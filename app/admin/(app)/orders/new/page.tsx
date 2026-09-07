@@ -2,10 +2,12 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { getCustomersForSelect, getProductsForOrderForm } from "@/lib/queries/orders";
 import { NewOrderForm } from "./new-order-form";
+import { requireAdmin } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 
 export default async function NewOrderPage() {
+  await requireAdmin();
   const [customers, products] = await Promise.all([getCustomersForSelect(), getProductsForOrderForm()]);
   return (
     <div className="flex flex-col gap-5">

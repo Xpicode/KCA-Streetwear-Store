@@ -5,6 +5,7 @@ import { StockInForm } from "@/components/admin/stock-in-form";
 import { Card, CardHeader, Empty } from "@/components/ui/card";
 import { peso } from "@/lib/format";
 import { cn } from "@/lib/utils";
+import { requireAdmin } from "@/lib/auth";
 
 const LOW_STOCK_LIMIT = 25;
 
@@ -15,6 +16,7 @@ export default async function StockInPage({
 }: {
   searchParams: Promise<{ received?: string; product?: string; variant?: string }>;
 }) {
+  await requireAdmin();
   const { received, product, variant } = await searchParams;
   const receivedIds = (received ?? "")
     .split(",")

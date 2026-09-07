@@ -24,12 +24,14 @@ import {
 } from "@/components/admin/report-sections";
 import { fmtDate } from "@/components/admin/order-bits";
 import { RangePicker } from "./range-picker";
+import { requireAdmin } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 
 type SearchParams = Promise<{ from?: string; to?: string; preset?: string }>;
 
 export default async function ReportsPage({ searchParams }: { searchParams: SearchParams }) {
+  await requireAdmin();
   const params = await searchParams;
   const range = resolveRange(params);
 

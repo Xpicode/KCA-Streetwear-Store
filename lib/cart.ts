@@ -26,7 +26,13 @@ export async function writeCart(cart: Cart) {
     jar.delete(COOKIE);
     return;
   }
-  jar.set(COOKIE, JSON.stringify(clean), { httpOnly: true, sameSite: "lax", path: "/", maxAge: 60 * 60 * 24 * 30 });
+  jar.set(COOKIE, JSON.stringify(clean), {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+    maxAge: 60 * 60 * 24 * 30,
+  });
 }
 
 export function cartCount(cart: Cart) {

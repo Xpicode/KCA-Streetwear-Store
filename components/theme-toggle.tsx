@@ -1,27 +1,32 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 import { Moon, Sun } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { THEME_KEY } from "@/lib/theme";
 
+/** The <html class="dark"> flag is the source of truth; watch it instead of mirroring it in state. */
+function subscribe(onChange: () => void) {
+  const observer = new MutationObserver(onChange);
+  observer.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+  return () => observer.disconnect();
+}
+const readDark = () => document.documentElement.classList.contains("dark");
+const readServer = () => null;
+
 /** Sun/moon button that flips the `dark` class on <html> and remembers the choice. */
 export function ThemeToggle({ className, labeled }: { className?: string; labeled?: boolean }) {
-  const [dark, setDark] = useState<boolean | null>(null);
-
-  useEffect(() => {
-    setDark(document.documentElement.classList.contains("dark"));
-  }, []);
+  // null during server render and hydration so both paints match
+  const dark = useSyncExternalStore(subscribe, readDark, readServer);
 
   const toggle = () => {
-    const next = !document.documentElement.classList.contains("dark");
+    const next = !readDark();
     document.documentElement.classList.toggle("dark", next);
     try {
       localStorage.setItem(THEME_KEY, next ? "dark" : "light");
     } catch {
       // private mode etc. — the toggle still works for this page
     }
-    setDark(next);
   };
 
   const label = dark ? "Switch to light mode" : "Switch to dark mode";
@@ -37,7 +42,6 @@ export function ThemeToggle({ className, labeled }: { className?: string; labele
         className
       )}
     >
-      {/* render both until mounted so server + first client paint match */}
       {dark === null ? <Sun className="size-4 opacity-0" /> : dark ? <Sun className="size-4" /> : <Moon className="size-4" />}
       {labeled && <span>{dark === null ? "Theme" : dark ? "Light mode" : "Dark mode"}</span>}
     </button>

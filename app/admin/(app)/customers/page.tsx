@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { LinkRow } from "@/components/admin/link-row";
 import { CustomerStatusBadge } from "@/components/admin/order-bits";
 import { StatusButtons } from "./status-buttons";
+import { requireAdmin } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 
@@ -16,6 +17,7 @@ const FILTERS = [
 ] as const;
 
 export default async function CustomersPage({ searchParams }: { searchParams: Promise<{ status?: string }> }) {
+  await requireAdmin();
   const { status } = await searchParams;
   const filter = status === "pending" || status === "approved" || status === "blocked" ? status : undefined;
   const [rows, counts] = await Promise.all([getCustomers({ status: filter }), getCustomerStatusCounts()]);

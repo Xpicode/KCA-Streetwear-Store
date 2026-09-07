@@ -6,7 +6,6 @@ import { z } from "zod";
 import { db } from "@/db";
 import { customers } from "@/db/schema";
 import { requireAdmin } from "@/lib/auth";
-import { hashPassword } from "@/lib/auth-hash";
 import type { ActionState } from "@/components/ui/form-message";
 
 function revalidateCustomer(id: number) {
@@ -76,29 +75,4 @@ export async function updateCustomer(_prev: ActionState, formData: FormData): Pr
   if (!row) return { error: "Customer not found." };
   revalidateCustomer(id);
   return { ok: true };
-}
-
-export type ResetPasswordState = { ok?: boolean; error?: string; password?: string } | null;
-
-const ALPHABET = "abcdefghjkmnpqrstuvwxyz23456789";
-function generatePassword(len = 10) {
-  const bytes = new Uint8Array(len);
-  crypto.getRandomValues(bytes);
-  return [...bytes].map((b) => ALPHABET[b % ALPHABET.length]).join("");
-}
-
-/** Owner only. Sets a fresh random password and returns it once so the owner can pass it on. */
-export async function resetCustomerPassword(_prev: ResetPasswordState, formData: FormData): Promise<ResetPasswordState> {
-  await requireAdmin({ owner: true });
-  const id = Number(formData.get("id"));
-  if (!Number.isInteger(id) || id <= 0) return { error: "Customer not found." };
-  const password = generatePassword();
-  const [row] = await db
-    .update(customers)
-    .set({ passwordHash: hashPassword(password) })
-    .where(eq(customers.id, id))
-    .returning({ id: customers.id });
-  if (!row) return { error: "Customer not found." };
-  revalidateCustomer(id);
-  return { ok: true, password };
 }

@@ -2,14 +2,13 @@ import Link from "next/link";
 import { Plus } from "lucide-react";
 import {
   ORDER_SORTS,
-  ORDER_TABS,
   getOrderCounts,
   getOrders,
   type OrderSort,
   type OrderTab,
   type OrderView,
 } from "@/lib/queries/orders";
-import { getAdminUser } from "@/lib/auth";
+import { getAdminUser, requireAdmin } from "@/lib/auth";
 import { OrderFilters } from "./order-filters";
 import { OrdersTable } from "./orders-table";
 
@@ -21,6 +20,7 @@ const ACTIVE_TABS: OrderTab[] = ["all", "pending", "confirmed", "packed", "paid"
 const HISTORY_TABS: OrderTab[] = ["all", "delivered", "cancelled"];
 
 export default async function OrdersPage({ searchParams }: { searchParams: SearchParams }) {
+  await requireAdmin();
   const sp = await searchParams;
   const view: OrderView = sp.view === "history" ? "history" : "active";
   const validTabs = view === "history" ? HISTORY_TABS : ACTIVE_TABS;

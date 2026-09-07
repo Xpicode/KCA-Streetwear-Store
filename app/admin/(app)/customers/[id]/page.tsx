@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Plus } from "lucide-react";
-import { getAdminUser } from "@/lib/auth";
+import { requireAdmin } from "@/lib/auth";
 import { getCustomer, getCustomerBalance, getCustomerOrders, getPriceGroups } from "@/lib/queries/customers";
 import { peso } from "@/lib/format";
 import { cn } from "@/lib/utils";
@@ -10,7 +10,6 @@ import { LinkRow } from "@/components/admin/link-row";
 import { CustomerStatusBadge, PaymentBadge, StatusBadge, fmtDate } from "@/components/admin/order-bits";
 import { StatusButtons } from "../status-buttons";
 import { CustomerForm } from "./customer-form";
-import { ResetPassword } from "./reset-password";
 
 export const dynamic = "force-dynamic";
 
@@ -19,12 +18,12 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
   const customerId = Number(id);
   if (!Number.isInteger(customerId)) notFound();
 
-  const [customer, orders, balance, priceGroups, me] = await Promise.all([
+  await requireAdmin();
+  const [customer, orders, balance, priceGroups] = await Promise.all([
     getCustomer(customerId),
     getCustomerOrders(customerId),
     getCustomerBalance(customerId),
     getPriceGroups(),
-    getAdminUser(),
   ]);
   if (!customer) notFound();
 
@@ -127,15 +126,6 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
               <CustomerForm customer={customer} priceGroups={priceGroups} />
             </CardBody>
           </Card>
-
-          {me?.role === "owner" && (
-            <Card>
-              <CardHeader title="Storefront login" />
-              <CardBody>
-                <ResetPassword customerId={customer.id} email={customer.email} />
-              </CardBody>
-            </Card>
-          )}
         </div>
       </div>
     </div>

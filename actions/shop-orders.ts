@@ -24,29 +24,45 @@ const schema = z.object({
   note: z.string().trim().max(1000, "Note is too long").optional().default(""),
 });
 
+type ContactDetails = { shopName: string; contactName: string; phone: string; email?: string; address: string };
+
+type ResolvedCustomer = {
+  id: number;
+  priceGroup: string;
+  /**
+   * true  — this device already placed orders for the customer, or the customer is brand new:
+   *         profile updated from the form, device remembered, customer's price group applies.
+   * false — an existing customer matched by phone number only. A phone number is not proof of
+   *         identity, so the profile on file is left alone, standard pricing applies and the
+   *         device is NOT given access to that customer's order history.
+   */
+  verified: boolean;
+  /** Fields the buyer typed that differ from the profile on file (unverified matches only). */
+  differences: string[];
+};
+
+/** Which of the typed details disagree with what's on file, as "shop name "X" (on file "Y")". */
+function diffDetails(typed: ContactDetails, onFile: { shopName: string; contactName: string | null; address: string | null; email: string | null }) {
+  const norm = (s: string | null | undefined) => (s ?? "").trim().toLowerCase().replace(/\s+/g, " ");
+  const out: string[] = [];
+  const check = (label: string, a: string | undefined, b: string | null) => {
+    if (a && norm(a) !== norm(b)) out.push(`${label} "${a}" (on file "${b ?? "—"}")`);
+  };
+  check("shop name", typed.shopName, onFile.shopName);
+  check("contact", typed.contactName, onFile.contactName);
+  check("address", typed.address, onFile.address);
+  check("email", typed.email, onFile.email);
+  return out;
+}
+
 /**
  * Finds the customer this order belongs to, without any account:
- *   1. the customer remembered on this device (cookie), if the phone still matches
- *   2. an existing customer with the same phone number (digits compared)
- *   3. otherwise a new, auto-approved customer row
- * Contact details are refreshed from the form each time.
+ *   1. the customer remembered on this device (cookie), if the phone still matches → verified
+ *   2. an existing customer with the same phone number (digits compared)         → unverified
+ *   3. otherwise a new, auto-approved customer row                                → verified
  */
-async function resolveCustomer(d: { shopName: string; contactName: string; phone: string; email?: string; address: string }) {
+async function resolveCustomer(d: ContactDetails): Promise<ResolvedCustomer> {
   const digits = normalizePhone(d.phone);
-  const remembered = await getShopper();
-  let id: number | null = null;
-
-  if (remembered && remembered.status !== "blocked" && (!remembered.phone || normalizePhone(remembered.phone) === digits)) {
-    id = remembered.id;
-  } else if (digits.length >= 7) {
-    const [match] = await db
-      .select({ id: customers.id, status: customers.status })
-      .from(customers)
-      .where(and(sql`regexp_replace(coalesce(${customers.phone}, ''), '\\D', '', 'g') = ${digits}`, sql`${customers.status} <> 'blocked'`))
-      .limit(1);
-    if (match) id = match.id;
-  }
-
   const details = {
     shopName: d.shopName,
     contactName: d.contactName,
@@ -55,16 +71,37 @@ async function resolveCustomer(d: { shopName: string; contactName: string; phone
     ...(d.email ? { email: d.email } : {}),
   };
 
-  if (id) {
-    await db.update(customers).set(details).where(eq(customers.id, id));
-    const [c] = await db.select({ priceGroup: customers.priceGroup }).from(customers).where(eq(customers.id, id)).limit(1);
-    return { id, priceGroup: c?.priceGroup ?? "standard" };
+  const remembered = await getShopper();
+  if (remembered && remembered.status !== "blocked" && (!remembered.phone || normalizePhone(remembered.phone) === digits)) {
+    await db.update(customers).set(details).where(eq(customers.id, remembered.id));
+    return { id: remembered.id, priceGroup: remembered.priceGroup, verified: true, differences: [] };
   }
+
+  if (digits.length >= 7) {
+    const [match] = await db
+      .select({
+        id: customers.id,
+        shopName: customers.shopName,
+        contactName: customers.contactName,
+        address: customers.address,
+        email: customers.email,
+      })
+      .from(customers)
+      .where(and(sql`regexp_replace(coalesce(${customers.phone}, ''), '\\D', '', 'g') = ${digits}`, sql`${customers.status} <> 'blocked'`))
+      .limit(1);
+    if (match) return { id: match.id, priceGroup: "standard", verified: false, differences: diffDetails(d, match) };
+  }
+
   const [created] = await db
     .insert(customers)
     .values({ ...details, status: "approved" })
     .returning({ id: customers.id, priceGroup: customers.priceGroup });
-  return created;
+  return { id: created.id, priceGroup: created.priceGroup, verified: true, differences: [] };
+}
+
+/** Signed link that opens exactly one order for 7 days (same mechanism as "Track an order"). */
+function orderToken(orderId: number) {
+  return signPayload({ oid: orderId, exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 7 });
 }
 
 /**
@@ -76,7 +113,7 @@ export async function placeOrder(_prev: ActionState, formData: FormData): Promis
   const parsed = schema.safeParse(Object.fromEntries(formData));
   if (!parsed.success) return { error: parsed.error.issues[0].message };
   const d = parsed.data;
-  let customer: { id: number; priceGroup: string };
+  let customer: ResolvedCustomer;
   try {
     customer = await resolveCustomer(d);
   } catch {
@@ -88,6 +125,10 @@ export async function placeOrder(_prev: ActionState, formData: FormData): Promis
     `Deliver to: ${d.shopName} · ${d.contactName} · ${d.phone} · ${d.address.replace(/\s*\n\s*/g, ", ")}`,
     `Preferred payment: ${payment}`,
     d.note ? `Note: ${d.note}` : null,
+    customer.verified
+      ? null
+      : `Review: matched an existing customer by phone number from a new device — profile not updated, standard pricing applied.` +
+        (customer.differences.length ? ` Typed details differ: ${customer.differences.join("; ")}.` : ""),
   ]
     .filter(Boolean)
     .join("\n");
@@ -103,10 +144,14 @@ export async function placeOrder(_prev: ActionState, formData: FormData): Promis
   }
 
   await writeCart({});
-  await rememberShopper(customer.id);
   revalidatePath("/shop", "layout");
   revalidatePath("/admin", "layout");
-  redirect(`/shop/orders/${order.id}?placed=1`);
+  if (customer.verified) {
+    await rememberShopper(customer.id);
+    redirect(`/shop/orders/${order.id}?placed=1`);
+  }
+  // unverified: this device may follow this one order, not the matched customer's history
+  redirect(`/shop/orders/${order.id}?placed=1&t=${encodeURIComponent(orderToken(order.id))}`);
 }
 
 const trackSchema = z.object({
@@ -131,6 +176,5 @@ export async function trackOrder(_prev: ActionState, formData: FormData): Promis
     .where(and(eq(orders.orderNo, no), sql`regexp_replace(coalesce(${customers.phone}, ''), '\\D', '', 'g') = ${digits}`))
     .limit(1);
   if (!row) return { error: "No order found with that number and contact number." };
-  const token = signPayload({ oid: row.id, exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 7 });
-  redirect(`/shop/orders/${row.id}?t=${encodeURIComponent(token)}`);
+  redirect(`/shop/orders/${row.id}?t=${encodeURIComponent(orderToken(row.id))}`);
 }

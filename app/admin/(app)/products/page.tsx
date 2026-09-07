@@ -5,12 +5,14 @@ import { ProductFilters } from "@/components/admin/product-filters";
 import { peso } from "@/lib/format";
 import { marginPercent } from "@/lib/profit";
 import { cn } from "@/lib/utils";
+import { requireAdmin } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 
 type SearchParams = Promise<{ q?: string; category?: string }>;
 
 export default async function ProductsPage({ searchParams }: { searchParams: SearchParams }) {
+  await requireAdmin();
   const { q, category } = await searchParams;
   const categoryId = category ? Number(category) : undefined;
 

@@ -1,4 +1,4 @@
-import { and, between, count, desc, eq, inArray, sql, sum } from "drizzle-orm";
+import { and, between, count, desc, eq, inArray, sql } from "drizzle-orm";
 import { db } from "@/db";
 import { customers, orderItems, orders, productVariants, products } from "@/db/schema";
 import { periodRange, type Period } from "@/lib/profit";

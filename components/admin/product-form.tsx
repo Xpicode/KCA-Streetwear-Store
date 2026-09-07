@@ -221,7 +221,7 @@ export function ProductForm({
           isActive: v.isActive,
         }))
       ),
-    [variants]
+    [variants, mode]
   );
   const tiersJson = useMemo(
     () => JSON.stringify(tiers.map((t) => ({ minQty: t.minQty, price: t.price, priceGroup: t.priceGroup.trim() }))),

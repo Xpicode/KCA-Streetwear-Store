@@ -68,9 +68,7 @@ export async function getCustomerStatusCounts() {
 
 export async function getCustomer(id: number) {
   const [c] = await db.select().from(customers).where(eq(customers.id, id)).limit(1);
-  if (!c) return null;
-  const { passwordHash, ...rest } = c;
-  return { ...rest, hasPassword: !!passwordHash };
+  return c ?? null;
 }
 
 export type CustomerOrderRow = {

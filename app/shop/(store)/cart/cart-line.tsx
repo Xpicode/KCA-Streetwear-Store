@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState, useTransition } from "react";
+import { useState, useTransition } from "react";
 import { Trash2, AlertTriangle } from "lucide-react";
 import { removeFromCart, setCartQty } from "@/actions/cart";
 import type { CartLine as Line } from "@/lib/queries/catalog";
@@ -13,7 +13,12 @@ import { ProductImage } from "@/components/shop/product-image";
 export function CartLineRow({ line }: { line: Line }) {
   const [qty, setQty] = useState(line.qty);
   const [pending, startTransition] = useTransition();
-  useEffect(() => setQty(line.qty), [line.qty]);
+  // when the server's quantity changes (e.g. clamped to stock), drop the local edit and follow it
+  const [serverQty, setServerQty] = useState(line.qty);
+  if (serverQty !== line.qty) {
+    setServerQty(line.qty);
+    setQty(line.qty);
+  }
 
   function commit(next: number) {
     setQty(next);

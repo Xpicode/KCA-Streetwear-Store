@@ -3,10 +3,12 @@ import { ChevronLeft } from "lucide-react";
 import { getCategories } from "@/lib/queries/products";
 import { getPriceGroups } from "@/lib/queries/product-detail";
 import { ProductForm } from "@/components/admin/product-form";
+import { requireAdmin } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 
 export default async function NewProductPage() {
+  await requireAdmin();
   const [categories, priceGroups] = await Promise.all([getCategories(), getPriceGroups()]);
   return (
     <div className="flex flex-col gap-5">

@@ -6,6 +6,7 @@ import { marginPercent, type Period } from "@/lib/profit";
 import { cn } from "@/lib/utils";
 import { ProfitChart } from "@/components/admin/profit-chart";
 import { LinkRow } from "@/components/admin/link-row";
+import { requireAdmin } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 
@@ -33,6 +34,7 @@ export default async function DashboardPage({
 }: {
   searchParams: Promise<{ period?: string }>;
 }) {
+  await requireAdmin();
   const { period: raw } = await searchParams;
   const period: Period = raw === "day" || raw === "month" ? raw : "week";
   const d = await getDashboard(period);

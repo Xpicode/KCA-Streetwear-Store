@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element -- landing art is local SVG and product photos are plain uploads */
 import Link from "next/link";
 import { ArrowRight, PackageCheck, Search, Send, ShieldCheck, Truck, Layers } from "lucide-react";
 import { getLandingData } from "@/lib/queries/landing";

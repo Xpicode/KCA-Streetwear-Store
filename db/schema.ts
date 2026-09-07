@@ -53,7 +53,6 @@ export const customers = pgTable("customers", {
   address: text("address"),
   priceGroup: text("price_group").notNull().default("standard"),
   status: customerStatus("status").notNull().default("pending"),
-  passwordHash: text("password_hash"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 

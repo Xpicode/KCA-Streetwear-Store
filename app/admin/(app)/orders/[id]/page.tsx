@@ -9,7 +9,7 @@ import { Card, CardBody, CardHeader, Empty } from "@/components/ui/card";
 import { PaymentBadge, StatusBadge, fmtDate, fmtDateTime, pesoExact, sourceLabel } from "@/components/admin/order-bits";
 import { ActionsBar } from "./actions-bar";
 import { DeleteOrderButton } from "../delete-order-button";
-import { getAdminUser } from "@/lib/auth";
+import { getAdminUser, requireAdmin } from "@/lib/auth";
 import { NoteForm } from "./note-form";
 
 export const dynamic = "force-dynamic";
@@ -25,6 +25,7 @@ const STEPS = [
 const METHOD_LABEL: Record<string, string> = { cash: "Cash", bank: "Bank transfer", ewallet: "E-wallet" };
 
 export default async function OrderDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  await requireAdmin();
   const { id } = await params;
   const orderId = Number(id);
   if (!Number.isInteger(orderId)) notFound();

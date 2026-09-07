@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { headers } from "next/headers";
 import "./globals.css";
 import { THEME_INIT_SCRIPT } from "@/lib/theme";
 
@@ -18,7 +19,9 @@ export const metadata: Metadata = {
   description: "Streetwear tees, caps and accessories at wholesale prices for resellers.",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  // per-request CSP nonce from proxy.ts; the inline theme script must carry it to run
+  const nonce = (await headers()).get("x-nonce") ?? undefined;
   return (
     <html
       lang="en"
@@ -27,7 +30,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <head>
         {/* sets the .dark class before paint — see lib/theme.ts */}
-        <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
+        <script nonce={nonce} dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
       </head>
       <body className="min-h-full flex flex-col">{children}</body>
     </html>

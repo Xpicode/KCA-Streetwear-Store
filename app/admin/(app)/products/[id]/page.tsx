@@ -9,6 +9,7 @@ import { peso } from "@/lib/format";
 import { marginPercent, type Period } from "@/lib/profit";
 import { cn } from "@/lib/utils";
 import { AdjustForm } from "./adjust-form";
+import { requireAdmin } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 
@@ -32,6 +33,7 @@ export default async function ProductDetailPage({
   params: Promise<{ id: string }>;
   searchParams: Promise<{ period?: string }>;
 }) {
+  await requireAdmin();
   const [{ id: raw }, { period: rawPeriod }] = await Promise.all([params, searchParams]);
   const id = Number(raw);
   if (!Number.isInteger(id)) notFound();

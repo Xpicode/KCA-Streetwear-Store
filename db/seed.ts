@@ -14,6 +14,24 @@ import { hashPassword } from "../lib/auth-hash";
 loadEnvLocal();
 if (!process.env.DATABASE_URL) throw new Error("DATABASE_URL missing — create .env.local first");
 
+// Seeding wipes every table and installs well-known sample passwords, so it refuses to run
+// against anything that doesn't look like a local database unless you override on purpose.
+const dbHost = (() => {
+  try {
+    return new URL(process.env.DATABASE_URL).hostname;
+  } catch {
+    return "";
+  }
+})();
+const isLocalDb = ["localhost", "127.0.0.1", "::1", "db"].includes(dbHost);
+if ((process.env.NODE_ENV === "production" || !isLocalDb) && process.env.ALLOW_SEED !== "yes") {
+  console.error(
+    `Refusing to seed "${dbHost || "this database"}": seeding WIPES every table and installs the public sample logins.\n` +
+      "It only runs against a local database. To do this on purpose:  ALLOW_SEED=yes npm run db:seed"
+  );
+  process.exit(1);
+}
+
 const client = postgres(process.env.DATABASE_URL, { max: 1 });
 const db = drizzle(client, { schema: s });
 
@@ -119,7 +137,7 @@ async function main() {
   const custs = await db
     .insert(s.customers)
     .values([
-      { shopName: "Rina's Boutique", contactName: "Rina", phone: "[0917 000 0003]", email: "rina@example.com", passwordHash: hashPassword("buyer123"), address: "Stall 14, Baclaran Market, Parañaque", status: "approved" },
+      { shopName: "Rina's Boutique", contactName: "Rina", phone: "[0917 000 0003]", email: "rina@example.com", address: "Stall 14, Baclaran Market, Parañaque", status: "approved" },
       { shopName: "JM Caps Trading", contactName: "JM", phone: "[0917 000 0004]", address: "Divisoria, Manila", status: "approved" },
       { shopName: "Kuya Ben Sportswear", contactName: "Ben", phone: "[0917 000 0005]", address: "Cebu City", status: "approved" },
       { shopName: "Manong Ed Ukay", contactName: "Ed", phone: "[0917 000 0006]", address: "Dagupan City", status: "approved" },
@@ -205,7 +223,8 @@ async function main() {
   }
 
   console.log(`Seeded ${defs.length} products, ${custs.length} customers, ${orderDefs.length} orders.`);
-  console.log("Logins — admin: owner@example.com / admin123 · staff@example.com / staff123 · buyer: rina@example.com / buyer123");
+  console.log("Logins — owner@example.com / admin123 · staff@example.com / staff123");
+  console.log("WARNING: these sample passwords are public. Change them in Settings before going live.");
 }
 
 main()

@@ -6,54 +6,23 @@
  * AUTH_SECRET in .env.local signs the cookie. Change it to log everyone out.
  */
 import "server-only";
-import { createHmac, timingSafeEqual } from "node:crypto";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { cache } from "react";
 import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import { users } from "@/db/schema";
+import { signPayload, verifyPayload } from "./session-token";
 
-const COOKIE = "ws_session";
+const COOKIE = "ws_session"; // proxy.ts checks the same cookie at the edge
 const MAX_AGE = 60 * 60 * 24 * 14; // 14 days
 
 export { hashPassword, verifyPassword } from "./auth-hash";
+export { signPayload, verifyPayload } from "./session-token";
 
 // ---- session cookie ---------------------------------------------------------
 export type SessionKind = "admin";
 type Payload = { kind: SessionKind; id: number; exp: number };
-
-function secret() {
-  const s = process.env.AUTH_SECRET;
-  if (!s) throw new Error("AUTH_SECRET is not set in .env.local");
-  return s;
-}
-
-function sign(data: string) {
-  return createHmac("sha256", secret()).update(data).digest("base64url");
-}
-
-/** Sign any small JSON payload (must include `exp` as unix seconds) for use in a cookie. */
-export function signPayload<T extends { exp: number }>(p: T) {
-  const data = Buffer.from(JSON.stringify(p)).toString("base64url");
-  return `${data}.${sign(data)}`;
-}
-
-/** Verify a token from signPayload; null if tampered or expired. */
-export function verifyPayload<T extends { exp: number }>(token: string | undefined): T | null {
-  if (!token) return null;
-  const [data, sig] = token.split(".");
-  if (!data || !sig) return null;
-  const expected = sign(data);
-  if (sig.length !== expected.length || !timingSafeEqual(Buffer.from(sig), Buffer.from(expected))) return null;
-  try {
-    const p = JSON.parse(Buffer.from(data, "base64url").toString()) as T;
-    if (!p.exp || p.exp < Date.now() / 1000) return null;
-    return p;
-  } catch {
-    return null;
-  }
-}
 
 const encode = (p: Payload) => signPayload(p);
 const decode = (token: string | undefined) => verifyPayload<Payload>(token);

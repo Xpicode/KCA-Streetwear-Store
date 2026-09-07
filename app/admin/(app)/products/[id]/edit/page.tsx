@@ -4,10 +4,12 @@ import { ChevronLeft } from "lucide-react";
 import { getCategories } from "@/lib/queries/products";
 import { getPriceGroups, getProductDetail } from "@/lib/queries/product-detail";
 import { ProductForm } from "@/components/admin/product-form";
+import { requireAdmin } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 
 export default async function EditProductPage({ params }: { params: Promise<{ id: string }> }) {
+  await requireAdmin();
   const { id: raw } = await params;
   const id = Number(raw);
   if (!Number.isInteger(id)) notFound();
