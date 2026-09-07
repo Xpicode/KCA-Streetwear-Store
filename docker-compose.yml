@@ -1,0 +1,16 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: wholesale-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: wholesale
+      POSTGRES_PASSWORD: wholesale
+      POSTGRES_DB: wholesale
+    ports:
+      - "55432:5432"
+    volumes:
+      - wholesale-pgdata:/var/lib/postgresql/data
+
+volumes:
+  wholesale-pgdata:

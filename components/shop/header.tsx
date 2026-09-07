@@ -1,0 +1,47 @@
+import Link from "next/link";
+import { ShoppingCart, Search, PackageSearch } from "lucide-react";
+import type { Shopper } from "@/lib/shopper";
+import { BRAND } from "@/lib/brand";
+import { ThemeToggle } from "@/components/theme-toggle";
+
+export function ShopHeader({ shopper, cartCount }: { shopper: Shopper | null; cartCount: number }) {
+  return (
+    <header className="sticky top-0 z-20 border-b border-zinc-200 bg-white/95 backdrop-blur">
+      <div className="mx-auto flex h-16 max-w-7xl items-center gap-3 px-4 sm:gap-6 sm:px-6">
+        <Link href="/shop" className="shrink-0 font-extrabold">
+          {BRAND.name} <span className="hidden font-semibold text-zinc-500 sm:inline">{BRAND.tagline}</span>
+        </Link>
+
+        <form action="/shop" className="hidden h-10 w-96 items-center gap-2 rounded-lg border border-zinc-200 bg-zinc-50 px-3 md:flex">
+          <Search className="size-4 text-zinc-500" />
+          <input name="q" placeholder="Search tees, caps, bags…" className="w-full bg-transparent text-sm font-medium outline-none placeholder:text-zinc-400" />
+        </form>
+
+        <div className="flex-1" />
+
+        <div className="flex items-center gap-3 text-sm font-semibold text-zinc-600 sm:gap-5">
+          <Link href="/shop/orders" className="flex items-center gap-1.5 whitespace-nowrap hover:text-zinc-900">
+            <PackageSearch className="size-4 sm:hidden" />
+            <span className="hidden sm:inline">My orders</span>
+          </Link>
+          {shopper && (
+            <span className="hidden items-center gap-2 lg:flex" title="Remembered from your last order">
+              <span className="flex size-8 items-center justify-center rounded-full bg-emerald-50 text-[11px] font-extrabold text-emerald-800">
+                {shopper.shopName.slice(0, 2).toUpperCase()}
+              </span>
+              <span className="max-w-40 truncate">{shopper.shopName}</span>
+            </span>
+          )}
+          <ThemeToggle className="hidden sm:flex" />
+          <Link href="/shop/cart" className="flex h-10 items-center gap-2 rounded-lg bg-zinc-900 px-3 text-sm font-bold text-white sm:px-4">
+            <ShoppingCart className="size-4" />
+            <span className="hidden sm:inline">Cart</span>
+            {cartCount > 0 && (
+              <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-emerald-600 px-1.5 text-[11px]">{cartCount}</span>
+            )}
+          </Link>
+        </div>
+      </div>
+    </header>
+  );
+}

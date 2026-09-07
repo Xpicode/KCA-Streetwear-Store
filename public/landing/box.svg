@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" fill="none">
+  <path d="M40 92l80-40 80 40v88l-80 40-80-40z" fill="#f4f6f3" stroke="#1f7a5c" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M40 92l80 40 80-40M120 132v88" stroke="#1f7a5c" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M80 72l80 40" stroke="#1f7a5c" stroke-width="4" stroke-dasharray="6 8"/>
+  <rect x="132" y="150" width="34" height="20" rx="4" fill="#1f7a5c" transform="skewY(-26) translate(0 60)"/>
+</svg>

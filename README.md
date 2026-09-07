@@ -1,36 +1,69 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# KCA Streetwear — Wholesale System
 
-## Getting Started
+Inventory, profit tracking, and an online order-request storefront for KCA Streetwear.
+Built with Next.js 16 (App Router), TypeScript, Tailwind CSS 4, Drizzle ORM, and PostgreSQL.
 
-First, run the development server:
+## Getting started
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+docker compose up -d     # start the local Postgres 16 database (host port 55432)
+npm install
+npm run db:setup         # create tables + load sample data (WIPES existing data)
+npm run dev              # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Accounts (sample data)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Created by `npm run db:setup`. **Change these before going live.**
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Role  | Where to sign in       | Email               | Password   |
+| ----- | ---------------------- | ------------------- | ---------- |
+| Owner | `/admin/login`         | `owner@example.com` | `admin123` |
+| Staff | `/admin/login`         | `staff@example.com` | `staff123` |
 
-## Learn More
+The owner sees everything including Settings; staff can run products, stock, and orders.
+**Buyers need no account** — the shop at `/shop` is open to everyone. Checkout asks for
+shop name, contact number, and address; repeat buyers are matched by phone number.
 
-To learn more about Next.js, take a look at the following resources:
+## Pages
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+| URL            | What it is                                                       |
+| -------------- | ---------------------------------------------------------------- |
+| `/`            | Public landing page                                              |
+| `/shop`        | Catalog → cart → order request (no account, no online payment)   |
+| `/shop/orders` | Buyer's orders (remembered per device, or order no. + phone)     |
+| `/admin`       | Dashboard: profit today / this week / this month                 |
+| `/admin/...`   | Products, stock-in, orders pipeline, customers, reports, settings|
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Database scripts
 
-## Deploy on Vercel
+| Command               | What it does                                            |
+| --------------------- | ------------------------------------------------------- |
+| `npm run db:migrate`  | Create/update tables from `db/migrations`               |
+| `npm run db:seed`     | Load sample data (wipes all tables first)               |
+| `npm run db:setup`    | Both of the above                                       |
+| `npm run db:generate` | Make a new migration after editing `db/schema.ts`       |
+| `npm run db:studio`   | Browse the database in Drizzle Studio                   |
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Connection settings live in `.env.local` (`DATABASE_URL`, `AUTH_SECRET`).
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Where things live
+
+```
+app/            pages: landing, admin/(app), shop/(store)
+actions/        server actions (orders, stock, customers, settings, auth)
+lib/            business rules: orders pipeline, pricing, stock, auth, brand
+lib/queries/    read queries for every screen
+db/             schema, migrations, seed, client
+components/     ui primitives, admin + shop + landing components
+public/landing/ landing page artwork (swap for real photos)
+```
+
+Brand name and contact details: `lib/brand.ts`.
+
+## Key business rules
+
+- Order flow: pending → confirmed (stock reserved) → packed (stock deducted, cost
+  snapshotted) → delivered (profit counts on this date) → paid. Cancelling releases stock.
+- Profit per line = (unit price − unit cost) × qty, frozen at packing time.
+- Wholesale tiers: quantity discounts per style; minimum order quantity per style.
