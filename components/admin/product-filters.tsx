@@ -36,7 +36,7 @@ export function ProductFilters({ categories }: { categories: Category[] }) {
 
   return (
     <div className="flex flex-wrap items-center gap-3">
-      <label className="flex h-9 w-72 items-center gap-2 rounded-lg border border-zinc-300 bg-white px-3">
+      <label className="flex h-9 w-full sm:w-72 items-center gap-2 rounded-lg border border-zinc-300 bg-white px-3">
         <Search className="size-4 text-zinc-500" />
         <input
           value={q}

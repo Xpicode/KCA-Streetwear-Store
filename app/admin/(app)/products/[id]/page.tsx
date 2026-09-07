@@ -49,7 +49,7 @@ export default async function ProductDetailPage({
   return (
     <div className="flex flex-col gap-5">
       {/* Header */}
-      <div className="flex items-end justify-between gap-4">
+      <div className="flex flex-wrap items-end justify-between gap-4">
         <div className="min-w-0">
           <Link href="/admin/products" className="mb-2 inline-flex items-center gap-1 text-xs font-bold text-zinc-500 hover:text-zinc-800">
             <ChevronLeft className="size-3.5" />
@@ -82,7 +82,7 @@ export default async function ProductDetailPage({
       </div>
 
       {/* Summary tiles */}
-      <div className="grid grid-cols-5 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
         <Tile label="Cost" value={p.avgCost ? peso(p.avgCost) : "—"} sub="weighted avg of open batches" />
         <Tile label="Price" value={peso(p.basePrice)} sub={p.tiers.length ? `${p.tiers.length} quantity tier${p.tiers.length > 1 ? "s" : ""}` : "no tiers"} />
         <Tile
@@ -125,7 +125,7 @@ export default async function ProductDetailPage({
             </div>
           }
         />
-        <CardBody className="grid grid-cols-[220px_1fr] gap-6">
+        <CardBody className="grid grid-cols-1 md:grid-cols-[220px_1fr] gap-6">
           <div className="flex flex-col gap-4">
             <Stat label="Profit" value={peso(profit.profit)} sub={`${Math.round(periodMargin)}% margin`} big />
             <Stat label="Units sold" value={profit.units.toLocaleString("en-PH")} sub={`${profit.orders} order${profit.orders === 1 ? "" : "s"} delivered`} />
@@ -145,7 +145,7 @@ export default async function ProductDetailPage({
           title="Stock by variant"
           action={<span className="text-xs font-semibold text-zinc-500">Adjust: pick − or +, a qty and a reason</span>}
         />
-        <table className="w-full text-sm">
+        <div className="overflow-x-auto"><table className="w-full min-w-[560px] text-sm">
           <thead className="bg-zinc-50 text-left text-[11px] font-bold uppercase tracking-wider text-zinc-500">
             <tr>
               <th className="px-5 py-2.5">Size</th>
@@ -179,10 +179,10 @@ export default async function ProductDetailPage({
               );
             })}
           </tbody>
-        </table>
+        </table></div>
       </Card>
 
-      <div className="grid grid-cols-[1fr_1.6fr] gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.6fr] gap-4">
         {/* Price tiers */}
         <Card>
           <CardHeader title="Price tiers" action={<Link href={`/admin/products/${p.id}/edit`} className="text-xs font-bold text-emerald-700">Edit</Link>} />
@@ -219,7 +219,7 @@ export default async function ProductDetailPage({
             <Empty>No stock received yet. Use Stock-in to record a purchase.</Empty>
           ) : (
             <div className="max-h-96 overflow-y-auto">
-              <table className="w-full text-sm">
+              <div className="overflow-x-auto"><table className="w-full min-w-[560px] text-sm">
                 <thead className="sticky top-0 bg-zinc-50 text-left text-[11px] font-bold uppercase tracking-wider text-zinc-500">
                   <tr>
                     <th className="px-5 py-2">Received</th>
@@ -245,7 +245,7 @@ export default async function ProductDetailPage({
                     </tr>
                   ))}
                 </tbody>
-              </table>
+              </table></div>
             </div>
           )}
         </Card>

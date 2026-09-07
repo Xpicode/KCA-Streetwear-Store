@@ -56,7 +56,7 @@ export function AddCategoryForm({ nextSort }: { nextSort: number }) {
   const [state, action] = useActionState(addCategory, null);
   return (
     <form action={action} className="flex flex-col gap-2">
-      <div className="grid grid-cols-[80px_1fr_auto] items-center gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-[80px_1fr_auto] items-center gap-3">
         <Input name="sortOrder" type="number" min={0} defaultValue={nextSort} className="h-9" aria-label="Sort order" />
         <Input name="name" placeholder="New category name" required className="h-9" />
         <SubmitButton pendingText="Adding…" className="h-9">

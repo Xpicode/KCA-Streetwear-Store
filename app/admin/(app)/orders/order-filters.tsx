@@ -99,7 +99,7 @@ export function OrderFilters({
               </option>
             ))}
           </select>
-          <label className="flex h-9 w-64 items-center gap-2 rounded-lg border border-zinc-300 bg-white px-3">
+          <label className="flex h-9 w-full sm:w-64 items-center gap-2 rounded-lg border border-zinc-300 bg-white px-3">
             <Search className="size-4 text-zinc-500" />
             <input
               value={q}

@@ -88,7 +88,7 @@ export function OrdersTable({ rows, canDelete, emptyText }: { rows: OrderListRow
       {error && <p className="rounded-lg bg-red-50 px-3 py-2 text-sm font-semibold text-red-700">{error}</p>}
 
       <div className="overflow-hidden rounded-xl border border-zinc-200 bg-white">
-        <table className="w-full text-sm">
+        <div className="overflow-x-auto"><table className="w-full min-w-[560px] text-sm">
           <thead className="bg-zinc-50 text-left text-[11px] font-bold uppercase tracking-wider text-zinc-500">
             <tr>
               {canDelete && (
@@ -162,7 +162,7 @@ export function OrdersTable({ rows, canDelete, emptyText }: { rows: OrderListRow
               </tr>
             ))}
           </tbody>
-        </table>
+        </table></div>
       </div>
     </div>
   );

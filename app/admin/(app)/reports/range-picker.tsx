@@ -20,7 +20,7 @@ export function RangePicker({ range }: { range: Range }) {
           </Link>
         ))}
       </div>
-      <form method="get" action="/admin/reports" className="flex items-center gap-2">
+      <form method="get" action="/admin/reports" className="flex flex-wrap items-center gap-2">
         <input
           type="date"
           name="from"

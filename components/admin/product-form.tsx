@@ -247,11 +247,11 @@ export function ProductForm({
       />
       <input type="hidden" name="tiers" value={tiersJson} />
 
-      <div className="grid grid-cols-[1.6fr_1fr] gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-[1.6fr_1fr] gap-4">
         <Card>
           <CardHeader title="Details" />
           <CardBody className="flex flex-col gap-4">
-            <div className="grid grid-cols-[1fr_180px] gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-[1fr_180px] gap-4">
               <Field label="Product name">
                 <Input name="name" value={name} onChange={(e) => setName(e.target.value)} required autoFocus placeholder="e.g. Plain Cotton Tee" />
               </Field>
@@ -259,7 +259,7 @@ export function ProductForm({
                 <Input name="sku" defaultValue={p.sku} required placeholder="TEE-001" className="uppercase" />
               </Field>
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <Field label="Slug" hint={slug ? undefined : autoSlug ? `Blank — will use “${autoSlug}”` : "Used in the storefront URL"}>
                 <Input name="slug" value={slug} onChange={(e) => setSlug(e.target.value)} placeholder={autoSlug || "auto from name"} />
               </Field>
@@ -334,7 +334,7 @@ export function ProductForm({
         <Card>
           <CardHeader title="Pricing & stock" />
           <CardBody className="flex flex-col gap-4">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <Field label="Cost per unit (₱)" hint="What you pay your supplier.">
                 <Input name="baseCost" type="number" step="0.01" min="0" value={cost} onChange={(e) => setCost(e.target.value)} placeholder="0.00" />
               </Field>
@@ -352,7 +352,7 @@ export function ProductForm({
                 ))}
               </Select>
             </Field>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <Field label="MOQ" hint="Minimum order qty">
                 <Input name="moq" type="number" min="1" step="1" defaultValue={p.moq} required />
               </Field>
@@ -396,7 +396,7 @@ export function ProductForm({
             </p>
           ) : (
             <div className="overflow-hidden rounded-lg border border-zinc-200">
-              <table className="w-full text-sm">
+              <div className="overflow-x-auto"><table className="w-full min-w-[560px] text-sm">
                 <thead className="bg-zinc-50 text-left text-[11px] font-bold uppercase tracking-wider text-zinc-500">
                   <tr>
                     <th className="px-3 py-2">Size</th>
@@ -469,7 +469,7 @@ export function ProductForm({
                     </tr>
                   ))}
                 </tbody>
-              </table>
+              </table></div>
             </div>
           )}
           <p className="text-xs text-zinc-500">
@@ -500,7 +500,7 @@ export function ProductForm({
             </p>
           ) : (
             <div className="overflow-hidden rounded-lg border border-zinc-200">
-              <table className="w-full text-sm">
+              <div className="overflow-x-auto"><table className="w-full min-w-[560px] text-sm">
                 <thead className="bg-zinc-50 text-left text-[11px] font-bold uppercase tracking-wider text-zinc-500">
                   <tr>
                     <th className="px-3 py-2">From qty</th>
@@ -544,7 +544,7 @@ export function ProductForm({
                     </tr>
                   ))}
                 </tbody>
-              </table>
+              </table></div>
             </div>
           )}
           <datalist id="price-groups">

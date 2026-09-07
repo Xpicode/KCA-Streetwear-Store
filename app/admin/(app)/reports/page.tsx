@@ -49,7 +49,7 @@ export default async function ReportsPage({ searchParams }: { searchParams: Sear
 
   return (
     <div className="flex flex-col gap-5">
-      <div className="flex items-end justify-between gap-4">
+      <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <h1 className="text-2xl font-extrabold tracking-tight">Reports</h1>
           <p className="text-sm font-medium text-zinc-500">
@@ -62,7 +62,7 @@ export default async function ReportsPage({ searchParams }: { searchParams: Sear
       {/* Profit summary */}
       <section className="flex flex-col gap-3">
         <SectionHead title="Profit summary" report="summary" range={range} />
-        <div className="grid grid-cols-6 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
           <Tile label="Gross profit" value={peso(summary.profit)} sub={`${margin.toFixed(1)}% margin`} accent />
           <Tile label="Revenue" value={peso(summary.revenue)} sub="delivered + paid" />
           <Tile label="Cost of goods" value={peso(summary.cost)} sub="snapshot at packing" />

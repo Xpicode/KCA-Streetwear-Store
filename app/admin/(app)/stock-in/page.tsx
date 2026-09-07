@@ -38,7 +38,7 @@ export default async function StockInPage({
 
   return (
     <div className="flex flex-col gap-5">
-      <div className="flex items-end justify-between">
+      <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="text-2xl font-extrabold tracking-tight">Stock-in</h1>
           <p className="text-sm font-medium text-zinc-500">
@@ -113,7 +113,7 @@ export default async function StockInPage({
         {recent.length === 0 ? (
           <Empty>No stock received yet.</Empty>
         ) : (
-          <table className="w-full text-sm">
+          <div className="overflow-x-auto"><table className="w-full min-w-[560px] text-sm">
             <thead className="bg-zinc-50 text-left text-[11px] font-bold uppercase tracking-wider text-zinc-500">
               <tr>
                 <th className="px-5 py-2.5">Received</th>
@@ -148,7 +148,7 @@ export default async function StockInPage({
                 </tr>
               ))}
             </tbody>
-          </table>
+          </table></div>
         )}
       </Card>
     </div>
@@ -189,7 +189,7 @@ function LowStockCard({ rows, outCount }: { rows: LowStockRow[]; outCount: numbe
         <Empty>Every product is above its reorder level. Nothing to restock right now.</Empty>
       ) : (
         <>
-          <table className="w-full text-sm">
+          <div className="overflow-x-auto"><table className="w-full min-w-[560px] text-sm">
             <thead className="bg-zinc-50 text-left text-[11px] font-bold uppercase tracking-wider text-zinc-500">
               <tr>
                 <th className="px-5 py-2.5">Product</th>
@@ -241,7 +241,7 @@ function LowStockCard({ rows, outCount }: { rows: LowStockRow[]; outCount: numbe
                 );
               })}
             </tbody>
-          </table>
+          </table></div>
           {hidden > 0 && (
             <p className="border-t border-zinc-100 px-5 py-3 text-xs font-semibold text-zinc-500">
               Showing the {LOW_STOCK_LIMIT} most urgent · {hidden} more on the{" "}

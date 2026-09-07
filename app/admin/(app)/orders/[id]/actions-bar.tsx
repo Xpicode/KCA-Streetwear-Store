@@ -126,7 +126,7 @@ function PaymentForm({ orderId, balance, onDone }: { orderId: number; balance: n
           <X className="size-4" />
         </button>
       </div>
-      <div className="grid grid-cols-4 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
         <Field label="Amount (₱)" hint={`Balance due ₱${balance.toLocaleString("en-PH", { minimumFractionDigits: 2 })}`}>
           <Input name="amount" type="number" step="0.01" min="0.01" max={balance} defaultValue={balance.toFixed(2)} required autoFocus />
         </Field>

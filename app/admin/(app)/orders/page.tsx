@@ -37,7 +37,7 @@ export default async function OrdersPage({ searchParams }: { searchParams: Searc
 
   return (
     <div className="flex flex-col gap-5">
-      <div className="flex items-end justify-between">
+      <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="text-2xl font-extrabold tracking-tight">Orders</h1>
           <p className="text-sm font-medium text-zinc-500">

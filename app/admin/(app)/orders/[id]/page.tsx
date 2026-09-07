@@ -41,7 +41,7 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
   return (
     <div className="flex flex-col gap-5">
       {/* Header */}
-      <div className="flex items-end justify-between gap-4">
+      <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <Link href="/admin/orders" className="mb-1 flex items-center gap-1 text-xs font-bold text-zinc-500 hover:text-zinc-800">
             <ArrowLeft className="size-3.5" />
@@ -127,7 +127,7 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
         </Card>
       )}
 
-      <div className="grid grid-cols-[1.6fr_1fr] items-start gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-[1.6fr_1fr] items-start gap-4">
         {/* Left: lines + payments */}
         <div className="flex flex-col gap-4">
           <Card>
@@ -141,7 +141,7 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
                 )
               }
             />
-            <table className="w-full text-sm">
+            <div className="overflow-x-auto"><table className="w-full min-w-[560px] text-sm">
               <thead className="bg-zinc-50 text-left text-[11px] font-bold uppercase tracking-wider text-zinc-500">
                 <tr>
                   <th className="px-5 py-2.5">Product</th>
@@ -183,7 +183,7 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
                   );
                 })}
               </tbody>
-            </table>
+            </table></div>
           </Card>
 
           <Card>
@@ -191,7 +191,7 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
             {o.payments.length === 0 ? (
               <Empty>No payments recorded yet.</Empty>
             ) : (
-              <table className="w-full text-sm">
+              <div className="overflow-x-auto"><table className="w-full min-w-[560px] text-sm">
                 <thead className="bg-zinc-50 text-left text-[11px] font-bold uppercase tracking-wider text-zinc-500">
                   <tr>
                     <th className="px-5 py-2.5">Date</th>
@@ -210,7 +210,7 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
                     </tr>
                   ))}
                 </tbody>
-              </table>
+              </table></div>
             )}
           </Card>
         </div>

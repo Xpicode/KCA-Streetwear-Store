@@ -25,7 +25,7 @@ export function CustomerForm({ customer, priceGroups }: { customer: Customer; pr
   return (
     <form action={action} className="flex flex-col gap-4">
       <input type="hidden" name="id" value={customer.id} />
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <Field label="Shop / business name">
           <Input name="shopName" defaultValue={customer.shopName} required />
         </Field>

@@ -24,7 +24,7 @@ export default async function CustomersPage({ searchParams }: { searchParams: Pr
 
   return (
     <div className="flex flex-col gap-5">
-      <div className="flex items-end justify-between">
+      <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="text-2xl font-extrabold tracking-tight">Customers</h1>
           <p className="text-sm font-medium text-zinc-500">
@@ -55,7 +55,7 @@ export default async function CustomersPage({ searchParams }: { searchParams: Pr
       </div>
 
       <div className="overflow-hidden rounded-xl border border-zinc-200 bg-white">
-        <table className="w-full text-sm">
+        <div className="overflow-x-auto"><table className="w-full min-w-[560px] text-sm">
           <thead className="bg-zinc-50 text-left text-[11px] font-bold uppercase tracking-wider text-zinc-500">
             <tr>
               <th className="px-4 py-2.5">Shop</th>
@@ -105,7 +105,7 @@ export default async function CustomersPage({ searchParams }: { searchParams: Pr
               );
             })}
           </tbody>
-        </table>
+        </table></div>
       </div>
     </div>
   );

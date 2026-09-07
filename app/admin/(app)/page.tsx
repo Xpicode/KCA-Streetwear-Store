@@ -43,7 +43,7 @@ export default async function DashboardPage({
   return (
     <div className="flex flex-col gap-5">
       {/* Header */}
-      <div className="flex items-end justify-between">
+      <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="text-2xl font-extrabold tracking-tight">Profit overview</h1>
           <p className="text-sm font-medium text-zinc-500">{rangeLabel(period, d.start, d.end)}</p>
@@ -74,7 +74,7 @@ export default async function DashboardPage({
       </div>
 
       {/* KPI tiles */}
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <Tile
           label="Gross profit"
           value={peso(d.kpis.profit)}
@@ -91,7 +91,7 @@ export default async function DashboardPage({
       </div>
 
       {/* Chart + top products */}
-      <div className="grid grid-cols-[1.6fr_1fr] gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-[1.6fr_1fr] gap-4">
         <Card title={`Profit by ${period === "day" ? "hour" : "day"}`}>
           <ProfitChart data={d.series} />
         </Card>
@@ -128,7 +128,7 @@ export default async function DashboardPage({
       </div>
 
       {/* Orders needing action + low stock */}
-      <div className="grid grid-cols-[1.6fr_1fr] gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-[1.6fr_1fr] gap-4">
         <Card
           title="Orders needing action"
           action={
@@ -144,7 +144,7 @@ export default async function DashboardPage({
           {d.action.length === 0 ? (
             <Empty>Nothing waiting. New storefront requests will show up here.</Empty>
           ) : (
-            <table className="w-full text-sm">
+            <div className="overflow-x-auto"><table className="w-full min-w-[560px] text-sm">
               <thead className="text-left text-[11px] font-bold uppercase tracking-wider text-zinc-500">
                 <tr>
                   <th className="px-5 py-2">Order</th>
@@ -171,7 +171,7 @@ export default async function DashboardPage({
                   </LinkRow>
                 ))}
               </tbody>
-            </table>
+            </table></div>
           )}
         </Card>
 

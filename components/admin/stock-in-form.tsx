@@ -73,7 +73,7 @@ export function StockInForm({
 
       <Card>
         <CardHeader title="Purchase" />
-        <CardBody className="grid grid-cols-[1fr_1fr_180px] gap-4">
+        <CardBody className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[1fr_1fr_180px] gap-4">
           <Field label="Supplier">
             <div className="flex flex-col gap-2">
               <Select name="supplierId" value={supplierId} onChange={(e) => setSupplierId(e.target.value)}>
@@ -111,7 +111,7 @@ export function StockInForm({
             </button>
           }
         />
-        <table className="w-full text-sm">
+        <div className="overflow-x-auto"><table className="w-full min-w-[560px] text-sm">
           <thead className="bg-zinc-50 text-left text-[11px] font-bold uppercase tracking-wider text-zinc-500">
             <tr>
               <th className="px-5 py-2.5">Product</th>
@@ -204,7 +204,7 @@ export function StockInForm({
               <td />
             </tr>
           </tfoot>
-        </table>
+        </table></div>
       </Card>
 
       <FormMessage state={state} />

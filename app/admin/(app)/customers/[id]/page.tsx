@@ -31,7 +31,7 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
 
   return (
     <div className="flex flex-col gap-5">
-      <div className="flex items-end justify-between gap-4">
+      <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <Link href="/admin/customers" className="mb-1 flex items-center gap-1 text-xs font-bold text-zinc-500 hover:text-zinc-800">
             <ArrowLeft className="size-3.5" />
@@ -57,7 +57,7 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <Tile label="Total spent" value={peso(balance.spent)} sub="delivered and paid orders" />
         <Tile
           label="Unpaid balance"
@@ -68,14 +68,14 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
         <Tile label="Price group" value={customer.priceGroup} sub="wholesale tier pricing" capitalize />
       </div>
 
-      <div className="grid grid-cols-[1.6fr_1fr] items-start gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-[1.6fr_1fr] items-start gap-4">
         <div className="flex flex-col gap-4">
           <Card>
             <CardHeader title="Order history" />
             {orders.length === 0 ? (
               <Empty>No orders yet.</Empty>
             ) : (
-              <table className="w-full text-sm">
+              <div className="overflow-x-auto"><table className="w-full min-w-[560px] text-sm">
                 <thead className="bg-zinc-50 text-left text-[11px] font-bold uppercase tracking-wider text-zinc-500">
                   <tr>
                     <th className="px-5 py-2.5">Order</th>
@@ -114,7 +114,7 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
                     );
                   })}
                 </tbody>
-              </table>
+              </table></div>
             )}
           </Card>
         </div>

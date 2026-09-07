@@ -49,7 +49,7 @@ export function StaffRowActions({ id, name, isMe }: { id: number; name: string; 
       {showPw && (
         <form action={pwAction} className="flex items-center gap-2">
           <input type="hidden" name="id" value={id} />
-          <Input name="password" type="text" placeholder="New password (6+ chars)" minLength={6} required className="h-9 w-56" autoFocus />
+          <Input name="password" type="text" placeholder="New password (6+ chars)" minLength={6} required className="h-9 w-full sm:w-56" autoFocus />
           <SubmitButton variant="outline" pendingText="Saving…" className="h-9 px-3">
             Save
           </SubmitButton>
@@ -68,7 +68,7 @@ export function AddStaffForm() {
   const [state, action] = useActionState(addStaffUser, null);
   return (
     <form action={action} className="flex flex-col gap-3">
-      <div className="grid grid-cols-[1fr_1fr_140px_1fr] gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[1fr_1fr_140px_1fr] gap-3">
         <Field label="Name">
           <Input name="name" required placeholder="e.g. Ana" />
         </Field>

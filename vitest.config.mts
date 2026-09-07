@@ -1,6 +1,8 @@
 import path from "node:path";
 import { defineConfig } from "vitest/config";
-import { TEST_DATABASE_URL } from "./tests/setup/db-url";
+
+// kept in sync with tests/setup/db-url.ts (the config loader can't import project TS cleanly)
+const TEST_DATABASE_URL = process.env.TEST_DATABASE_URL ?? "postgresql://wholesale:wholesale@localhost:55432/wholesale_test";
 
 /**
  * Unit tests are plain. Integration tests (tests/integration) run against a separate

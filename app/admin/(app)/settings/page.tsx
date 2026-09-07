@@ -29,7 +29,7 @@ export default async function SettingsPage() {
         {cats.length === 0 ? (
           <Empty>No categories yet.</Empty>
         ) : (
-          <table className="w-full text-sm">
+          <div className="overflow-x-auto"><table className="w-full min-w-[560px] text-sm">
             <thead className="bg-zinc-50 text-left text-[11px] font-bold uppercase tracking-wider text-zinc-500">
               <tr>
                 <th colSpan={5} className="px-5 py-2.5">
@@ -49,7 +49,7 @@ export default async function SettingsPage() {
                 <CategoryRow key={c.id} category={c} />
               ))}
             </tbody>
-          </table>
+          </table></div>
         )}
         <CardBody className="border-t border-zinc-100 pt-4">
           <AddCategoryForm nextSort={nextSort} />
@@ -61,7 +61,7 @@ export default async function SettingsPage() {
           title="Staff users"
           action={<span className="text-xs font-semibold text-zinc-500">Only owners can open Settings and reset customer passwords; staff run orders and stock</span>}
         />
-        <table className="w-full text-sm">
+        <div className="overflow-x-auto"><table className="w-full min-w-[560px] text-sm">
           <thead className="bg-zinc-50 text-left text-[11px] font-bold uppercase tracking-wider text-zinc-500">
             <tr>
               <th className="px-5 py-2.5">Name</th>
@@ -94,7 +94,7 @@ export default async function SettingsPage() {
               </tr>
             ))}
           </tbody>
-        </table>
+        </table></div>
         <CardBody className="border-t border-zinc-100 pt-4">
           <AddStaffForm />
         </CardBody>

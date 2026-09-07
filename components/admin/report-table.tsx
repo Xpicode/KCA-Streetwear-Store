@@ -64,7 +64,7 @@ export function ReportTable<T extends { [k: string]: unknown }>({
   };
 
   return (
-    <table className="w-full text-sm">
+    <div className="overflow-x-auto"><table className="w-full min-w-[560px] text-sm">
       <thead className="bg-zinc-50 text-left text-[11px] font-bold uppercase tracking-wider text-zinc-500">
         <tr>
           {columns.map((c) => (
@@ -115,7 +115,7 @@ export function ReportTable<T extends { [k: string]: unknown }>({
         ))}
       </tbody>
       {footer && sorted.length > 0 && <tfoot className="border-t border-zinc-200 bg-zinc-50 font-bold tabular-nums">{footer}</tfoot>}
-    </table>
+    </table></div>
   );
 }
 
