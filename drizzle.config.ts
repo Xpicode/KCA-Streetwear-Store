@@ -8,6 +8,7 @@ export default defineConfig({
   out: "./db/migrations",
   dialect: "postgresql",
   dbCredentials: {
-    url: process.env.DATABASE_URL!,
+    // Supabase: drizzle-kit needs the direct / session-mode connection, not the transaction pooler
+    url: (process.env.DIRECT_URL ?? process.env.DATABASE_URL)!,
   },
 });

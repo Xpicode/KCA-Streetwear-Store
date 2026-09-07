@@ -40,17 +40,17 @@ export async function adminLogin(_prev: ActionState, formData: FormData): Promis
 
   const emailKey = `login:email:${parsed.data.email}`;
   const ipKey = `login:ip:${await clientIp()}`;
-  const wait = Math.max(retryAfter(emailKey, EMAIL_RULE), retryAfter(ipKey, IP_RULE));
+  const wait = Math.max(await retryAfter(emailKey, EMAIL_RULE), await retryAfter(ipKey, IP_RULE));
   if (wait > 0) return { error: waitMessage(wait) };
 
   const [u] = await db.select().from(users).where(eq(users.email, parsed.data.email)).limit(1);
   if (!u || !verifyPassword(parsed.data.password, u.passwordHash)) {
-    hit(emailKey, EMAIL_RULE);
-    hit(ipKey, IP_RULE);
+    await hit(emailKey, EMAIL_RULE);
+    await hit(ipKey, IP_RULE);
     return { error: "Wrong email or password." };
   }
 
-  clear(emailKey);
+  await clear(emailKey);
   await createSession("admin", u.id);
   redirect("/admin");
 }

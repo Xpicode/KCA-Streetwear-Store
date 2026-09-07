@@ -1,7 +1,5 @@
 "use server";
 
-import { mkdir, unlink, writeFile } from "node:fs/promises";
-import path from "node:path";
 import { and, eq, inArray, notInArray, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -9,6 +7,7 @@ import { z } from "zod";
 import { db } from "@/db";
 import { categories, orderItems, priceTiers, productVariants, products, stockBatches, stockMovements } from "@/db/schema";
 import { requireAdmin } from "@/lib/auth";
+import { deleteProductImage, saveProductImage } from "@/lib/storage";
 import type { ActionState } from "@/components/ui/form-message";
 
 // ---- input shapes -----------------------------------------------------------
@@ -172,12 +171,28 @@ const IMAGE_TYPES: Record<string, string> = {
   "image/webp": "webp",
   "image/gif": "gif",
 };
-const MAX_IMAGE_BYTES = 5 * 1024 * 1024; // 5 MB
-const UPLOAD_DIR = ["uploads", "products"] as const;
+const MAX_IMAGE_BYTES = 5 * 1024 * 1024; // 5 MB (the form shrinks photos in the browser first)
+
+/** The declared type must match the file's leading bytes — the browser's `file.type` is just a hint. */
+function looksLike(type: string, b: Uint8Array) {
+  const ascii = (from: number, to: number) => String.fromCharCode(...b.subarray(from, to));
+  switch (type) {
+    case "image/jpeg":
+      return b[0] === 0xff && b[1] === 0xd8 && b[2] === 0xff;
+    case "image/png":
+      return b[0] === 0x89 && ascii(1, 4) === "PNG";
+    case "image/gif":
+      return ascii(0, 3) === "GIF";
+    case "image/webp":
+      return ascii(0, 4) === "RIFF" && ascii(8, 12) === "WEBP";
+    default:
+      return false;
+  }
+}
 
 /**
- * If the form carried a photo file, store it under public/uploads/products and
- * return its public URL. Returns { url: null } when no file was chosen.
+ * If the form carried a photo file, store it (Supabase Storage or local disk — see lib/storage)
+ * and return its public URL. Returns { url: null } when no file was chosen.
  */
 async function saveUploadedImage(formData: FormData, sku: string): Promise<{ url: string | null } | { error: string }> {
   const file = formData.get("imageFile");
@@ -185,23 +200,21 @@ async function saveUploadedImage(formData: FormData, sku: string): Promise<{ url
   if (file.size > MAX_IMAGE_BYTES) return { error: "That photo is over 5 MB. Use a smaller image." };
   const ext = IMAGE_TYPES[file.type];
   if (!ext) return { error: "Photos must be JPG, PNG, WebP, or GIF." };
+  const bytes = new Uint8Array(await file.arrayBuffer());
+  if (!looksLike(file.type, bytes)) return { error: "That file doesn't look like a JPG, PNG, WebP, or GIF image." };
 
   const name = `${slugify(sku) || "product"}-${Date.now()}.${ext}`;
-  const dir = path.join(process.cwd(), "public", ...UPLOAD_DIR);
-  await mkdir(dir, { recursive: true });
-  await writeFile(path.join(dir, name), Buffer.from(await file.arrayBuffer()));
-  return { url: `/${UPLOAD_DIR.join("/")}/${name}` };
+  try {
+    return { url: await saveProductImage(bytes, name, file.type) };
+  } catch (e) {
+    console.error("photo upload failed:", e);
+    return { error: "The photo could not be stored. Check the storage settings and try again." };
+  }
 }
 
 /** Best-effort delete of a previously uploaded photo (never a pasted external link). */
 async function removeUploadedImage(url: string | null | undefined) {
-  if (!url || !url.startsWith(`/${UPLOAD_DIR.join("/")}/`)) return;
-  const name = path.basename(url);
-  try {
-    await unlink(path.join(process.cwd(), "public", ...UPLOAD_DIR, name));
-  } catch {
-    // already gone — fine
-  }
+  await deleteProductImage(url);
 }
 
 /** Translate a Postgres unique-violation into a message the owner can act on. */

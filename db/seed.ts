@@ -12,13 +12,14 @@ import * as s from "./schema";
 import { hashPassword } from "../lib/auth-hash";
 
 loadEnvLocal();
-if (!process.env.DATABASE_URL) throw new Error("DATABASE_URL missing — create .env.local first");
+const url = process.env.DIRECT_URL ?? process.env.DATABASE_URL;
+if (!url) throw new Error("DATABASE_URL missing — create .env.local first");
 
 // Seeding wipes every table and installs well-known sample passwords, so it refuses to run
 // against anything that doesn't look like a local database unless you override on purpose.
 const dbHost = (() => {
   try {
-    return new URL(process.env.DATABASE_URL).hostname;
+    return new URL(url).hostname;
   } catch {
     return "";
   }
@@ -32,7 +33,7 @@ if ((process.env.NODE_ENV === "production" || !isLocalDb) && process.env.ALLOW_S
   process.exit(1);
 }
 
-const client = postgres(process.env.DATABASE_URL, { max: 1 });
+const client = postgres(url, { max: 1 });
 const db = drizzle(client, { schema: s });
 
 const daysAgo = (n: number, hour = 10) => {

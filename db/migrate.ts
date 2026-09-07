@@ -4,7 +4,8 @@ import postgres from "postgres";
 import { loadEnvLocal } from "./env";
 
 loadEnvLocal();
-const url = process.env.DATABASE_URL;
+// Supabase: migrations need a direct / session-mode connection, not the transaction pooler
+const url = process.env.DIRECT_URL ?? process.env.DATABASE_URL;
 if (!url) throw new Error("DATABASE_URL missing — create .env.local first");
 
 console.log("Connecting to", url.replace(/:\/\/([^:]+):[^@]*@/, "://$1:***@"));

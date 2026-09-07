@@ -6,7 +6,8 @@ import { customers, priceTiers, productVariants, products, stockBatches, users }
 export async function resetDb() {
   await db.execute(sql`
     truncate table payments, order_items, orders, stock_movements, stock_batches,
-      price_tiers, product_variants, products, categories, suppliers, customers, users
+      price_tiers, product_variants, products, categories, suppliers, customers, users,
+      login_attempts
     restart identity cascade
   `);
 }

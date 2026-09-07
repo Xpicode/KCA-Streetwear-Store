@@ -44,6 +44,13 @@ export const users = pgTable("users", {
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
+/** Failed sign-in counters (per email / per IP), shared by every server instance. See lib/rate-limit.ts. */
+export const loginAttempts = pgTable("login_attempts", {
+  key: text("key").primaryKey(),
+  count: integer("count").notNull().default(0),
+  resetAt: timestamp("reset_at", { withTimezone: true }).notNull(),
+});
+
 export const customers = pgTable("customers", {
   id: serial("id").primaryKey(),
   shopName: text("shop_name").notNull(),

@@ -13,6 +13,7 @@ import { SubmitButton } from "@/components/ui/submit-button";
 import { FormMessage } from "@/components/ui/form-message";
 import { peso } from "@/lib/format";
 import { cn } from "@/lib/utils";
+import { resizeImage } from "@/lib/client/resize-image";
 
 export type ProductFormValues = {
   id?: number;
@@ -169,18 +170,26 @@ export function ProductForm({
   const [fileName, setFileName] = useState<string | null>(null);
   const [imageError, setImageError] = useState<string | null>(null);
 
-  const onPickFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onPickFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     setImageError(null);
-    const f = e.target.files?.[0];
+    const input = e.target;
+    const picked = input.files?.[0];
     if (filePreview) URL.revokeObjectURL(filePreview);
-    if (!f) {
+    if (!picked) {
       setFilePreview(null);
       setFileName(null);
       return;
     }
+    // shrink big phone photos here so the upload stays small (and under serverless body limits)
+    const f = await resizeImage(picked);
+    if (f !== picked) {
+      const dt = new DataTransfer();
+      dt.items.add(f);
+      input.files = dt.files;
+    }
     if (f.size > 5 * 1024 * 1024) {
       setImageError("That photo is over 5 MB. Use a smaller image.");
-      e.target.value = "";
+      input.value = "";
       setFilePreview(null);
       setFileName(null);
       return;

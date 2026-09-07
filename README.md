@@ -51,6 +51,7 @@ The admin works on phones and tablets (menu in the top bar) as well as desktop.
 | `npm run db:migrate`  | Create/update tables from `db/migrations`               |
 | `npm run db:seed`     | Load sample data (wipes all tables first; local only)   |
 | `npm run db:setup`    | Both of the above                                       |
+| `npm run db:create-owner` | Create / reset the owner login on a real database (see Deploying) |
 | `npm run db:generate` | Make a new migration after editing `db/schema.ts`       |
 | `npm run db:studio`   | Browse the database in Drizzle Studio                   |
 
@@ -74,7 +75,10 @@ between tests, so dev data is never touched.
 - **Sessions**: HMAC-signed, `httpOnly`, `secure` in production, 14-day expiry. Signed
   with `AUTH_SECRET` (≥ 32 chars) — rotate it to sign everyone out.
 - **Passwords**: scrypt with per-user salt. Sign-in is rate-limited (5 failed attempts
-  per email / 15 min, 30 per IP). Counters are in-memory, i.e. per server process.
+  per email / 15 min, 30 per IP). Counters live in the `login_attempts` table, so they
+  hold across server instances (serverless included).
+- **Uploads**: photos are type-checked by their leading bytes, resized in the browser
+  before upload, and stored outside the code (Supabase Storage or local disk).
 - **Headers**: a per-request nonce Content-Security-Policy, `X-Frame-Options: DENY`,
   `nosniff`, referrer and permissions policies, HSTS.
 - **Storefront identity**: a buyer is matched to an existing customer by phone number
@@ -84,15 +88,34 @@ between tests, so dev data is never touched.
 - **Seeding**: `db:seed` refuses non-local databases and `NODE_ENV=production` unless
   `ALLOW_SEED=yes`, because it wipes every table and installs public sample passwords.
 
-## Deploying
+## Deploying (Supabase + Vercel)
 
-Product photos are written to `public/uploads/products/` and served as static files, so
-the app needs a host with a **persistent disk**: a VPS or a Docker host (run
-`npm run build && npm start` behind nginx/Caddy with HTTPS, set `NODE_ENV=production`,
-`DATABASE_URL`, `AUTH_SECRET`). Serverless platforms such as Vercel have a read-only,
-non-persistent filesystem — to deploy there, move uploads to object storage (S3, R2,
-Vercel Blob) first. HTTPS is required in production: session cookies are `secure` and the
-CSP upgrades insecure requests.
+The recommended setup: **Supabase** for the database and product photos, **Vercel** for
+the app. Both have free tiers; HTTPS and a domain come with Vercel.
+
+1. **Supabase** — create a project (pick a region near your customers, e.g. Singapore).
+   - *Project → Connect*: copy the **Transaction** pooler URL (port 6543) → `DATABASE_URL`
+     and the **Session** pooler URL (port 5432) → `DIRECT_URL`. Keep `?sslmode=require`.
+   - *Settings → API*: copy the **Project URL** → `SUPABASE_URL` and the **service_role**
+     key → `SUPABASE_SERVICE_ROLE_KEY`. The `products` photo bucket is created on the first
+     upload; nothing else to set up.
+2. **Create the tables and your login** from your computer, with those values in `.env.local`:
+   ```bash
+   npm run db:migrate
+   OWNER_EMAIL=you@yourshop.com OWNER_PASSWORD='a long password' OWNER_NAME='Your name' npm run db:create-owner
+   ```
+   (Do **not** run `db:seed` against Supabase — it wipes tables and installs sample logins.)
+3. **Vercel** — import the Git repository. In *Settings → Environment Variables* add
+   `DATABASE_URL`, `DIRECT_URL`, `AUTH_SECRET` (a new 64-character random string),
+   `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`. Deploy. Add your domain under *Domains*.
+4. Sign in at `https://your-domain/admin/login`, add categories/products, and in Settings
+   add staff accounts.
+
+**Any other host** (a VPS, Docker, Railway, Render…) also works: `npm run build && npm start`
+with the same variables behind HTTPS. Without `SUPABASE_URL`, photos are stored on the
+server's disk at `public/uploads/products/`, so that host needs a persistent disk.
+HTTPS is required in production: session cookies are `secure` and the CSP upgrades
+insecure requests. New migrations are applied with `npm run db:migrate` (uses `DIRECT_URL`).
 
 ## Where things live
 
