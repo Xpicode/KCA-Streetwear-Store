@@ -79,6 +79,12 @@ between tests, so dev data is never touched.
   hold across server instances (serverless included).
 - **Uploads**: photos are type-checked by their leading bytes, resized in the browser
   before upload, and stored outside the code (Supabase Storage or local disk).
+- **Supabase Data API**: Supabase exposes the `public` schema over REST to the `anon` /
+  `authenticated` roles by default. This app never uses that API (it connects directly),
+  so migrations `0005`–`0006` enable Row Level Security on every table with no policies
+  and revoke all privileges from those roles — nothing is reachable through the Data API.
+  The app's own `postgres` connection bypasses RLS. Keep it that way: never add policies
+  or grants for `anon`/`authenticated` unless you deliberately build a public API.
 - **Headers**: a per-request nonce Content-Security-Policy, `X-Frame-Options: DENY`,
   `nosniff`, referrer and permissions policies, HSTS.
 - **Storefront identity**: a buyer is matched to an existing customer by phone number
@@ -129,7 +135,12 @@ components/     ui primitives, admin + shop + landing components
 proxy.ts        edge auth gate + CSP nonce (runs before every page)
 tests/          vitest unit + integration tests
 public/landing/ landing page artwork (swap for real photos)
+.agents/skills/ Supabase + Postgres guidance for AI coding agents (npx skills install)
 ```
+
+`.agents/skills/` holds the official Supabase agent skills (installed with
+`npx skills add supabase/agent-skills`, pinned in `skills-lock.json`). Claude Code reads
+them through `.claude/skills/`, a machine-local symlink that `npx skills install` recreates.
 
 ## Design system
 

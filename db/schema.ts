@@ -42,14 +42,14 @@ export const users = pgTable("users", {
   passwordHash: text("password_hash").notNull(),
   role: userRole("role").notNull().default("staff"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
-});
+}).enableRLS();
 
 /** Failed sign-in counters (per email / per IP), shared by every server instance. See lib/rate-limit.ts. */
 export const loginAttempts = pgTable("login_attempts", {
   key: text("key").primaryKey(),
   count: integer("count").notNull().default(0),
   resetAt: timestamp("reset_at", { withTimezone: true }).notNull(),
-});
+}).enableRLS();
 
 export const customers = pgTable("customers", {
   id: serial("id").primaryKey(),
@@ -61,7 +61,7 @@ export const customers = pgTable("customers", {
   priceGroup: text("price_group").notNull().default("standard"),
   status: customerStatus("status").notNull().default("pending"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
-});
+}).enableRLS();
 
 // ---------------------------------------------------------------------------
 // Catalog
@@ -71,7 +71,7 @@ export const categories = pgTable("categories", {
   name: text("name").notNull(),
   slug: text("slug").notNull().unique(),
   sortOrder: integer("sort_order").notNull().default(0),
-});
+}).enableRLS();
 
 export const products = pgTable(
   "products",
@@ -93,7 +93,7 @@ export const products = pgTable(
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (t) => [index("products_category_idx").on(t.categoryId)]
-);
+).enableRLS();
 
 /** One row per size/colour. A product with no options still gets one "default" variant. */
 export const productVariants = pgTable(
@@ -115,7 +115,7 @@ export const productVariants = pgTable(
     index("variants_product_idx").on(t.productId),
     uniqueIndex("variants_unique_option").on(t.productId, t.size, t.color),
   ]
-);
+).enableRLS();
 
 /** Quantity discounts: the highest min_qty <= ordered qty wins. price_group null = everyone. */
 export const priceTiers = pgTable(
@@ -130,7 +130,7 @@ export const priceTiers = pgTable(
     priceGroup: text("price_group"),
   },
   (t) => [index("tiers_product_idx").on(t.productId)]
-);
+).enableRLS();
 
 // ---------------------------------------------------------------------------
 // Stock
@@ -141,7 +141,7 @@ export const suppliers = pgTable("suppliers", {
   contact: text("contact"),
   phone: text("phone"),
   notes: text("notes"),
-});
+}).enableRLS();
 
 /** One row per purchase line. qty_remaining lets you do FIFO or weighted-average cost. */
 export const stockBatches = pgTable(
@@ -158,8 +158,8 @@ export const stockBatches = pgTable(
     receivedAt: timestamp("received_at", { withTimezone: true }).notNull().defaultNow(),
     reference: text("reference"),
   },
-  (t) => [index("batches_variant_idx").on(t.variantId)]
-);
+  (t) => [index("batches_variant_idx").on(t.variantId), index("batches_supplier_idx").on(t.supplierId)]
+).enableRLS();
 
 /** Audit trail. stock_on_hand should always equal the sum of qty for that variant. */
 export const stockMovements = pgTable(
@@ -176,8 +176,8 @@ export const stockMovements = pgTable(
     createdBy: integer("created_by").references(() => users.id),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
-  (t) => [index("movements_variant_idx").on(t.variantId)]
-);
+  (t) => [index("movements_variant_idx").on(t.variantId), index("movements_created_by_idx").on(t.createdBy)]
+).enableRLS();
 
 // ---------------------------------------------------------------------------
 // Orders
@@ -207,8 +207,9 @@ export const orders = pgTable(
     index("orders_customer_idx").on(t.customerId),
     index("orders_status_idx").on(t.status),
     index("orders_delivered_idx").on(t.deliveredAt),
+    index("orders_handled_by_idx").on(t.handledBy),
   ]
-);
+).enableRLS();
 
 /** unit_cost / line_profit are filled in when the order is PACKED, never changed after. */
 export const orderItems = pgTable(
@@ -228,7 +229,7 @@ export const orderItems = pgTable(
     lineProfit: money("line_profit"),
   },
   (t) => [index("items_order_idx").on(t.orderId), index("items_variant_idx").on(t.variantId)]
-);
+).enableRLS();
 
 export const payments = pgTable(
   "payments",
@@ -243,7 +244,7 @@ export const payments = pgTable(
     reference: text("reference"),
   },
   (t) => [index("payments_order_idx").on(t.orderId)]
-);
+).enableRLS();
 
 // ---------------------------------------------------------------------------
 // Relations (for db.query.* convenience)
