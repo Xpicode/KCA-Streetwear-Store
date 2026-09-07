@@ -60,7 +60,7 @@ export function CartLineRow({ line }: { line: Line }) {
           </button>
           <span className="text-xs font-semibold text-zinc-500">
             {line.tierApplied ? (
-              <span className="rounded-md bg-emerald-50 px-1.5 py-0.5 text-emerald-700">
+              <span className="rounded-md bg-brand-50 px-1.5 py-0.5 text-brand-700">
                 Tier price {peso(line.unitPrice)} · was {peso(line.basePrice)}
               </span>
             ) : line.nextTier ? (

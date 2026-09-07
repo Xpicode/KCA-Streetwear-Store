@@ -45,7 +45,7 @@ export function CategoryRow({ category }: { category: Category }) {
             <Trash2 className="size-4" />
           </button>
           {(state?.error || error) && <p className="col-span-6 text-xs font-semibold text-red-600">{state?.error ?? error}</p>}
-          {state?.ok && !error && <p className="col-span-6 text-xs font-semibold text-emerald-700">Saved.</p>}
+          {state?.ok && !error && <p className="col-span-6 text-xs font-semibold text-brand-700">Saved.</p>}
         </form>
       </td>
     </tr>

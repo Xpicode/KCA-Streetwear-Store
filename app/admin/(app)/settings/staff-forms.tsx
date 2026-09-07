@@ -57,7 +57,7 @@ export function StaffRowActions({ id, name, isMe }: { id: number; name: string; 
             <X className="size-4" />
           </button>
           {pwState?.error && <span className="text-xs font-semibold text-red-600">{pwState.error}</span>}
-          {pwState?.ok && <span className="text-xs font-semibold text-emerald-700">Saved.</span>}
+          {pwState?.ok && <span className="text-xs font-semibold text-brand-700">Saved.</span>}
         </form>
       )}
     </div>

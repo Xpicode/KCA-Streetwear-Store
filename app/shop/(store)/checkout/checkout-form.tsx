@@ -46,9 +46,9 @@ export function CheckoutForm({ shopper }: { shopper: Shopper | null }) {
           {PAYMENT_OPTIONS.map((opt, i) => (
             <label
               key={opt.value}
-              className="flex cursor-pointer items-start gap-3 rounded-lg border border-zinc-200 p-3 hover:border-zinc-400 has-checked:border-emerald-600 has-checked:bg-emerald-50/60"
+              className="flex cursor-pointer items-start gap-3 rounded-lg border border-zinc-200 p-3 hover:border-zinc-400 has-checked:border-brand-600 has-checked:bg-brand-50/60"
             >
-              <input type="radio" name="payment" value={opt.value} defaultChecked={i === 0} className="mt-0.5 size-4 accent-emerald-700" required />
+              <input type="radio" name="payment" value={opt.value} defaultChecked={i === 0} className="mt-0.5 size-4 accent-brand-700" required />
               <span>
                 <span className="block text-sm font-bold">{opt.label}</span>
                 <span className="block text-xs font-medium text-zinc-500">{opt.hint}</span>

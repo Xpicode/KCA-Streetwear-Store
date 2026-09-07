@@ -24,7 +24,7 @@ export default async function CartPage({ searchParams }: { searchParams: Promise
         </div>
         <h1 className="text-2xl font-extrabold tracking-tight">Your cart is empty</h1>
         <p className="mt-2 text-sm font-medium text-zinc-500">Pick a style from the catalog — minimum 12 pcs per style, any mix of sizes and colors.</p>
-        <Link href="/shop" className="mt-6 inline-flex h-11 items-center rounded-lg bg-emerald-700 px-5 text-sm font-bold text-white">
+        <Link href="/shop" className="mt-6 inline-flex h-11 items-center rounded-lg bg-brand-700 px-5 text-sm font-bold text-white">
           Browse the catalog
         </Link>
       </div>
@@ -41,7 +41,7 @@ export default async function CartPage({ searchParams }: { searchParams: Promise
       </div>
 
       {reordered && (
-        <p className="rounded-lg bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-800">
+        <p className="rounded-lg bg-brand-50 px-4 py-3 text-sm font-semibold text-brand-800">
           Your previous order is back in the cart. Adjust quantities, then send it again.
         </p>
       )}
@@ -89,7 +89,7 @@ export default async function CartPage({ searchParams }: { searchParams: Promise
             tabIndex={ok ? 0 : -1}
             className={cn(
               "hidden h-11 items-center justify-center gap-2 rounded-lg px-5 text-sm font-bold text-white lg:flex",
-              ok ? "bg-emerald-700 hover:bg-emerald-800" : "pointer-events-none bg-zinc-300"
+              ok ? "bg-brand-700 hover:bg-brand-800" : "pointer-events-none bg-zinc-300"
             )}
           >
             Send order request <ArrowRight className="size-4" />
@@ -115,7 +115,7 @@ export default async function CartPage({ searchParams }: { searchParams: Promise
             aria-disabled={!ok}
             className={cn(
               "flex h-12 flex-1 items-center justify-center gap-2 rounded-xl text-sm font-bold text-white",
-              ok ? "bg-emerald-700" : "pointer-events-none bg-zinc-300"
+              ok ? "bg-brand-700" : "pointer-events-none bg-zinc-300"
             )}
           >
             {ok ? "Send order request" : "Fix cart to continue"} <ArrowRight className="size-4" />

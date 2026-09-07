@@ -95,18 +95,18 @@ function ProfitPreview({ cost, price }: { cost: string; price: string }) {
     <div
       className={cn(
         "flex items-center justify-between rounded-lg border px-3 py-2.5",
-        losing ? "border-red-200 bg-red-50" : "border-emerald-200 bg-emerald-50"
+        losing ? "border-red-200 bg-red-50" : "border-brand-200 bg-brand-50"
       )}
     >
       <div>
-        <div className={cn("text-[11px] font-bold uppercase tracking-wider", losing ? "text-red-600" : "text-emerald-700")}>
+        <div className={cn("text-[11px] font-bold uppercase tracking-wider", losing ? "text-red-600" : "text-brand-700")}>
           {losing ? "Losing per unit" : "Profit per unit"}
         </div>
-        <div className={cn("text-lg font-extrabold tabular-nums", losing ? "text-red-700" : "text-emerald-900")}>
+        <div className={cn("text-lg font-extrabold tabular-nums", losing ? "text-red-700" : "text-brand-900")}>
           {peso(profit)}
         </div>
       </div>
-      <div className={cn("text-right text-xs font-bold tabular-nums", losing ? "text-red-700" : "text-emerald-800")}>
+      <div className={cn("text-right text-xs font-bold tabular-nums", losing ? "text-red-700" : "text-brand-800")}>
         <div>{margin.toFixed(1)}% margin</div>
         {markup != null && <div className="font-semibold opacity-80">{markup.toFixed(0)}% markup on cost</div>}
       </div>
@@ -121,7 +121,7 @@ function TierProfit({ cost, price }: { cost: string; price: string }) {
   if (c == null || s == null || s <= 0) return <span className="text-xs font-semibold text-zinc-400">—</span>;
   const profit = s - c;
   return (
-    <span className={cn("text-xs font-bold tabular-nums", profit < 0 ? "text-red-600" : "text-emerald-700")}>
+    <span className={cn("text-xs font-bold tabular-nums", profit < 0 ? "text-red-600" : "text-brand-700")}>
       {peso(profit)} · {((profit / s) * 100).toFixed(0)}%
     </span>
   );
@@ -366,7 +366,7 @@ export function ProductForm({
               </Field>
             )}
             <label className="flex min-h-10 cursor-pointer items-center gap-3 rounded-lg border border-zinc-200 px-3 py-2">
-              <input type="checkbox" name="isActive" defaultChecked={p.isActive} className="size-4 accent-emerald-700" />
+              <input type="checkbox" name="isActive" defaultChecked={p.isActive} className="size-4 accent-brand-700" />
               <span className="text-sm font-bold">Active</span>
               <span className="text-xs text-zinc-500">Inactive products are hidden from the storefront and stock-in.</span>
             </label>
@@ -442,7 +442,7 @@ export function ProductForm({
                       )}
                       <td className="px-3 py-2">
                         <label className="flex h-9 cursor-pointer items-center gap-2">
-                          <input type="checkbox" checked={v.isActive} onChange={(e) => setVariant(v.key, { isActive: e.target.checked })} className="size-4 accent-emerald-700" />
+                          <input type="checkbox" checked={v.isActive} onChange={(e) => setVariant(v.key, { isActive: e.target.checked })} className="size-4 accent-brand-700" />
                           <span className="text-xs font-semibold">{v.isActive ? "Active" : "Inactive"}</span>
                         </label>
                       </td>

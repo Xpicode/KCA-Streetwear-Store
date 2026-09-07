@@ -14,8 +14,8 @@ export function ProfitChart({ data }: { data: Bucket[] }) {
   return (
     <div className="flex flex-col gap-3">
       <div className="flex items-center justify-end gap-4 text-xs font-semibold text-zinc-500">
-        <Legend color="bg-emerald-700" label="Profit" />
-        <Legend color="bg-emerald-200" label="Cost" />
+        <Legend color="bg-brand-700" label="Profit" />
+        <Legend color="bg-brand-200" label="Cost" />
       </div>
 
       {total === 0 ? (
@@ -37,8 +37,8 @@ export function ProfitChart({ data }: { data: Bucket[] }) {
                   className="group relative flex flex-1 flex-col justify-end"
                   title={`${b.label}: ${peso(b.profit)} profit · ${peso(b.cost)} cost`}
                 >
-                  <div className="rounded-t-sm bg-emerald-200" style={{ height: ch }} />
-                  <div className="bg-emerald-700" style={{ height: ph }} />
+                  <div className="rounded-t-sm bg-brand-200" style={{ height: ch }} />
+                  <div className="bg-brand-700" style={{ height: ph }} />
                 </div>
               );
             })}

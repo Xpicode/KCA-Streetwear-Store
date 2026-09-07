@@ -72,7 +72,7 @@ export function PurchasePanel({ product: p, priceGroup, inCart }: { product: Cat
         </div>
         <p className="mt-1 text-xs font-semibold text-zinc-500">
           {unit < base ? (
-            <span className="text-emerald-700">Tier price applied for {qty} pcs</span>
+            <span className="text-brand-700">Tier price applied for {qty} pcs</span>
           ) : next ? (
             <>
               Add {next.minQty - qty} more to get {peso(next.price)}/{p.unit}
@@ -147,7 +147,7 @@ export function PurchasePanel({ product: p, priceGroup, inCart }: { product: Cat
             disabled={pending || out}
             className={cn(
               "flex h-11 items-center justify-center gap-2 rounded-lg px-5 text-sm font-bold text-white disabled:opacity-50 sm:flex-1",
-              flash === "added" ? "bg-emerald-600" : "bg-emerald-700 hover:bg-emerald-800"
+              flash === "added" ? "bg-brand-600" : "bg-brand-700 hover:bg-brand-800"
             )}
           >
             {flash === "added" ? (
@@ -167,7 +167,7 @@ export function PurchasePanel({ product: p, priceGroup, inCart }: { product: Cat
         )}
         {flash && flash !== "added" && <p className="mt-2 text-xs font-semibold text-red-600">{flash}</p>}
         {cartQty > 0 && (
-          <p className="mt-2 text-xs font-semibold text-emerald-700">
+          <p className="mt-2 text-xs font-semibold text-brand-700">
             <Check className="mr-1 inline size-3.5" />
             {cartQty} pcs of this option already in your cart ·{" "}
             <Link href="/shop/cart" className="underline">

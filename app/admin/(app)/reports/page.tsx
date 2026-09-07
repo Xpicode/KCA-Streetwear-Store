@@ -141,10 +141,10 @@ function ExportLink({ report, range }: { report: ReportKey; range: Range }) {
 
 function Tile({ label, value, sub, accent }: { label: string; value: string; sub: string; accent?: boolean }) {
   return (
-    <div className={cn("flex flex-col gap-1 rounded-xl border p-4", accent ? "border-emerald-700 bg-emerald-700 text-white" : "border-zinc-200 bg-white")}>
-      <div className={cn("text-[11px] font-bold uppercase tracking-wider", accent ? "text-emerald-100" : "text-zinc-500")}>{label}</div>
+    <div className={cn("flex flex-col gap-1 rounded-xl border p-4", accent ? "border-brand-700 bg-brand-700 text-white" : "border-zinc-200 bg-white")}>
+      <div className={cn("text-[11px] font-bold uppercase tracking-wider", accent ? "text-brand-100" : "text-zinc-500")}>{label}</div>
       <div className="text-2xl font-extrabold tabular-nums tracking-tight">{value}</div>
-      <div className={cn("text-xs font-semibold", accent ? "text-emerald-100" : "text-zinc-500")}>{sub}</div>
+      <div className={cn("text-xs font-semibold", accent ? "text-brand-100" : "text-zinc-500")}>{sub}</div>
     </div>
   );
 }

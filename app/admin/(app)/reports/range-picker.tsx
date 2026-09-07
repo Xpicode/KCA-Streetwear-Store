@@ -25,7 +25,7 @@ export function RangePicker({ range }: { range: Range }) {
           type="date"
           name="from"
           defaultValue={range.fromKey}
-          className="h-9 rounded-lg border border-zinc-300 bg-white px-2.5 text-sm font-medium text-zinc-900 outline-none focus:border-emerald-600"
+          className="h-9 rounded-lg border border-zinc-300 bg-white px-2.5 text-sm font-medium text-zinc-900 outline-none focus:border-brand-600"
           aria-label="From"
         />
         <span className="text-xs font-bold text-zinc-400">to</span>
@@ -33,7 +33,7 @@ export function RangePicker({ range }: { range: Range }) {
           type="date"
           name="to"
           defaultValue={range.toKey}
-          className="h-9 rounded-lg border border-zinc-300 bg-white px-2.5 text-sm font-medium text-zinc-900 outline-none focus:border-emerald-600"
+          className="h-9 rounded-lg border border-zinc-300 bg-white px-2.5 text-sm font-medium text-zinc-900 outline-none focus:border-brand-600"
           aria-label="To"
         />
         <button type="submit" className="h-9 rounded-lg border border-zinc-300 bg-white px-3 text-sm font-bold hover:bg-zinc-50">

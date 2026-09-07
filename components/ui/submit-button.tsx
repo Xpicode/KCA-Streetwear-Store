@@ -18,7 +18,7 @@ export function SubmitButton({
       disabled={pending || props.disabled}
       className={cn(
         "inline-flex h-10 items-center justify-center gap-2 rounded-lg px-4 text-sm font-bold disabled:opacity-60",
-        variant === "primary" && "bg-emerald-700 text-white hover:bg-emerald-800",
+        variant === "primary" && "bg-brand-700 text-white hover:bg-brand-800",
         variant === "outline" && "border border-zinc-300 bg-white text-zinc-900 hover:bg-zinc-50",
         variant === "danger" && "border border-red-200 bg-white text-red-700 hover:bg-red-50",
         className

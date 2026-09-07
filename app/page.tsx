@@ -35,7 +35,7 @@ export default async function LandingPage() {
       <header className="sticky top-0 z-30 border-b border-zinc-200/70 bg-[#f6f7f5]/85 backdrop-blur">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5">
           <Link href="/" className="flex items-center gap-2.5 font-extrabold">
-            <span className="flex size-8 items-center justify-center rounded-lg bg-emerald-700 text-white">
+            <span className="flex size-8 items-center justify-center rounded-lg bg-brand-700 text-white">
               <Layers className="size-4" />
             </span>
             {BRAND.name} <span className="hidden font-semibold text-zinc-500 sm:inline">{BRAND.tagline}</span>
@@ -54,13 +54,13 @@ export default async function LandingPage() {
 
       {/* --------------------------------------------------------------- hero */}
       <section className="relative overflow-hidden">
-        <div className="drift pointer-events-none absolute -top-32 -right-24 size-[520px] rounded-full bg-emerald-200/50 blur-3xl" />
+        <div className="drift pointer-events-none absolute -top-32 -right-24 size-[520px] rounded-full bg-brand-200/50 blur-3xl" />
         <div className="drift pointer-events-none absolute -bottom-40 -left-24 size-[420px] rounded-full bg-amber-100/70 blur-3xl [animation-delay:-8s]" />
 
         <div className="mx-auto grid max-w-6xl items-center gap-12 px-5 pt-16 pb-20 lg:grid-cols-[1.1fr_1fr] lg:pt-24 lg:pb-28">
           <div className="flex flex-col gap-6">
-            <span className="rise inline-flex w-fit items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-800">
-              <span className="size-1.5 rounded-full bg-emerald-600" /> KCA Streetwear · now taking reseller orders
+            <span className="rise inline-flex w-fit items-center gap-2 rounded-full border border-brand-200 bg-brand-50 px-3 py-1 text-xs font-bold text-brand-800">
+              <span className="size-1.5 rounded-full bg-brand-600" /> KCA Streetwear · now taking reseller orders
             </span>
             <h1 className="rise rise-1 text-4xl font-extrabold tracking-tight text-balance sm:text-5xl lg:text-6xl">
               Streetwear for resellers, at wholesale prices.
@@ -70,7 +70,7 @@ export default async function LandingPage() {
               pay by GCash or bank transfer, and your order ships the same day.
             </p>
             <div className="rise rise-3 flex flex-wrap gap-3">
-              <Link href="/shop" className="flex h-12 items-center gap-2 rounded-xl bg-emerald-700 px-6 text-base font-bold text-white shadow-lg shadow-emerald-700/20 hover:bg-emerald-800">
+              <Link href="/shop" className="flex h-12 items-center gap-2 rounded-xl bg-brand-700 px-6 text-base font-bold text-white shadow-lg shadow-brand-700/20 hover:bg-brand-800">
                 Browse the catalog <ArrowRight className="size-4" />
               </Link>
               <Link href="/shop/orders" className="flex h-12 items-center gap-2 rounded-xl border border-zinc-300 bg-white px-6 text-base font-bold hover:bg-zinc-50">
@@ -99,7 +99,7 @@ export default async function LandingPage() {
             <ul className="marquee flex shrink-0 items-center gap-10 pr-10 text-sm font-bold tracking-wide text-zinc-500 uppercase">
               {[...marqueeItems, ...marqueeItems].map((t, i) => (
                 <li key={i} className="flex items-center gap-10 whitespace-nowrap">
-                  {t} <span className="size-1.5 rounded-full bg-emerald-600" />
+                  {t} <span className="size-1.5 rounded-full bg-brand-600" />
                 </li>
               ))}
             </ul>
@@ -115,7 +115,7 @@ export default async function LandingPage() {
             <Link
               key={c.id}
               href={`/shop?category=${c.slug}`}
-              className={`reveal reveal-delay-${(i % 3) + 1} group flex items-center gap-5 rounded-2xl border border-zinc-200 bg-white p-5 transition hover:-translate-y-1 hover:border-emerald-300 hover:shadow-lg hover:shadow-emerald-900/5`}
+              className={`reveal reveal-delay-${(i % 3) + 1} group flex items-center gap-5 rounded-2xl border border-zinc-200 bg-white p-5 transition hover:-translate-y-1 hover:border-brand-300 hover:shadow-lg hover:shadow-brand-900/5`}
             >
               <img src={artFor(c.slug)} alt="" className="size-20 shrink-0 transition group-hover:scale-110" />
               <div className="min-w-0 flex-1">
@@ -124,7 +124,7 @@ export default async function LandingPage() {
                   {c.products} {c.products === 1 ? "style" : "styles"} in stock
                 </div>
               </div>
-              <ArrowRight className="size-5 text-zinc-300 transition group-hover:translate-x-1 group-hover:text-emerald-700" />
+              <ArrowRight className="size-5 text-zinc-300 transition group-hover:translate-x-1 group-hover:text-brand-700" />
             </Link>
           ))}
         </div>
@@ -151,9 +151,9 @@ export default async function LandingPage() {
               <Link
                 key={p.id}
                 href={`/shop/product/${p.slug}`}
-                className={`reveal reveal-delay-${(i % 4) + 1} group overflow-hidden rounded-2xl border border-zinc-200 bg-white transition hover:-translate-y-1 hover:shadow-lg hover:shadow-emerald-900/5`}
+                className={`reveal reveal-delay-${(i % 4) + 1} group overflow-hidden rounded-2xl border border-zinc-200 bg-white transition hover:-translate-y-1 hover:shadow-lg hover:shadow-brand-900/5`}
               >
-                <div className="flex h-44 items-center justify-center bg-gradient-to-br from-zinc-50 to-emerald-50">
+                <div className="flex h-44 items-center justify-center bg-gradient-to-br from-zinc-50 to-brand-50">
                   {p.imageUrl ? (
                     <img src={p.imageUrl} alt={p.name} className="h-full w-full object-cover" />
                   ) : (
@@ -163,7 +163,7 @@ export default async function LandingPage() {
                 <div className="p-4">
                   <div className="text-xs font-bold tracking-wider text-zinc-500 uppercase">{p.category ?? "Style"}</div>
                   <div className="mt-0.5 font-extrabold">{p.name}</div>
-                  <div className="mt-1 text-sm font-semibold text-emerald-700">from {peso(p.price)} /pc</div>
+                  <div className="mt-1 text-sm font-semibold text-brand-700">from {peso(p.price)} /pc</div>
                 </div>
               </Link>
             ))}
@@ -200,19 +200,19 @@ export default async function LandingPage() {
 
       {/* ------------------------------------------------------------ contact */}
       <section id="contact" className="mx-auto max-w-6xl px-5 py-20">
-        <div className="reveal relative overflow-hidden rounded-3xl bg-emerald-700 px-6 py-14 text-white sm:px-12">
-          <div className="pointer-events-none absolute -top-20 -right-20 size-72 rounded-full bg-emerald-500/40 blur-3xl" />
+        <div className="reveal relative overflow-hidden rounded-3xl bg-brand-700 px-6 py-14 text-white sm:px-12">
+          <div className="pointer-events-none absolute -top-20 -right-20 size-72 rounded-full bg-brand-500/40 blur-3xl" />
           <div className="relative grid items-center gap-8 md:grid-cols-[1.4fr_1fr]">
             <div>
               <h2 className="text-3xl font-extrabold tracking-tight text-balance sm:text-4xl">Ready to restock?</h2>
-              <p className="mt-3 max-w-lg text-emerald-50/90">
+              <p className="mt-3 max-w-lg text-brand-50/90">
                 Send your first order request today. Questions about bulk pricing or custom prints? Message us at{" "}
                 <span className="font-bold text-white">{BRAND.phone}</span> or{" "}
                 <span className="font-bold text-white">{BRAND.email}</span>.
               </p>
             </div>
             <div className="flex flex-col gap-3 md:items-end">
-              <Link href="/shop" className="flex h-12 items-center justify-center gap-2 rounded-xl bg-white px-6 text-base font-bold text-emerald-800 hover:bg-emerald-50">
+              <Link href="/shop" className="flex h-12 items-center justify-center gap-2 rounded-xl bg-white px-6 text-base font-bold text-brand-800 hover:bg-brand-50">
                 Browse the catalog <ArrowRight className="size-4" />
               </Link>
               <Link href="/shop/orders" className="flex h-12 items-center justify-center rounded-xl border border-white/40 px-6 text-base font-bold text-white hover:bg-white/10">
@@ -251,13 +251,13 @@ function Stat({ value, label }: { value: string; label: string }) {
 function FloatCard({ className, tilt, art, name, price, note }: { className: string; tilt: string; art: string; name: string; price: string; note: string }) {
   return (
     <div className={`absolute rounded-2xl border border-zinc-200 bg-white p-3 shadow-xl shadow-zinc-900/10 ${className}`} style={{ ["--tilt" as string]: tilt }}>
-      <div className="flex h-28 items-center justify-center rounded-xl bg-gradient-to-br from-zinc-50 to-emerald-50">
+      <div className="flex h-28 items-center justify-center rounded-xl bg-gradient-to-br from-zinc-50 to-brand-50">
         <img src={art} alt="" className="size-24" />
       </div>
       <div className="mt-2.5 px-0.5">
         <div className="text-sm font-extrabold">{name}</div>
         <div className="flex items-baseline justify-between text-xs font-semibold text-zinc-500">
-          <span className="text-emerald-700">{price}</span>
+          <span className="text-brand-700">{price}</span>
           <span>{note}</span>
         </div>
       </div>
@@ -268,7 +268,7 @@ function FloatCard({ className, tilt, art, name, price, note }: { className: str
 function SectionHeading({ eyebrow, title, sub, dark, align = "center" }: { eyebrow: string; title: string; sub?: string; dark?: boolean; align?: "center" | "left" }) {
   return (
     <div className={`reveal ${align === "center" ? "mx-auto max-w-2xl text-center" : ""}`}>
-      <div className={`text-xs font-bold tracking-wider uppercase ${dark ? "text-emerald-300" : "text-emerald-700"}`}>{eyebrow}</div>
+      <div className={`text-xs font-bold tracking-wider uppercase ${dark ? "text-brand-300" : "text-brand-700"}`}>{eyebrow}</div>
       <h2 className="mt-2 text-3xl font-extrabold tracking-tight text-balance sm:text-4xl">{title}</h2>
       {sub ? <p className={`mt-3 text-base font-medium ${dark ? "text-zinc-300" : "text-zinc-600"}`}>{sub}</p> : null}
     </div>
@@ -279,7 +279,7 @@ function Step({ n, icon, title, text }: { n: string; icon: React.ReactNode; titl
   return (
     <li className={`reveal reveal-delay-${n} rounded-2xl border border-white/10 bg-white/5 p-6`}>
       <div className="flex items-center justify-between">
-        <span className="flex size-10 items-center justify-center rounded-xl bg-emerald-500/20 text-emerald-300">{icon}</span>
+        <span className="flex size-10 items-center justify-center rounded-xl bg-brand-500/20 text-brand-300">{icon}</span>
         <span className="text-4xl font-extrabold text-white/10">{n}</span>
       </div>
       <h3 className="mt-5 text-lg font-extrabold">{title}</h3>
@@ -291,7 +291,7 @@ function Step({ n, icon, title, text }: { n: string; icon: React.ReactNode; titl
 function Perk({ icon, text }: { icon: React.ReactNode; text: string }) {
   return (
     <li className="flex items-start gap-3 text-sm font-semibold text-zinc-700">
-      <span className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-emerald-700">{icon}</span>
+      <span className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-lg bg-brand-50 text-brand-700">{icon}</span>
       {text}
     </li>
   );
@@ -304,9 +304,9 @@ function TierRow({ qty, price, note, best }: { qty: string; price: string; note:
         <div className="font-extrabold">{qty}</div>
         <div className="text-xs font-semibold text-zinc-500">{note}</div>
       </div>
-      <div className={`text-xl font-extrabold tabular-nums ${best ? "text-emerald-700" : ""}`}>
+      <div className={`text-xl font-extrabold tabular-nums ${best ? "text-brand-700" : ""}`}>
         {price} <span className="text-xs font-semibold text-zinc-500">/pc</span>
-        {best ? <span className="ml-2 rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-bold text-emerald-700">best</span> : null}
+        {best ? <span className="ml-2 rounded-full bg-brand-50 px-2 py-0.5 text-[11px] font-bold text-brand-700">best</span> : null}
       </div>
     </div>
   );

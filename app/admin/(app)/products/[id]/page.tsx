@@ -73,7 +73,7 @@ export default async function ProductDetailPage({
           </Link>
           <Link
             href={`/admin/stock-in?product=${p.id}`}
-            className="flex h-9 items-center gap-2 rounded-lg bg-emerald-700 px-3 text-sm font-bold text-white hover:bg-emerald-800"
+            className="flex h-9 items-center gap-2 rounded-lg bg-brand-700 px-3 text-sm font-bold text-white hover:bg-brand-800"
           >
             <PackagePlus className="size-4" />
             Stock-in
@@ -171,7 +171,7 @@ export default async function ProductDetailPage({
                   </td>
                   <td className="px-5 py-2.5 text-right font-bold">{v.stockOnHand}</td>
                   <td className="px-5 py-2.5 text-right text-zinc-600">{v.stockReserved}</td>
-                  <td className={cn("px-5 py-2.5 text-right font-extrabold", available <= 0 ? "text-red-600" : "text-emerald-700")}>{available}</td>
+                  <td className={cn("px-5 py-2.5 text-right font-extrabold", available <= 0 ? "text-red-600" : "text-brand-700")}>{available}</td>
                   <td className="px-5 py-2">
                     <AdjustForm variantId={v.id} onHand={v.stockOnHand} />
                   </td>
@@ -185,7 +185,7 @@ export default async function ProductDetailPage({
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.6fr] gap-4">
         {/* Price tiers */}
         <Card>
-          <CardHeader title="Price tiers" action={<Link href={`/admin/products/${p.id}/edit`} className="text-xs font-bold text-emerald-700">Edit</Link>} />
+          <CardHeader title="Price tiers" action={<Link href={`/admin/products/${p.id}/edit`} className="text-xs font-bold text-brand-700">Edit</Link>} />
           {p.tiers.length === 0 ? (
             <Empty>No quantity discounts. Every order pays {peso(p.basePrice)} per {p.unit}.</Empty>
           ) : (
@@ -202,7 +202,7 @@ export default async function ProductDetailPage({
                   </span>
                   <span className="font-bold">
                     {peso(t.price)}
-                    <span className="ml-2 text-xs font-semibold text-emerald-700">
+                    <span className="ml-2 text-xs font-semibold text-brand-700">
                       {p.basePrice ? `−${Math.round((1 - t.price / p.basePrice) * 100)}%` : ""}
                     </span>
                   </span>
@@ -265,7 +265,7 @@ export default async function ProductDetailPage({
                   <Badge tone={mv.tone} className="w-20 text-center">
                     {mv.label}
                   </Badge>
-                  <span className={cn("w-14 text-right font-extrabold tabular-nums", m.qty < 0 ? "text-red-600" : "text-emerald-700")}>
+                  <span className={cn("w-14 text-right font-extrabold tabular-nums", m.qty < 0 ? "text-red-600" : "text-brand-700")}>
                     {m.qty > 0 ? `+${m.qty}` : m.qty}
                   </span>
                   <span className="w-32 font-medium">{m.variantLabel}</span>
@@ -291,12 +291,12 @@ function Tile({ label, value, sub, accent, warn }: { label: string; value: strin
     <div
       className={cn(
         "flex flex-col gap-1.5 rounded-xl border p-5",
-        accent ? "border-emerald-700 bg-emerald-700 text-white" : warn ? "border-red-200 bg-red-50" : "border-zinc-200 bg-white"
+        accent ? "border-brand-700 bg-brand-700 text-white" : warn ? "border-red-200 bg-red-50" : "border-zinc-200 bg-white"
       )}
     >
-      <div className={cn("text-[11px] font-bold uppercase tracking-wider", accent ? "text-emerald-100" : warn ? "text-red-700" : "text-zinc-500")}>{label}</div>
+      <div className={cn("text-[11px] font-bold uppercase tracking-wider", accent ? "text-brand-100" : warn ? "text-red-700" : "text-zinc-500")}>{label}</div>
       <div className={cn("text-3xl font-extrabold tabular-nums tracking-tight", warn && "text-red-700")}>{value}</div>
-      <div className={cn("text-xs font-semibold", accent ? "text-emerald-100" : warn ? "text-red-700" : "text-zinc-500")}>{sub}</div>
+      <div className={cn("text-xs font-semibold", accent ? "text-brand-100" : warn ? "text-red-700" : "text-zinc-500")}>{sub}</div>
     </div>
   );
 }

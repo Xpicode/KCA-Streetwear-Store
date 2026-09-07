@@ -44,7 +44,7 @@ export function QtyStepper({
         type="number"
         inputMode="numeric"
         aria-label={ariaLabel}
-        className="h-full w-12 min-w-0 flex-1 border-x border-zinc-200 bg-white text-center text-sm font-bold tabular-nums outline-none [appearance:textfield] focus:bg-emerald-50/40 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+        className="h-full w-12 min-w-0 flex-1 border-x border-zinc-200 bg-white text-center text-sm font-bold tabular-nums outline-none [appearance:textfield] focus:bg-brand-50/40 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
         value={value}
         min={min}
         max={max}

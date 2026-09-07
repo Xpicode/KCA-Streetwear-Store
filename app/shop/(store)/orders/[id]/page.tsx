@@ -42,11 +42,11 @@ export default async function OrderDetailPage({
       </Link>
 
       {placed && (
-        <div className="flex gap-3 rounded-xl border border-emerald-200 bg-emerald-50 p-4 sm:p-5">
-          <CheckCircle2 className="mt-0.5 size-6 shrink-0 text-emerald-700" />
+        <div className="flex gap-3 rounded-xl border border-brand-200 bg-brand-50 p-4 sm:p-5">
+          <CheckCircle2 className="mt-0.5 size-6 shrink-0 text-brand-700" />
           <div>
-            <h2 className="text-base font-extrabold text-emerald-900">Order request {order.orderNo} sent</h2>
-            <p className="mt-1 text-sm font-medium text-emerald-900/80">
+            <h2 className="text-base font-extrabold text-brand-900">Order request {order.orderNo} sent</h2>
+            <p className="mt-1 text-sm font-medium text-brand-900/80">
               We&apos;ll check stock and message you the confirmed total and delivery fee. Once you pay by GCash, Maya or bank transfer, your
               order ships.
             </p>
@@ -125,7 +125,7 @@ export default async function OrderDetailPage({
           {order.discount > 0 && (
             <div className="flex justify-between font-medium text-zinc-600">
               <dt>Discount</dt>
-              <dd className="text-emerald-700">−{peso(order.discount)}</dd>
+              <dd className="text-brand-700">−{peso(order.discount)}</dd>
             </div>
           )}
           <div className="flex justify-between text-base font-extrabold">

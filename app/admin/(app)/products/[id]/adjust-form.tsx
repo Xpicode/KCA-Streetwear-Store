@@ -23,7 +23,7 @@ export function AdjustForm({ variantId, onHand }: { variantId: number; onHand: n
           name="direction"
           defaultValue="out"
           aria-label="Direction"
-          className="h-9 rounded-lg border border-zinc-300 bg-white px-2 text-sm font-bold outline-none focus:border-emerald-600"
+          className="h-9 rounded-lg border border-zinc-300 bg-white px-2 text-sm font-bold outline-none focus:border-brand-600"
         >
           <option value="out">−</option>
           <option value="in">+</option>
@@ -37,13 +37,13 @@ export function AdjustForm({ variantId, onHand }: { variantId: number; onHand: n
           required
           placeholder="qty"
           aria-label="Quantity"
-          className="h-9 w-16 rounded-lg border border-zinc-300 bg-white px-2 text-sm font-medium tabular-nums outline-none focus:border-emerald-600"
+          className="h-9 w-16 rounded-lg border border-zinc-300 bg-white px-2 text-sm font-medium tabular-nums outline-none focus:border-brand-600"
         />
         <select
           name="reason"
           defaultValue="count"
           aria-label="Reason"
-          className="h-9 rounded-lg border border-zinc-300 bg-white px-2 text-sm font-medium outline-none focus:border-emerald-600"
+          className="h-9 rounded-lg border border-zinc-300 bg-white px-2 text-sm font-medium outline-none focus:border-brand-600"
         >
           {ADJUST_REASONS.map((r) => (
             <option key={r} value={r}>
@@ -56,7 +56,7 @@ export function AdjustForm({ variantId, onHand }: { variantId: number; onHand: n
           placeholder="note"
           aria-label="Note"
           maxLength={300}
-          className="h-9 w-28 rounded-lg border border-zinc-300 bg-white px-2 text-sm font-medium outline-none placeholder:text-zinc-400 focus:border-emerald-600"
+          className="h-9 w-28 rounded-lg border border-zinc-300 bg-white px-2 text-sm font-medium outline-none placeholder:text-zinc-400 focus:border-brand-600"
         />
         <SubmitButton variant="outline" className="h-9 px-3" pendingText="…">
           Adjust
@@ -65,7 +65,7 @@ export function AdjustForm({ variantId, onHand }: { variantId: number; onHand: n
       {state?.error ? (
         <p className="text-xs font-semibold text-red-600">{state.error}</p>
       ) : state?.ok ? (
-        <p className="text-xs font-semibold text-emerald-700">Adjusted · now {onHand} on hand</p>
+        <p className="text-xs font-semibold text-brand-700">Adjusted · now {onHand} on hand</p>
       ) : null}
     </form>
   );

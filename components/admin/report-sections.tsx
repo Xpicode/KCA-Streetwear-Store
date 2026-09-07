@@ -28,7 +28,7 @@ export function ProductProfitTable({ rows }: { rows: ProductProfitRow[] }) {
     { key: "units", label: "Units", align: "right", render: (r) => num(r.units) },
     { key: "revenue", label: "Revenue", align: "right", render: (r) => peso(r.revenue) },
     { key: "cost", label: "Cost", align: "right", render: (r) => <span className="text-zinc-600">{peso(r.cost)}</span> },
-    { key: "profit", label: "Profit", align: "right", strong: true, render: (r) => <span className="text-emerald-700">{peso(r.profit)}</span> },
+    { key: "profit", label: "Profit", align: "right", strong: true, render: (r) => <span className="text-brand-700">{peso(r.profit)}</span> },
     { id: "margin", key: "profit", label: "Margin", align: "right", sortValue: (r) => marginPercent(r.profit, r.revenue), render: (r) => pct(r.profit, r.revenue) },
   ];
   const t = sum(rows);
@@ -51,7 +51,7 @@ export function CustomerProfitTable({ rows }: { rows: CustomerProfitRow[] }) {
     { key: "units", label: "Units", align: "right", render: (r) => num(r.units) },
     { key: "revenue", label: "Revenue", align: "right", render: (r) => peso(r.revenue) },
     { key: "cost", label: "Cost", align: "right", render: (r) => <span className="text-zinc-600">{peso(r.cost)}</span> },
-    { key: "profit", label: "Profit", align: "right", strong: true, render: (r) => <span className="text-emerald-700">{peso(r.profit)}</span> },
+    { key: "profit", label: "Profit", align: "right", strong: true, render: (r) => <span className="text-brand-700">{peso(r.profit)}</span> },
     { id: "margin", key: "profit", label: "Margin", align: "right", sortValue: (r) => marginPercent(r.profit, r.revenue), render: (r) => pct(r.profit, r.revenue) },
   ];
   const t = sum(rows);
@@ -74,7 +74,7 @@ export function DayProfitTable({ rows }: { rows: DayProfitRow[] }) {
     { key: "units", label: "Units", align: "right", render: (r) => num(r.units) },
     { key: "revenue", label: "Revenue", align: "right", render: (r) => peso(r.revenue) },
     { key: "cost", label: "Cost", align: "right", render: (r) => <span className="text-zinc-600">{peso(r.cost)}</span> },
-    { key: "profit", label: "Profit", align: "right", strong: true, render: (r) => <span className="text-emerald-700">{peso(r.profit)}</span> },
+    { key: "profit", label: "Profit", align: "right", strong: true, render: (r) => <span className="text-brand-700">{peso(r.profit)}</span> },
     { id: "margin", key: "profit", label: "Margin", align: "right", sortValue: (r) => marginPercent(r.profit, r.revenue), render: (r) => pct(r.profit, r.revenue) },
   ];
   const t = sum(rows);

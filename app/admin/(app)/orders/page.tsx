@@ -45,7 +45,7 @@ export default async function OrdersPage({ searchParams }: { searchParams: Searc
             {sp.q ? ` · matching “${sp.q}”` : ""}
           </p>
         </div>
-        <Link href="/admin/orders/new" className="flex h-9 items-center gap-2 rounded-lg bg-emerald-700 px-3 text-sm font-bold text-white">
+        <Link href="/admin/orders/new" className="flex h-9 items-center gap-2 rounded-lg bg-brand-700 px-3 text-sm font-bold text-white">
           <Plus className="size-4" />
           New order
         </Link>

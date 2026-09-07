@@ -26,7 +26,7 @@ export function ShopHeader({ shopper, cartCount }: { shopper: Shopper | null; ca
           </Link>
           {shopper && (
             <span className="hidden items-center gap-2 lg:flex" title="Remembered from your last order">
-              <span className="flex size-8 items-center justify-center rounded-full bg-emerald-50 text-[11px] font-extrabold text-emerald-800">
+              <span className="flex size-8 items-center justify-center rounded-full bg-brand-50 text-[11px] font-extrabold text-brand-800">
                 {shopper.shopName.slice(0, 2).toUpperCase()}
               </span>
               <span className="max-w-40 truncate">{shopper.shopName}</span>
@@ -37,7 +37,7 @@ export function ShopHeader({ shopper, cartCount }: { shopper: Shopper | null; ca
             <ShoppingCart className="size-4" />
             <span className="hidden sm:inline">Cart</span>
             {cartCount > 0 && (
-              <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-emerald-600 px-1.5 text-[11px]">{cartCount}</span>
+              <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-brand-600 px-1.5 text-[11px]">{cartCount}</span>
             )}
           </Link>
         </div>

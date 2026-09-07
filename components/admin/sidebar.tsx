@@ -34,7 +34,7 @@ function NavLinks({ items, pathname }: { items: Item[]; pathname: string }) {
           aria-current={isActive(href, pathname) ? "page" : undefined}
           className={cn(
             "flex h-10 items-center gap-3 rounded-lg px-3 text-sm font-semibold text-zinc-600 hover:bg-zinc-100",
-            isActive(href, pathname) && "bg-emerald-50 text-emerald-800"
+            isActive(href, pathname) && "bg-brand-50 text-brand-800"
           )}
         >
           <Icon className="size-4" />
@@ -54,7 +54,7 @@ function UserRow({ user, showTheme = true }: { user: AdminUser; showTheme?: bool
     .toUpperCase();
   return (
     <div className="flex items-center gap-3 px-2">
-      <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-emerald-50 text-xs font-extrabold text-emerald-800">{initials}</div>
+      <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-brand-50 text-xs font-extrabold text-brand-800">{initials}</div>
       <div className="min-w-0 flex-1 leading-tight">
         <div className="truncate text-sm font-bold">{user.name}</div>
         <div className="text-[11px] capitalize text-zinc-500">{user.role}</div>

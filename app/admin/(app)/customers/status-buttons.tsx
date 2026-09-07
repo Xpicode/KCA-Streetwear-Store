@@ -23,7 +23,7 @@ export function StatusButtons({ id, status, size = "sm" }: { id: number; status:
           type="button"
           disabled={busy}
           onClick={() => run(approveCustomer)}
-          className={cn("rounded-lg bg-emerald-700 font-bold text-white hover:bg-emerald-800 disabled:opacity-60", h)}
+          className={cn("rounded-lg bg-brand-700 font-bold text-white hover:bg-brand-800 disabled:opacity-60", h)}
         >
           {status === "blocked" ? "Unblock" : "Approve"}
         </button>

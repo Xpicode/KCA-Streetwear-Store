@@ -60,11 +60,11 @@ export function OrdersTable({ rows, canDelete, emptyText }: { rows: OrderListRow
   return (
     <div className="flex flex-col gap-3">
       {canDelete && picked.length > 0 && (
-        <div className="flex items-center gap-3 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm font-semibold text-emerald-900">
+        <div className="flex items-center gap-3 rounded-xl border border-brand-200 bg-brand-50 px-4 py-2 text-sm font-semibold text-brand-900">
           <span className="font-extrabold tabular-nums">
             {picked.length} of {ids.length} selected
           </span>
-          <button onClick={toggleAll} className="font-bold text-emerald-700 underline-offset-2 hover:underline">
+          <button onClick={toggleAll} className="font-bold text-brand-700 underline-offset-2 hover:underline">
             {allPicked ? "Clear all" : "Select all"}
           </button>
           <span className="flex-1" />
@@ -79,7 +79,7 @@ export function OrdersTable({ rows, canDelete, emptyText }: { rows: OrderListRow
           <button
             onClick={() => setSelected(new Set())}
             title="Clear selection"
-            className="rounded-md p-1.5 text-emerald-700/60 hover:bg-emerald-100 hover:text-emerald-900"
+            className="rounded-md p-1.5 text-brand-700/60 hover:bg-brand-100 hover:text-brand-900"
           >
             <X className="size-4" />
           </button>
@@ -98,7 +98,7 @@ export function OrdersTable({ rows, canDelete, emptyText }: { rows: OrderListRow
                     aria-label="Select all orders in this list"
                     checked={allPicked}
                     onChange={toggleAll}
-                    className="size-4 accent-emerald-700"
+                    className="size-4 accent-brand-700"
                   />
                 </th>
               )}
@@ -121,7 +121,7 @@ export function OrdersTable({ rows, canDelete, emptyText }: { rows: OrderListRow
             {rows.map((o) => (
               <tr
                 key={o.id}
-                className={cn("cursor-pointer hover:bg-zinc-50", selected.has(o.id) && "bg-emerald-50/60 hover:bg-emerald-50")}
+                className={cn("cursor-pointer hover:bg-zinc-50", selected.has(o.id) && "bg-brand-50/60 hover:bg-brand-50")}
                 onClick={(e) => {
                   const target = e.target as HTMLElement;
                   if (target.closest("a, button, input, select, textarea, label")) return;
@@ -135,7 +135,7 @@ export function OrdersTable({ rows, canDelete, emptyText }: { rows: OrderListRow
                       aria-label={`Select ${o.orderNo}`}
                       checked={selected.has(o.id)}
                       onChange={() => toggle(o.id)}
-                      className="size-4 accent-emerald-700"
+                      className="size-4 accent-brand-700"
                     />
                   </td>
                 )}

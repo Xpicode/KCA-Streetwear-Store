@@ -223,7 +223,7 @@ export function NewOrderForm({ customers, products }: { customers: Customer[]; p
             </div>
             <p className="text-xs text-zinc-500">
               Not on the list?{" "}
-              <Link href="/admin/customers" className="font-bold text-emerald-700">
+              <Link href="/admin/customers" className="font-bold text-brand-700">
                 Add them under Customers
               </Link>{" "}
               first.

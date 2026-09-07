@@ -35,7 +35,7 @@ export default async function OrdersPage() {
           <PackageOpen className="mx-auto mb-3 size-8 text-zinc-400" />
           <p className="text-sm font-bold">No orders yet.</p>
           <p className="mt-1 text-sm font-medium text-zinc-500">Your order requests and their status will show here.</p>
-          <Link href="/shop" className="mt-5 inline-flex h-10 items-center rounded-lg bg-emerald-700 px-4 text-sm font-bold text-white">
+          <Link href="/shop" className="mt-5 inline-flex h-10 items-center rounded-lg bg-brand-700 px-4 text-sm font-bold text-white">
             Browse the catalog
           </Link>
         </div>
@@ -124,7 +124,7 @@ function TrackOnly() {
         </p>
       </div>
       <TrackOrderForm />
-      <Link href="/shop" className="text-sm font-bold text-emerald-700">
+      <Link href="/shop" className="text-sm font-bold text-brand-700">
         ← Back to catalog
       </Link>
     </div>

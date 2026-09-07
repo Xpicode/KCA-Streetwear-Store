@@ -49,7 +49,7 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
           <StatusButtons id={customer.id} status={customer.status} size="md" />
           <Link
             href="/admin/orders/new"
-            className="flex h-10 items-center gap-2 rounded-lg bg-emerald-700 px-4 text-sm font-bold text-white"
+            className="flex h-10 items-center gap-2 rounded-lg bg-brand-700 px-4 text-sm font-bold text-white"
           >
             <Plus className="size-4" />
             New order
@@ -152,7 +152,7 @@ function Tile({
         className={cn(
           "text-2xl font-extrabold tabular-nums tracking-tight",
           tone === "red" && "text-red-700",
-          tone === "green" && "text-emerald-700",
+          tone === "green" && "text-brand-700",
           capitalize && "capitalize"
         )}
       >

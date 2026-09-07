@@ -42,7 +42,7 @@ export function CatalogFilters({ categories, active, q }: { categories: Cat[]; a
           </Link>
         ))}
         {q && (
-          <Link href={href(active)} className="flex h-9 shrink-0 items-center gap-1 rounded-full bg-emerald-50 px-3 text-sm font-bold text-emerald-800">
+          <Link href={href(active)} className="flex h-9 shrink-0 items-center gap-1 rounded-full bg-brand-50 px-3 text-sm font-bold text-brand-800">
             “{q}” <X className="size-3.5" />
           </Link>
         )}

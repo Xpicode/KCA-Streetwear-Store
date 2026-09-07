@@ -55,12 +55,12 @@ export function StatusTrack({
         const at = dates[s.key as keyof typeof dates];
         return (
           <li key={s.key} className="relative flex flex-col items-center text-center">
-            {i > 0 && <span className={cn("absolute top-3.5 right-1/2 left-[-50%] h-0.5", i <= current ? "bg-emerald-600" : "bg-zinc-200")} />}
+            {i > 0 && <span className={cn("absolute top-3.5 right-1/2 left-[-50%] h-0.5", i <= current ? "bg-brand-600" : "bg-zinc-200")} />}
             <span
               className={cn(
                 "relative z-10 flex size-7 items-center justify-center rounded-full text-xs font-extrabold ring-4",
-                done && "bg-emerald-600 text-white ring-white",
-                active && "bg-emerald-700 text-white ring-emerald-100",
+                done && "bg-brand-600 text-white ring-white",
+                active && "bg-brand-700 text-white ring-brand-100",
                 !done && !active && "bg-zinc-200 text-zinc-500 ring-white"
               )}
             >

@@ -91,7 +91,7 @@ export function OrderFilters({
             value={sort}
             onChange={(e) => setSort(e.target.value)}
             aria-label="Sort orders"
-            className="h-9 rounded-lg border border-zinc-300 bg-white px-2.5 text-sm font-semibold text-zinc-700 outline-none focus:border-emerald-600"
+            className="h-9 rounded-lg border border-zinc-300 bg-white px-2.5 text-sm font-semibold text-zinc-700 outline-none focus:border-brand-600"
           >
             {(view === "active" ? (["status", "newest", "oldest", "total"] as const) : (["newest", "oldest", "total"] as const)).map((s) => (
               <option key={s} value={s}>
@@ -149,7 +149,7 @@ function ViewTab({ href, active, icon, label, count }: { href: string; active: b
     >
       {icon}
       {label}
-      <span className={cn("rounded-full px-1.5 text-[11px] tabular-nums", active ? "bg-emerald-50 text-emerald-700" : "bg-zinc-100 text-zinc-500")}>
+      <span className={cn("rounded-full px-1.5 text-[11px] tabular-nums", active ? "bg-brand-50 text-brand-700" : "bg-zinc-100 text-zinc-500")}>
         {count}
       </span>
     </Link>

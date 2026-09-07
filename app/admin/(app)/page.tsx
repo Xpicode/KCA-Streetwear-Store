@@ -20,7 +20,7 @@ const STATUS_STYLE: Record<string, string> = {
   pending: "bg-amber-50 text-amber-700",
   confirmed: "bg-indigo-50 text-indigo-700",
   packed: "bg-blue-50 text-blue-700",
-  paid: "bg-emerald-50 text-emerald-700",
+  paid: "bg-brand-50 text-brand-700",
 };
 const STATUS_LABEL: Record<string, string> = {
   pending: "Pending",
@@ -65,7 +65,7 @@ export default async function DashboardPage({
           </div>
           <Link
             href="/admin/orders/new"
-            className="flex h-9 items-center gap-2 rounded-lg bg-emerald-700 px-3 text-sm font-bold text-white"
+            className="flex h-9 items-center gap-2 rounded-lg bg-brand-700 px-3 text-sm font-bold text-white"
           >
             <Plus className="size-4" />
             New order
@@ -96,7 +96,7 @@ export default async function DashboardPage({
           <ProfitChart data={d.series} />
         </Card>
 
-        <Card title="Top products by profit" action={<Link href="/admin/products" className="text-xs font-bold text-emerald-700">All products</Link>}>
+        <Card title="Top products by profit" action={<Link href="/admin/products" className="text-xs font-bold text-brand-700">All products</Link>}>
           {d.top.length === 0 ? (
             <Empty>No delivered orders in this period.</Empty>
           ) : (
@@ -113,7 +113,7 @@ export default async function DashboardPage({
                     </div>
                     <div className="flex items-center gap-2">
                       <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-zinc-100">
-                        <div className="h-full rounded-full bg-emerald-700" style={{ width: `${w}%` }} />
+                        <div className="h-full rounded-full bg-brand-700" style={{ width: `${w}%` }} />
                       </div>
                       <span className="w-24 text-right text-[11px] font-semibold tabular-nums text-zinc-500">
                         {t.units} pcs · {Math.round(marginPercent(t.profit, t.revenue))}%
@@ -177,7 +177,7 @@ export default async function DashboardPage({
 
         <Card
           title="Low stock"
-          action={<Link href="/admin/stock-in" className="text-xs font-bold text-emerald-700">Create stock-in</Link>}
+          action={<Link href="/admin/stock-in" className="text-xs font-bold text-brand-700">Create stock-in</Link>}
           flush
         >
           {d.low.length === 0 ? (
@@ -218,14 +218,14 @@ function Tile({ label, value, sub, accent }: { label: string; value: string; sub
     <div
       className={cn(
         "flex flex-col gap-1.5 rounded-xl border p-5",
-        accent ? "border-emerald-700 bg-emerald-700 text-white" : "border-zinc-200 bg-white"
+        accent ? "border-brand-700 bg-brand-700 text-white" : "border-zinc-200 bg-white"
       )}
     >
-      <div className={cn("text-[11px] font-bold uppercase tracking-wider", accent ? "text-emerald-100" : "text-zinc-500")}>
+      <div className={cn("text-[11px] font-bold uppercase tracking-wider", accent ? "text-brand-100" : "text-zinc-500")}>
         {label}
       </div>
       <div className="text-3xl font-extrabold tabular-nums tracking-tight">{value}</div>
-      <div className={cn("text-xs font-semibold", accent ? "text-emerald-100" : "text-zinc-500")}>{sub}</div>
+      <div className={cn("text-xs font-semibold", accent ? "text-brand-100" : "text-zinc-500")}>{sub}</div>
     </div>
   );
 }

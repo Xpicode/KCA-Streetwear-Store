@@ -61,7 +61,7 @@ export function ActionsBar({ orderId, status, paymentStatus, balance }: Props) {
             type="button"
             disabled={busy}
             onClick={() => runStep(next.run)}
-            className="flex h-10 items-center gap-2 rounded-lg bg-emerald-700 px-4 text-sm font-bold text-white hover:bg-emerald-800 disabled:opacity-60"
+            className="flex h-10 items-center gap-2 rounded-lg bg-brand-700 px-4 text-sm font-bold text-white hover:bg-brand-800 disabled:opacity-60"
           >
             <next.icon className="size-4" />
             {busy ? next.pending : next.label}
@@ -76,7 +76,7 @@ export function ActionsBar({ orderId, status, paymentStatus, balance }: Props) {
               showPayment
                 ? "border-zinc-900 bg-zinc-900 text-white"
                 : awaitingPayment
-                  ? "border-transparent bg-emerald-700 text-white hover:bg-emerald-800"
+                  ? "border-transparent bg-brand-700 text-white hover:bg-brand-800"
                   : "border-zinc-300 bg-white text-zinc-900 hover:bg-zinc-50"
             )}
           >

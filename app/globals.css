@@ -4,17 +4,33 @@
 
 /* ---- design system -------------------------------------------------------
    One system: Tailwind utilities on the zinc scale for surfaces/text and
-   emerald as the single brand accent. Dark mode is a palette swap (see the
+   a single brand accent scale (--color-brand-*). Dark mode is a palette swap (see the
    "dark mode" block below), so screens never need dark: variants. */
 @theme inline {
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
 }
 
+/* Brand accent. Every accent in the app uses `brand-*` utilities (bg-brand-700, text-brand-800 …),
+   so rebranding = replacing this scale (and the dark-mode values further down). Currently emerald. */
+@theme {
+  --color-brand-50: oklch(97.9% 0.021 166.113);
+  --color-brand-100: oklch(95% 0.052 163.051);
+  --color-brand-200: oklch(90.5% 0.093 164.15);
+  --color-brand-300: oklch(84.5% 0.143 164.978);
+  --color-brand-400: oklch(76.5% 0.177 163.223);
+  --color-brand-500: oklch(69.6% 0.17 162.48);
+  --color-brand-600: oklch(59.6% 0.145 163.225);
+  --color-brand-700: oklch(50.8% 0.118 165.612);
+  --color-brand-800: oklch(43.2% 0.095 166.913);
+  --color-brand-900: oklch(37.8% 0.077 168.94);
+  --color-brand-950: oklch(26.2% 0.051 172.552);
+}
+
 @layer base {
   * {
     border-color: var(--color-zinc-200);
-    outline-color: color-mix(in oklab, var(--color-emerald-600) 50%, transparent);
+    outline-color: color-mix(in oklab, var(--color-brand-600) 50%, transparent);
   }
   html {
     @apply font-sans;
@@ -62,7 +78,7 @@
 }
 
 /* ---- dark mode ------------------------------------------------------------
-   The admin and shop are styled with plain Tailwind zinc/emerald utilities, so
+   The admin and shop are styled with plain Tailwind zinc/brand utilities, so
    dark mode is a palette swap: inside a `.theme-zone` (admin, shop, login) with
    `html.dark`, every zinc/white/accent token is remapped to a dark equivalent.
    The landing page stays light on purpose. Toggle = components/theme-toggle.tsx. */
@@ -82,13 +98,13 @@ html.dark .theme-zone {
   --color-zinc-900: #f2f2f4;
   --color-zinc-950: #fafafa;
 
-  --color-emerald-50: #0d2b21;
-  --color-emerald-100: #123d2f;
-  --color-emerald-200: #1a5a44;
-  --color-emerald-300: #22775a;
-  --color-emerald-700: #059669;
-  --color-emerald-800: #6ee7b7;
-  --color-emerald-900: #a7f3d0;
+  --color-brand-50: #0d2b21;
+  --color-brand-100: #123d2f;
+  --color-brand-200: #1a5a44;
+  --color-brand-300: #22775a;
+  --color-brand-700: #059669;
+  --color-brand-800: #6ee7b7;
+  --color-brand-900: #a7f3d0;
 
   --color-red-50: #2f1516;
   --color-red-100: #3f1a1c;

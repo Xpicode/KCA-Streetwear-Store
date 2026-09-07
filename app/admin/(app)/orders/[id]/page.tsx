@@ -86,14 +86,14 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
                   <li key={s.key} className="relative flex flex-1 flex-col items-center gap-1.5 text-center">
                     {i > 0 && (
                       <div
-                        className={cn("absolute top-3.5 right-1/2 left-[-50%] h-0.5", i <= stepIndex ? "bg-emerald-600" : "bg-zinc-200")}
+                        className={cn("absolute top-3.5 right-1/2 left-[-50%] h-0.5", i <= stepIndex ? "bg-brand-600" : "bg-zinc-200")}
                       />
                     )}
                     <div
                       className={cn(
                         "relative z-10 flex size-7 items-center justify-center rounded-full border-2 text-xs font-extrabold",
-                        done ? "border-emerald-600 bg-emerald-600 text-white" : "border-zinc-300 bg-white text-zinc-400",
-                        current && "ring-4 ring-emerald-100"
+                        done ? "border-brand-600 bg-brand-600 text-white" : "border-zinc-300 bg-white text-zinc-400",
+                        current && "ring-4 ring-brand-100"
                       )}
                     >
                       {done ? <Check className="size-4" /> : i + 1}
@@ -176,7 +176,7 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
                       <td className="px-4 py-3 text-right">{pesoExact(i.unitPrice)}</td>
                       <td className="px-4 py-3 text-right font-bold">{pesoExact(i.lineTotal)}</td>
                       <td className="px-4 py-3 text-right text-zinc-600">{i.unitCost != null ? pesoExact(i.unitCost) : "—"}</td>
-                      <td className="px-5 py-3 text-right font-extrabold text-emerald-700">
+                      <td className="px-5 py-3 text-right font-extrabold text-brand-700">
                         {i.lineProfit != null ? pesoExact(i.lineProfit) : "—"}
                       </td>
                     </tr>
@@ -221,7 +221,7 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
             <CardHeader
               title="Customer"
               action={
-                <Link href={`/admin/customers/${o.customer.id}`} className="text-xs font-bold text-emerald-700">
+                <Link href={`/admin/customers/${o.customer.id}`} className="text-xs font-bold text-brand-700">
                   View customer
                 </Link>
               }
@@ -259,7 +259,7 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
                 label="Balance due"
                 value={cancelled ? "—" : pesoExact(Math.max(o.balance, 0))}
                 strong
-                className={cancelled ? "text-zinc-400" : o.balance > 0 ? "text-red-700" : "text-emerald-700"}
+                className={cancelled ? "text-zinc-400" : o.balance > 0 ? "text-red-700" : "text-brand-700"}
               />
             </CardBody>
           </Card>
@@ -296,7 +296,7 @@ function Row({
   return (
     <div className="flex items-baseline justify-between gap-3">
       <span className="font-medium text-zinc-500">{label}</span>
-      <span className={cn("text-right", strong ? "text-base font-extrabold" : "font-semibold", accent && "text-emerald-700", muted && "text-zinc-400", className)}>
+      <span className={cn("text-right", strong ? "text-base font-extrabold" : "font-semibold", accent && "text-brand-700", muted && "text-zinc-400", className)}>
         {value}
         {sub && <span className="ml-1.5 text-xs font-semibold text-zinc-500">{sub}</span>}
       </span>

@@ -48,15 +48,15 @@ export default async function StockInPage({
       </div>
 
       {justReceived.length > 0 && (
-        <section className="rounded-xl border border-emerald-200 bg-emerald-50 p-5">
-          <div className="flex items-center gap-2 text-emerald-800">
+        <section className="rounded-xl border border-brand-200 bg-brand-50 p-5">
+          <div className="flex items-center gap-2 text-brand-800">
             <CheckCircle2 className="size-5" />
             <h2 className="text-[15px] font-extrabold">
               Received {justReceived.reduce((a, b) => a + b.qtyReceived, 0)} pcs in {justReceived.length} line{justReceived.length === 1 ? "" : "s"}
               {justReceived[0].supplier ? ` from ${justReceived[0].supplier}` : ""}
             </h2>
           </div>
-          <ul className="mt-3 divide-y divide-emerald-200/70 text-sm tabular-nums">
+          <ul className="mt-3 divide-y divide-brand-200/70 text-sm tabular-nums">
             {justReceived.map((b) => (
               <li key={b.id} className="flex items-center justify-between py-2">
                 <span>
@@ -74,7 +74,7 @@ export default async function StockInPage({
             ))}
           </ul>
           <div className="mt-3 flex items-center justify-between text-sm">
-            <Link href="/admin/stock-in" className="font-bold text-emerald-800 hover:underline">
+            <Link href="/admin/stock-in" className="font-bold text-brand-800 hover:underline">
               Record another stock-in
             </Link>
             <span className="font-extrabold">Total {peso(justReceived.reduce((a, b) => a + b.qtyReceived * b.unitCost, 0))}</span>
@@ -88,7 +88,7 @@ export default async function StockInPage({
         <Card>
           <Empty>
             No active products yet.{" "}
-            <Link href="/admin/products/new" className="font-bold text-emerald-700 hover:underline">
+            <Link href="/admin/products/new" className="font-bold text-brand-700 hover:underline">
               Add a product
             </Link>{" "}
             before recording stock.
@@ -245,7 +245,7 @@ function LowStockCard({ rows, outCount }: { rows: LowStockRow[]; outCount: numbe
           {hidden > 0 && (
             <p className="border-t border-zinc-100 px-5 py-3 text-xs font-semibold text-zinc-500">
               Showing the {LOW_STOCK_LIMIT} most urgent · {hidden} more on the{" "}
-              <Link href="/admin/products" className="font-bold text-emerald-700 hover:underline">
+              <Link href="/admin/products" className="font-bold text-brand-700 hover:underline">
                 Products
               </Link>{" "}
               page.

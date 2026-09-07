@@ -44,7 +44,7 @@ export function ProductCard({ product: p, inCart }: { product: CatalogProduct; i
         <ProductImage name={p.name} imageUrl={p.imageUrl} categorySlug={p.categorySlug} textClass="text-4xl" />
         <StockBadge available={p.available} moq={p.moq} className="absolute top-2 left-2" />
         {cartQty > 0 && (
-          <span className="absolute top-2 right-2 inline-flex items-center gap-1 rounded-full bg-emerald-700 px-2 py-0.5 text-[11px] font-bold text-white shadow-sm">
+          <span className="absolute top-2 right-2 inline-flex items-center gap-1 rounded-full bg-brand-700 px-2 py-0.5 text-[11px] font-bold text-white shadow-sm">
             <Check className="size-3" /> {cartQty} in cart
           </span>
         )}
@@ -62,7 +62,7 @@ export function ProductCard({ product: p, inCart }: { product: CatalogProduct; i
           <span className="text-lg font-extrabold">{peso(base)}</span>
           <span className="text-xs font-medium text-zinc-500">/{p.unit}</span>
           {tier && (
-            <span className="ml-auto rounded-md bg-emerald-50 px-1.5 py-0.5 text-[11px] font-bold text-emerald-700">
+            <span className="ml-auto rounded-md bg-brand-50 px-1.5 py-0.5 text-[11px] font-bold text-brand-700">
               {peso(tier.price)} at {tier.minQty}+
             </span>
           )}
@@ -74,7 +74,7 @@ export function ProductCard({ product: p, inCart }: { product: CatalogProduct; i
               aria-label="Option"
               value={variantId}
               onChange={(e) => setVariantId(Number(e.target.value))}
-              className="h-9 w-full rounded-lg border border-zinc-300 bg-white px-2 text-xs font-semibold text-zinc-800 outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/20"
+              className="h-9 w-full rounded-lg border border-zinc-300 bg-white px-2 text-xs font-semibold text-zinc-800 outline-none focus:border-brand-600 focus:ring-2 focus:ring-brand-600/20"
             >
               {p.variants.map((v) => (
                 <option key={v.id} value={v.id}>
@@ -92,7 +92,7 @@ export function ProductCard({ product: p, inCart }: { product: CatalogProduct; i
               disabled={pending || out}
               className={cn(
                 "flex h-9 items-center justify-center gap-1.5 rounded-lg px-2 text-xs font-bold text-white transition-colors disabled:opacity-50 sm:flex-1 sm:text-sm",
-                flash === "added" ? "bg-emerald-600" : "bg-emerald-700 hover:bg-emerald-800"
+                flash === "added" ? "bg-brand-600" : "bg-brand-700 hover:bg-brand-800"
               )}
             >
               {flash === "added" ? (
