@@ -35,7 +35,7 @@ export async function getLandingData() {
       .where(eq(products.isActive, true))
       .groupBy(products.id, categories.name)
       .orderBy(desc(sql`coalesce(sum(case when ${orders.status} in ('delivered','paid') then ${orderItems.qty} end), 0)`), desc(products.createdAt))
-      .limit(8),
+      .limit(4),
     db
       .select({
         styles: count(products.id),
