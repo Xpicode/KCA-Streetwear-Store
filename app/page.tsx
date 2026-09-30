@@ -38,7 +38,7 @@ export default async function LandingPage() {
             <span className="flex size-8 items-center justify-center rounded-lg bg-brand-700 text-white">
               <Layers className="size-4" />
             </span>
-            {BRAND.name} <span className="hidden font-semibold text-zinc-500 sm:inline">{BRAND.tagline}</span>
+            {BRAND.name}
           </Link>
           <nav className="hidden items-center gap-7 text-sm font-semibold text-zinc-600 md:flex">
             <a href="#categories" className="hover:text-zinc-900">Categories</a>
@@ -228,7 +228,7 @@ export default async function LandingPage() {
 
       <footer className="border-t border-zinc-200">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 px-5 py-8 text-sm font-medium text-zinc-500 sm:flex-row">
-          <div>© {new Date().getFullYear()} {BRAND.name} {BRAND.tagline} · {BRAND.city}</div>
+          <div>© {new Date().getFullYear()} {BRAND.name} · {BRAND.city}</div>
           <div className="flex gap-6">
             <Link href="/shop" className="hover:text-zinc-900">Wholesale catalog</Link>
             <Link href="/retail" className="hover:text-zinc-900">Retail store</Link>

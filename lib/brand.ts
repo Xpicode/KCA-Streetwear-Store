@@ -2,7 +2,6 @@
 export const BRAND = {
   name: "KCA Streetwear",
   short: "KCA",
-  tagline: "Wholesale",
   phone: "[0917 000 0000]",
   email: "[hello@kcastreetwear.com]",
   city: "[City, Philippines]",
