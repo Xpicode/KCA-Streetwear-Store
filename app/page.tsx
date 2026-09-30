@@ -61,9 +61,9 @@ export default async function LandingPage() {
             <a href="#contact" className="hover:underline underline-offset-4">Contact</a>
           </nav>
           <div className="flex items-center gap-5">
-            <Link href="/retail" className={`hidden underline-offset-4 hover:underline sm:inline ${navLink}`}>Retail</Link>
-            <Link href="/shop" className={`flex h-10 items-center gap-2 bg-zinc-950 px-4 text-white hover:bg-zinc-800 ${navLink}`}>
-              Wholesale <ArrowUpRight className="size-4" />
+            <Link href="/shop" className={`hidden underline-offset-4 hover:underline sm:inline ${navLink}`}>Wholesale</Link>
+            <Link href="/retail" className={`flex h-10 items-center gap-2 bg-zinc-950 px-4 text-white hover:bg-zinc-800 ${navLink}`}>
+              Shop retail <ArrowUpRight className="size-4" />
             </Link>
           </div>
         </div>
@@ -89,11 +89,11 @@ export default async function LandingPage() {
               <Stat value="24/7" label="open, order anytime" />
             </dl>
             <div className="flex flex-wrap gap-3">
-              <Link href="/shop" className={`flex h-12 items-center gap-2 bg-zinc-950 px-6 text-white hover:bg-zinc-800 ${navLink}`}>
-                Browse catalog <ArrowUpRight className="size-4" />
+              <Link href="/retail" className={`flex h-12 items-center gap-2 bg-zinc-950 px-6 text-white hover:bg-zinc-800 ${navLink}`}>
+                Shop retail <ArrowUpRight className="size-4" />
               </Link>
-              <Link href="/retail" className={`flex h-12 items-center border border-zinc-950 px-6 hover:bg-zinc-100 ${navLink}`}>
-                Retail store
+              <Link href="/shop" className={`flex h-12 items-center border border-zinc-950 px-6 hover:bg-zinc-100 ${navLink}`}>
+                Wholesale catalog
               </Link>
             </div>
           </div>
