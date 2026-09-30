@@ -33,7 +33,7 @@ export default async function LandingPage() {
   const ticker = (stocked.length ? stocked.map((c) => c.name) : ["Tees", "Caps", "Outerwear", "Bottoms", "Accessories"]).concat([
     "Mix sizes & colors",
     `Min ${stats.minMoq} pcs per style`,
-    "Same-day dispatch",
+    "Open 24/7",
     "GCash · Maya · Bank transfer",
   ]);
 
@@ -42,7 +42,7 @@ export default async function LandingPage() {
       <div className="bg-zinc-950 text-white">
         <div className={`${container} flex h-8 items-center justify-between font-mono text-[10px] uppercase tracking-[0.2em]`}>
           <span>Wholesale + retail · {BRAND.city}</span>
-          <span className="hidden sm:inline">Orders before 2 pm ship the same day</span>
+          <span className="hidden sm:inline">Open 24/7 · order anytime</span>
         </div>
       </div>
 
@@ -86,7 +86,7 @@ export default async function LandingPage() {
             <dl className="grid grid-cols-3 gap-6">
               {stats.styles > 0 && <Stat value={`${stats.styles}+`} label="styles in stock" />}
               <Stat value={`${stats.minMoq}`} label="pcs min. per style" />
-              <Stat value="2 pm" label="same-day cut-off" />
+              <Stat value="24/7" label="open, order anytime" />
             </dl>
             <div className="flex flex-wrap gap-3">
               <Link href="/shop" className={`flex h-12 items-center gap-2 bg-zinc-950 px-6 text-white hover:bg-zinc-800 ${navLink}`}>
