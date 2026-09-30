@@ -29,8 +29,9 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
       suppressHydrationWarning
     >
       <head>
-        {/* sets the .dark class before paint — see lib/theme.ts */}
-        <script nonce={nonce} dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
+        {/* sets the .dark class before paint — see lib/theme.ts. A plain inline tag is the only
+            thing that runs before first paint (next/script beforeInteractive waits for Next's JS). */}
+        <script nonce={nonce} suppressHydrationWarning dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
       </head>
       <body className="min-h-full flex flex-col">{children}</body>
     </html>

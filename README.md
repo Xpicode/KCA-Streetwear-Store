@@ -10,7 +10,7 @@ docker compose up -d     # start the local Postgres 16 database (host port 55432
 npm install
 cp .env.example .env.local   # then fill in AUTH_SECRET (see the file for a generator)
 npm run db:setup         # create tables + load sample data (WIPES existing data; local databases only)
-npm run dev              # http://localhost:3000
+npm run dev              # http://localhost:8080
 ```
 
 ## Accounts (sample data)
