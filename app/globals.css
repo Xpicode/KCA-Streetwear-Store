@@ -9,7 +9,7 @@
 @theme inline {
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
-  --font-display: var(--font-anton), Impact, "Arial Narrow Bold", sans-serif; /* landing page only */
+  --font-display: var(--font-instrument), Georgia, serif; /* landing page only */
 }
 
 /* Brand accent. Every accent in the app uses `brand-*` utilities (bg-brand-700, text-brand-800 …),
@@ -40,16 +40,6 @@
     @apply bg-white text-zinc-900;
   }
 }
-/* ---- landing page ticker -------------------------------------------------- */
-@keyframes marquee {
-  from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
-}
-.marquee { animation: marquee 40s linear infinite; }
-@media (prefers-reduced-motion: reduce) {
-  .marquee { animation: none; }
-}
-
 /* ---- dark mode ------------------------------------------------------------
    The admin and shop are styled with plain Tailwind zinc/brand utilities, so
    dark mode is a palette swap: inside a `.theme-zone` (admin, shop, login) with

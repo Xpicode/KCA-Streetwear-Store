@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element -- product photos are plain uploads; category art is local SVG */
 import Link from "next/link";
-import { Anton } from "next/font/google";
-import { ArrowUpRight } from "lucide-react";
+import { Instrument_Serif } from "next/font/google";
+import { ArrowRight } from "lucide-react";
 import { getLandingData } from "@/lib/queries/landing";
 import { peso } from "@/lib/format";
 import { BRAND } from "@/lib/brand";
@@ -9,7 +9,7 @@ import { BRAND } from "@/lib/brand";
 export const dynamic = "force-dynamic";
 
 // display face for the landing page only (see --font-display in globals.css)
-const display = Anton({ weight: "400", subsets: ["latin"], variable: "--font-anton" });
+const display = Instrument_Serif({ weight: "400", style: ["normal", "italic"], subsets: ["latin"], variable: "--font-instrument" });
 
 const ART: Record<string, string> = {
   tees: "/landing/tee.svg",
@@ -20,148 +20,123 @@ const ART: Record<string, string> = {
 };
 const artFor = (slug: string | null | undefined) => (slug && ART[slug]) || "/landing/box.svg";
 
-const label = "font-mono text-[10px] font-medium uppercase tracking-[0.2em] text-zinc-500";
-const navLink = "text-xs font-bold uppercase tracking-[0.15em]";
-const container = "mx-auto max-w-[1400px] px-5";
+const container = "mx-auto max-w-6xl px-6";
+const label = "text-[11px] font-semibold uppercase tracking-[0.22em] text-stone-500";
+const btn = "inline-flex h-12 items-center justify-center gap-2 rounded-full px-7 text-[11px] font-semibold uppercase tracking-[0.2em] transition";
+const btnDark = `${btn} bg-stone-900 text-stone-50 hover:bg-stone-700`;
+const btnLight = `${btn} border border-stone-300 text-stone-900 hover:border-stone-900`;
 
 export default async function LandingPage() {
   const { cats, featured, stats } = await getLandingData();
-  let sections = 0;
-  const no = () => String(++sections).padStart(2, "0");
   const stocked = cats.filter((c) => c.products > 0);
   const categoryList = stocked.length ? stocked : cats;
-  const ticker = (stocked.length ? stocked.map((c) => c.name) : ["Tees", "Caps", "Outerwear", "Bottoms", "Accessories"]).concat([
-    "Mix sizes & colors",
-    `Min ${stats.minMoq} pcs per style`,
-    "Open 24/7",
-    "GCash · Maya · Bank transfer",
-  ]);
+  const heroPair = featured.slice(0, 2);
 
   return (
-    <div className={`${display.variable} min-h-screen bg-white text-zinc-950`}>
-      <div className="bg-zinc-950 text-white">
-        <div className={`${container} flex h-8 items-center justify-between font-mono text-[10px] uppercase tracking-[0.2em]`}>
-          <span>Wholesale + retail · {BRAND.city}</span>
-          <span className="hidden sm:inline">Open 24/7 · order anytime</span>
-        </div>
-      </div>
-
-      <header className="sticky top-0 z-30 border-b border-zinc-950 bg-white">
-        <div className={`${container} flex h-16 items-center justify-between gap-6`}>
-          <Link href="/" className="font-display text-2xl uppercase leading-none">
-            {BRAND.short}
-            <span className="text-zinc-400"> / </span>
-            Streetwear
-          </Link>
-          <nav className={`hidden items-center gap-8 lg:flex ${navLink}`}>
-            <a href="#stock" className="hover:underline underline-offset-4">Stock</a>
-            <a href="#categories" className="hover:underline underline-offset-4">Categories</a>
-            <a href="#how" className="hover:underline underline-offset-4">How to order</a>
-            <a href="#pricing" className="hover:underline underline-offset-4">Pricing</a>
-            <a href="#contact" className="hover:underline underline-offset-4">Contact</a>
+    <div className={`${display.variable} min-h-screen bg-stone-50 text-stone-900`}>
+      <header className="sticky top-0 z-30 border-b border-stone-200/80 bg-stone-50/85 backdrop-blur">
+        <div className={`${container} flex h-16 items-center justify-between lg:grid lg:grid-cols-[1fr_auto_1fr]`}>
+          <nav className={`hidden items-center gap-7 lg:flex ${label}`}>
+            <a href="#collection" className="transition hover:text-stone-900">Collection</a>
+            <a href="#how" className="transition hover:text-stone-900">Ordering</a>
+            <a href="#pricing" className="transition hover:text-stone-900">Pricing</a>
+            <a href="#contact" className="transition hover:text-stone-900">Contact</a>
           </nav>
-          <div className="flex items-center gap-5">
-            <Link href="/retail" className={`hidden underline-offset-4 hover:underline sm:inline ${navLink}`}>Retail</Link>
-            <Link href="/shop" className={`flex h-10 items-center gap-2 bg-zinc-950 px-4 text-white hover:bg-zinc-800 ${navLink}`}>
-              Wholesale <ArrowUpRight className="size-4" />
+          <Link href="/" className="font-display text-[26px] leading-none tracking-tight lg:col-start-2">
+            {BRAND.short} <span className="italic">Streetwear</span>
+          </Link>
+          <div className={`flex items-center justify-end gap-6 ${label}`}>
+            <Link href="/retail" className="hidden transition hover:text-stone-900 sm:inline">Retail</Link>
+            <Link href="/shop" className="flex items-center gap-1.5 text-stone-900 transition hover:gap-2.5">
+              Wholesale <ArrowRight className="size-3.5" />
             </Link>
           </div>
         </div>
       </header>
 
       {/* hero */}
-      <section className="border-b border-zinc-950">
-        <div className={`${container} pt-12 pb-10 lg:pt-16`}>
-          <h1 className="font-display text-[15vw] uppercase leading-[0.86] tracking-tight sm:text-[13vw] lg:text-[10rem] xl:text-[11.5rem]">
-            Stock up<span className="text-zinc-300">.</span>
-            <br />
-            Sell out<span className="text-zinc-300">.</span>
+      <section className={`${container} grid gap-12 pt-20 pb-16 lg:grid-cols-12 lg:items-end lg:pt-28 lg:pb-24`}>
+        <div className="lg:col-span-7">
+          <div className={label}>{BRAND.city} · Wholesale &amp; retail</div>
+          <h1 className="mt-6 max-w-2xl font-display text-6xl leading-[0.95] tracking-tight text-balance sm:text-7xl xl:text-[5.5rem]">
+            Streetwear, <em>curated</em> for shops and for you.
           </h1>
-          <div className="mt-10 grid gap-8 border-t border-zinc-950 pt-8 lg:grid-cols-[1.2fr_1fr_auto] lg:items-end">
-            <p className="max-w-md text-lg font-medium text-zinc-600">
-              Tees, caps, hoodies and bags from our own stock. Browse what&rsquo;s in the warehouse right now, mix sizes and
-              colors, and send an order request in minutes. No account. We confirm by message, you pay by GCash, Maya or bank
-              transfer, and it ships the same day.
-            </p>
-            <dl className="grid grid-cols-3 gap-6">
-              {stats.styles > 0 && <Stat value={`${stats.styles}+`} label="styles in stock" />}
-              <Stat value={`${stats.minMoq}`} label="pcs min. per style" />
-              <Stat value="24/7" label="open, order anytime" />
-            </dl>
-            <div className="flex flex-wrap gap-3">
-              <Link href="/shop" className={`flex h-12 items-center gap-2 bg-zinc-950 px-6 text-white hover:bg-zinc-800 ${navLink}`}>
-                Browse catalog <ArrowUpRight className="size-4" />
-              </Link>
-              <Link href="/retail" className={`flex h-12 items-center border border-zinc-950 px-6 hover:bg-zinc-100 ${navLink}`}>
-                Retail store
-              </Link>
-            </div>
+          <p className="mt-8 max-w-md text-base leading-relaxed text-stone-600">
+            Tees, caps, hoodies and bags from our own stock. Resellers order by the dozen at wholesale tiers; everyone else
+            buys single pieces at retail. No account, no upfront payment. We confirm by message and ship once you pay.
+          </p>
+          <div className="mt-10 flex flex-wrap gap-3">
+            <Link href="/shop" className={btnDark}>
+              Wholesale catalog <ArrowRight className="size-3.5" />
+            </Link>
+            <Link href="/retail" className={btnLight}>
+              Retail store
+            </Link>
           </div>
         </div>
-        <div className="overflow-hidden border-t border-zinc-950 bg-zinc-950 py-2 text-white">
-          <ul className="marquee flex w-max shrink-0 font-display text-xl uppercase tracking-wide">
-            {[...ticker, ...ticker].map((t, i) => (
-              <li key={i} className="flex items-center whitespace-nowrap">
-                {t}
-                <span className="mx-6 text-zinc-500">/</span>
+
+        {heroPair.length > 0 && (
+          <div className="grid grid-cols-2 gap-4 lg:col-span-5">
+            {heroPair.map((p, i) => (
+              <Link key={p.id} href={`/shop/product/${p.slug}`} className={`group ${i === 1 ? "mt-12" : ""}`}>
+                <Tile imageUrl={p.imageUrl} alt={p.name} art={artFor(p.category?.toLowerCase())} ratio="aspect-[4/5]" />
+                <div className="mt-3 flex items-baseline justify-between gap-3">
+                  <span className="font-display text-xl leading-tight">{p.name}</span>
+                  <span className="text-sm text-stone-500">{peso(p.price)}</span>
+                </div>
+              </Link>
+            ))}
+          </div>
+        )}
+      </section>
+
+      {/* numbers */}
+      <section className="border-y border-stone-200">
+        <dl className={`${container} grid grid-cols-2 gap-x-6 gap-y-8 py-10 sm:grid-cols-4`}>
+          {stats.styles > 0 && <Stat value={`${stats.styles}`} label="styles in stock" />}
+          <Stat value={`${stats.minMoq}`} label="pcs minimum per style" />
+          <Stat value="24/7" label="open, order anytime" />
+          <Stat value="Same day" label="dispatch after payment" />
+        </dl>
+      </section>
+
+      {/* collection */}
+      {categoryList.length > 0 && (
+        <section id="collection" className={`${container} py-20 lg:py-28`}>
+          <Heading eyebrow="The collection" title="Everything a shop restocks" />
+          <ul className="mt-12 grid grid-cols-2 gap-x-4 gap-y-10 sm:grid-cols-3 lg:grid-cols-5">
+            {categoryList.map((c) => (
+              <li key={c.id}>
+                <Link href={`/shop?category=${c.slug}`} className="group block">
+                  <Tile art={artFor(c.slug)} ratio="aspect-[4/5]" />
+                  <div className="mt-4 font-display text-2xl leading-none">{c.name}</div>
+                  <div className={`mt-1.5 ${label}`}>
+                    {c.products} {c.products === 1 ? "style" : "styles"}
+                  </div>
+                </Link>
               </li>
             ))}
           </ul>
-        </div>
-      </section>
-
-      {/* stock */}
-      {featured.length > 0 && (
-        <section id="stock" className="border-b border-zinc-950">
-          <div className={`${container} pb-16`}>
-            <SectionBar no={no()} title="In stock now" link={{ href: "/shop", label: "Full catalog" }} />
-            <div className="grid grid-cols-2 gap-px border border-zinc-950 bg-zinc-950 lg:grid-cols-4">
-              {featured.map((p) => (
-                <Link key={p.id} href={`/shop/product/${p.slug}`} className="group flex flex-col bg-white">
-                  <div className="aspect-square overflow-hidden bg-zinc-100">
-                    {p.imageUrl ? (
-                      <img src={p.imageUrl} alt={p.name} className="h-full w-full object-cover transition duration-500 group-hover:scale-105" />
-                    ) : (
-                      <div className="flex h-full items-center justify-center">
-                        <img src={artFor(p.category?.toLowerCase())} alt="" className="size-2/5 opacity-60 grayscale" />
-                      </div>
-                    )}
-                  </div>
-                  <div className="flex items-start justify-between gap-3 border-t border-zinc-950 p-4">
-                    <div className="min-w-0">
-                      <div className={label}>{p.category ?? "Style"}</div>
-                      <div className="mt-1 font-bold uppercase leading-tight group-hover:underline underline-offset-4">{p.name}</div>
-                    </div>
-                    <div className="shrink-0 text-right">
-                      <div className="font-display text-xl leading-none">{peso(p.price)}</div>
-                      <div className={`mt-1 ${label}`}>per pc</div>
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
         </section>
       )}
 
-      {/* categories */}
-      {categoryList.length > 0 && (
-        <section id="categories" className="border-b border-zinc-950">
-          <div className={`${container} pb-16`}>
-            <SectionBar no={no()} title="Categories" />
-            <ul className="border-t border-zinc-950">
-              {categoryList.map((c, i) => (
-                <li key={c.id} className="border-b border-zinc-950">
-                  <Link
-                    href={`/shop?category=${c.slug}`}
-                    className="group flex items-center gap-4 px-2 py-5 transition hover:bg-zinc-950 hover:text-white sm:gap-8 sm:py-7"
-                  >
-                    <span className="w-8 font-mono text-xs text-zinc-500 group-hover:text-zinc-400">{String(i + 1).padStart(2, "0")}</span>
-                    <span className="flex-1 font-display text-4xl uppercase leading-none sm:text-6xl">{c.name}</span>
-                    <span className={`hidden sm:block ${label} group-hover:text-zinc-400`}>
-                      {c.products} {c.products === 1 ? "style" : "styles"}
-                    </span>
-                    <ArrowUpRight className="size-6 transition group-hover:-translate-y-1 group-hover:translate-x-1 sm:size-8" />
+      {/* best sellers */}
+      {featured.length > 0 && (
+        <section className="border-t border-stone-200 bg-stone-100/60">
+          <div className={`${container} py-20 lg:py-28`}>
+            <Heading eyebrow="Best sellers" title="What shops reorder most" link={{ href: "/shop", label: "Full catalog" }} />
+            <ul className="mt-12 grid grid-cols-2 gap-x-4 gap-y-10 lg:grid-cols-4">
+              {featured.map((p) => (
+                <li key={p.id}>
+                  <Link href={`/shop/product/${p.slug}`} className="group block">
+                    <Tile imageUrl={p.imageUrl} alt={p.name} art={artFor(p.category?.toLowerCase())} ratio="aspect-[3/4]" />
+                    <div className={`mt-4 ${label}`}>{p.category ?? "Style"}</div>
+                    <div className="mt-1 flex items-baseline justify-between gap-3">
+                      <span className="font-display text-xl leading-tight">{p.name}</span>
+                      <span className="shrink-0 text-sm text-stone-500">
+                        {peso(p.price)} <span className="text-stone-400">/pc</span>
+                      </span>
+                    </div>
                   </Link>
                 </li>
               ))}
@@ -171,87 +146,66 @@ export default async function LandingPage() {
       )}
 
       {/* how to order */}
-      <section id="how" className="border-b border-zinc-950 bg-zinc-950 text-white">
-        <div className={`${container} pb-16`}>
-          <SectionBar no={no()} title="How to order" dark />
-          <ol className="grid border border-white/20 md:grid-cols-3">
-            <Step n="01" title="Build your order" text="See real stock per size and color. Add at least the minimum per style and tier prices apply on their own." />
-            <Step n="02" title="Send the request" text="Shop name, contact number, address. No account, no payment yet." />
-            <Step n="03" title="We confirm, you pay, it ships" text="We check stock and message you the final total. Pay by GCash, Maya or bank transfer and it goes out the same day." last />
-          </ol>
-        </div>
+      <section id="how" className={`${container} py-20 lg:py-28`}>
+        <Heading eyebrow="Ordering" title="Three steps, no paperwork" />
+        <ol className="mt-12 grid gap-10 border-t border-stone-200 pt-10 md:grid-cols-3 md:gap-8">
+          <Step n="i" title="Build your order" text="See real stock per size and color. Add at least the minimum per style and the tier price applies on its own." />
+          <Step n="ii" title="Send the request" text="Your shop name, contact number and address. No account, nothing to pay yet." />
+          <Step n="iii" title="We confirm, you pay, it ships" text="We check stock and message you the final total. Pay by GCash, Maya or bank transfer and it leaves the same day." />
+        </ol>
       </section>
 
       {/* pricing */}
-      <section id="pricing" className="border-b border-zinc-950">
-        <div className={`${container} pb-16`}>
-          <SectionBar no={no()} title="Wholesale pricing" />
-          <div className="grid border-t border-zinc-950 lg:grid-cols-2">
-            <div className="py-8 lg:border-r lg:border-zinc-950 lg:pr-12">
-              <p className="max-w-md text-lg font-medium text-zinc-600">
-                Buy more of a style, pay less per piece. Tiers count every size and color of the same style together, so you
-                can mix and still hit the better price.
-              </p>
-              <ul className="mt-8 divide-y divide-zinc-200 border-y border-zinc-200 text-sm font-medium">
-                <Perk n="a" text={`Minimum ${stats.minMoq} pcs per style. Mix sizes and colors freely.`} />
-                <Perk n="b" text="Prices are per piece and update live as you change quantity." />
-                <Perk n="c" text="We confirm the final total before anything ships." />
-              </ul>
-            </div>
-            <div className="py-8 lg:pl-12">
-              <div className={label}>Example · Plain cotton tee</div>
-              <table className="mt-4 w-full border-t border-zinc-950 font-mono text-sm">
-                <tbody>
-                  <TierRow qty="1 – 11 pcs" price="₱150" note="retail-size order" />
-                  <TierRow qty="12+ pcs" price="₱140" note="wholesale tier" best />
-                </tbody>
-              </table>
-              <p className="mt-4 text-sm font-medium text-zinc-500">Every style has its own tiers. You see them on the product page.</p>
-            </div>
+      <section id="pricing" className="border-t border-stone-200 bg-stone-100/60">
+        <div className={`${container} grid gap-12 py-20 lg:grid-cols-2 lg:gap-20 lg:py-28`}>
+          <div>
+            <Heading eyebrow="Wholesale pricing" title="Buy more of a style, pay less per piece" />
+            <p className="mt-6 max-w-md leading-relaxed text-stone-600">
+              Tiers count every size and color of the same style together, so you can mix and still reach the better price.
+              Every style has its own tiers, shown on the product page.
+            </p>
+            <ul className="mt-8 flex flex-col gap-3 text-sm text-stone-700">
+              <li>Minimum {stats.minMoq} pcs per style, sizes and colors mixed freely.</li>
+              <li>Prices are per piece and update live as you change quantity.</li>
+              <li>We confirm the final total before anything ships.</li>
+            </ul>
+          </div>
+          <div className="self-center rounded-2xl border border-stone-200 bg-stone-50 p-8 sm:p-10">
+            <div className={label}>Example · Plain cotton tee</div>
+            <dl className="mt-6 divide-y divide-stone-200">
+              <TierRow qty="1 – 11 pcs" price="₱150" note="retail-size order" />
+              <TierRow qty="12+ pcs" price="₱140" note="wholesale tier" best />
+            </dl>
           </div>
         </div>
       </section>
 
       {/* two stores */}
-      <section className="border-b border-zinc-950">
-        <div className={`${container} grid md:grid-cols-2`}>
-          <Channel
-            href="/shop"
-            question="Buying for your shop?"
-            title="Wholesale"
-            text={`Tier prices, minimum ${stats.minMoq} pcs per style. Mix sizes and colors.`}
-            cta="Open the catalog"
-            className="border-b border-zinc-950 md:border-r md:border-b-0"
-          />
-          <Channel href="/retail" question="Buying for yourself?" title="Retail" text="Single pieces at retail price. Same stock, same fast dispatch." cta="Shop retail" />
-        </div>
+      <section className={`${container} grid gap-4 py-20 md:grid-cols-2 lg:py-28`}>
+        <Channel href="/shop" eyebrow="For shops" title="Wholesale" text={`Tier prices from ${stats.minMoq} pcs per style. Mix sizes and colors.`} cta="Open the catalog" />
+        <Channel href="/retail" eyebrow="For you" title="Retail" text="Single pieces at retail price. Same stock, same fast dispatch." cta="Shop retail" />
       </section>
 
-      <footer id="contact" className="overflow-hidden bg-zinc-950 text-white">
-        <div className={`${container} pt-16 pb-6`}>
-          <div className="grid gap-10 md:grid-cols-[1fr_auto] md:items-end">
-            <div>
-              <h2 className="font-display text-4xl uppercase leading-none sm:text-6xl">Questions? Message us.</h2>
-              <div className="mt-6 flex flex-col gap-1 font-mono text-sm text-zinc-400">
-                <span>{BRAND.phone}</span>
-                <span>{BRAND.email}</span>
-                <span>{BRAND.city}</span>
-              </div>
-            </div>
-            <nav className={`grid grid-cols-2 gap-x-12 gap-y-3 ${navLink}`}>
-              <Link href="/shop" className="hover:underline underline-offset-4">Wholesale catalog</Link>
-              <Link href="/retail" className="hover:underline underline-offset-4">Retail store</Link>
-              <Link href="/shop/orders" className="hover:underline underline-offset-4">Track order</Link>
-              <Link href="/admin/login" className="hover:underline underline-offset-4">Staff sign in</Link>
-            </nav>
+      <footer id="contact" className="border-t border-stone-200">
+        <div className={`${container} flex flex-col items-center py-20 text-center`}>
+          <div className="font-display text-5xl leading-none tracking-tight sm:text-7xl">
+            {BRAND.short} <span className="italic">Streetwear</span>
           </div>
-          <div aria-hidden className="mt-14 -mb-3 select-none font-display text-[12.5vw] uppercase leading-[0.8] whitespace-nowrap xl:text-[11rem]">
-            {BRAND.name}
+          <p className="mt-4 max-w-sm text-sm leading-relaxed text-stone-600">
+            Questions about bulk pricing or custom prints? Message us any time.
+          </p>
+          <div className="mt-6 flex flex-col gap-1 text-sm text-stone-700 sm:flex-row sm:gap-6">
+            <span>{BRAND.phone}</span>
+            <span>{BRAND.email}</span>
+            <span>{BRAND.city}</span>
           </div>
-          <div className="mt-4 flex flex-wrap justify-between gap-2 border-t border-white/20 pt-4 font-mono text-[10px] uppercase tracking-[0.2em] text-zinc-500">
-            <span>© {new Date().getFullYear()} {BRAND.name}</span>
-            <span>Wholesale + retail streetwear</span>
-          </div>
+          <nav className={`mt-12 flex flex-wrap justify-center gap-x-8 gap-y-3 ${label}`}>
+            <Link href="/shop" className="transition hover:text-stone-900">Wholesale catalog</Link>
+            <Link href="/retail" className="transition hover:text-stone-900">Retail store</Link>
+            <Link href="/shop/orders" className="transition hover:text-stone-900">Track order</Link>
+            <Link href="/admin/login" className="transition hover:text-stone-900">Staff sign in</Link>
+          </nav>
+          <div className="mt-10 text-xs text-stone-400">© {new Date().getFullYear()} {BRAND.name}</div>
         </div>
       </footer>
     </div>
@@ -259,6 +213,20 @@ export default async function LandingPage() {
 }
 
 // ------------------------------------------------------------------ pieces
+
+function Tile({ imageUrl, alt, art, ratio }: { imageUrl?: string | null; alt?: string; art: string; ratio: string }) {
+  return (
+    <div className={`overflow-hidden rounded-xl bg-stone-200/60 ${ratio}`}>
+      {imageUrl ? (
+        <img src={imageUrl} alt={alt ?? ""} className="h-full w-full object-cover transition duration-700 group-hover:scale-[1.04]" />
+      ) : (
+        <div className="flex h-full items-center justify-center">
+          <img src={art} alt="" className="size-1/3 opacity-50 grayscale transition duration-700 group-hover:scale-110" />
+        </div>
+      )}
+    </div>
+  );
+}
 
 function Stat({ value, label: text }: { value: string; label: string }) {
   return (
@@ -269,65 +237,56 @@ function Stat({ value, label: text }: { value: string; label: string }) {
   );
 }
 
-function SectionBar({ no, title, link, dark }: { no: string; title: string; link?: { href: string; label: string }; dark?: boolean }) {
+function Heading({ eyebrow, title, link }: { eyebrow: string; title: string; link?: { href: string; label: string } }) {
   return (
-    <div className="flex items-end justify-between gap-6 py-8 sm:py-10">
-      <div className="flex items-baseline gap-4">
-        <span className={`font-mono text-xs ${dark ? "text-zinc-500" : "text-zinc-400"}`}>{no}</span>
-        <h2 className="font-display text-3xl uppercase leading-none sm:text-5xl">{title}</h2>
+    <div className="flex flex-wrap items-end justify-between gap-6">
+      <div>
+        <div className={label}>{eyebrow}</div>
+        <h2 className="mt-3 font-display text-4xl leading-none tracking-tight text-balance sm:text-5xl">{title}</h2>
       </div>
       {link ? (
-        <Link href={link.href} className={`flex shrink-0 items-center gap-1 underline-offset-4 hover:underline ${navLink}`}>
-          {link.label} <ArrowUpRight className="size-4" />
+        <Link href={link.href} className={`flex items-center gap-1.5 text-stone-900 transition hover:gap-2.5 ${label}`}>
+          {link.label} <ArrowRight className="size-3.5" />
         </Link>
       ) : null}
     </div>
   );
 }
 
-function Step({ n, title, text, last }: { n: string; title: string; text: string; last?: boolean }) {
+function Step({ n, title, text }: { n: string; title: string; text: string }) {
   return (
-    <li className={`flex flex-col p-6 sm:p-8 ${last ? "" : "border-b border-white/20 md:border-r md:border-b-0"}`}>
-      <span className="font-display text-6xl leading-none text-white/25">{n}</span>
-      <h3 className="mt-10 text-lg font-bold uppercase leading-tight">{title}</h3>
-      <p className="mt-3 text-sm font-medium text-zinc-400">{text}</p>
-    </li>
-  );
-}
-
-function Perk({ n, text }: { n: string; text: string }) {
-  return (
-    <li className="flex gap-4 py-3">
-      <span className="w-4 font-mono text-xs text-zinc-400">{n}</span>
-      {text}
+    <li>
+      <span className="font-display text-3xl italic text-stone-400">{n}.</span>
+      <h3 className="mt-4 font-display text-2xl leading-tight">{title}</h3>
+      <p className="mt-3 text-sm leading-relaxed text-stone-600">{text}</p>
     </li>
   );
 }
 
 function TierRow({ qty, price, note, best }: { qty: string; price: string; note: string; best?: boolean }) {
   return (
-    <tr className="border-b border-zinc-200">
-      <td className="py-4 pr-4">
-        <div className={best ? "font-bold" : ""}>{qty}</div>
-        <div className="text-xs text-zinc-500">{note}</div>
-      </td>
-      <td className="py-4 text-right">
-        <span className="font-display text-2xl">{price}</span>
-        <span className="ml-1 text-xs text-zinc-500">/pc</span>
-        {best ? <span className="ml-3 bg-zinc-950 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white">best</span> : null}
-      </td>
-    </tr>
+    <div className="flex items-center justify-between py-4">
+      <div>
+        <dt className="text-sm font-semibold">{qty}</dt>
+        <dd className="text-xs text-stone-500">{note}</dd>
+      </div>
+      <dd className="flex items-center gap-3">
+        <span className="font-display text-3xl">{price}</span>
+        <span className="text-xs text-stone-500">/pc</span>
+        {best ? <span className="rounded-full border border-stone-900 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.15em]">best</span> : null}
+      </dd>
+    </div>
   );
 }
 
-function Channel({ href, question, title, text, cta, className = "" }: { href: string; question: string; title: string; text: string; cta: string; className?: string }) {
+function Channel({ href, eyebrow, title, text, cta }: { href: string; eyebrow: string; title: string; text: string; cta: string }) {
   return (
-    <Link href={href} className={`group flex min-h-72 flex-col gap-4 py-10 transition hover:bg-zinc-950 hover:text-white md:px-10 ${className}`}>
-      <span className={`${label} group-hover:text-zinc-400`}>{question}</span>
-      <span className="font-display text-6xl uppercase leading-none sm:text-8xl">{title}</span>
-      <span className="max-w-xs text-sm font-medium text-zinc-500 group-hover:text-zinc-400">{text}</span>
-      <span className={`mt-auto flex items-center gap-2 ${navLink}`}>
-        {cta} <ArrowUpRight className="size-4 transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+    <Link href={href} className="group flex min-h-64 flex-col rounded-2xl border border-stone-200 p-8 transition hover:border-stone-900 sm:p-10">
+      <span className={label}>{eyebrow}</span>
+      <span className="mt-4 font-display text-5xl leading-none tracking-tight sm:text-6xl">{title}</span>
+      <span className="mt-4 max-w-xs text-sm leading-relaxed text-stone-600">{text}</span>
+      <span className={`mt-auto flex items-center gap-1.5 pt-8 text-stone-900 transition group-hover:gap-2.5 ${label}`}>
+        {cta} <ArrowRight className="size-3.5" />
       </span>
     </Link>
   );
