@@ -6,13 +6,13 @@ import { BRAND } from "@/lib/brand";
 import { ThemeToggle } from "@/components/theme-toggle";
 
 export function ShopHeader({ channel, shopper, cartCount }: { channel: Channel; shopper: Shopper | null; cartCount: number }) {
-  const { base, label } = CHANNELS[channel];
+  const { base } = CHANNELS[channel];
   const other = otherChannel(channel);
   return (
     <header className="sticky top-0 z-20 border-b border-zinc-200 bg-white/95 backdrop-blur">
       <div className="mx-auto flex h-16 max-w-7xl items-center gap-3 px-4 sm:gap-6 sm:px-6">
         <Link href={base} className="shrink-0 font-extrabold">
-          {BRAND.name} <span className="hidden font-semibold text-zinc-500 sm:inline">{label}</span>
+          {BRAND.name}
         </Link>
 
         <form action={base} className="hidden h-10 w-96 items-center gap-2 rounded-lg border border-zinc-200 bg-zinc-50 px-3 md:flex">
