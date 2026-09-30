@@ -5,6 +5,7 @@ import { ArrowRight } from "lucide-react";
 import { getLandingData } from "@/lib/queries/landing";
 import { peso } from "@/lib/format";
 import { BRAND } from "@/lib/brand";
+import { Carousel } from "@/components/landing/carousel";
 
 export const dynamic = "force-dynamic";
 
@@ -122,12 +123,11 @@ export default async function LandingPage() {
 
       {/* best sellers */}
       {featured.length > 0 && (
-        <section className="border-t border-stone-200 bg-stone-100/60">
+        <section className="overflow-hidden border-t border-stone-200 bg-stone-100/60">
           <div className={`${container} py-20 lg:py-28`}>
-            <Heading eyebrow="Best sellers" title="What shops reorder most" link={{ href: "/shop", label: "Full catalog" }} />
-            <ul className="mt-12 grid grid-cols-2 gap-x-4 gap-y-10 lg:grid-cols-4">
-              {featured.map((p) => (
-                <li key={p.id}>
+            <Carousel heading={<Heading eyebrow="Best sellers" title="What shops reorder most" />} link={{ href: "/shop", label: "View all" }}>
+              {featured.map((p, i) => (
+                <li key={p.id} className="fade-up w-64 shrink-0 snap-start sm:w-72" style={{ "--i": i } as React.CSSProperties}>
                   <Link href={`/shop/product/${p.slug}`} className="group block">
                     <Tile imageUrl={p.imageUrl} alt={p.name} art={artFor(p.category?.toLowerCase())} ratio="aspect-[3/4]" />
                     <div className={`mt-4 ${label}`}>{p.category ?? "Style"}</div>
@@ -140,7 +140,7 @@ export default async function LandingPage() {
                   </Link>
                 </li>
               ))}
-            </ul>
+            </Carousel>
           </div>
         </section>
       )}
