@@ -10,6 +10,7 @@ export type ProductRow = {
   category: string | null;
   categoryId: number | null;
   price: number;
+  retailPrice: number | null;
   cost: number; // weighted-average cost of open stock
   stock: number;
   reorderLevel: number;
@@ -81,6 +82,7 @@ export async function getProductsWithStats(filters: ProductFilters = {}): Promis
       category: categories.name,
       categoryId: products.categoryId,
       price: products.basePrice,
+      retailPrice: products.retailPrice,
       reorderLevel: products.reorderLevel,
       cost: sql<number>`coalesce(${cost.avgCost}, 0)`.mapWith(Number),
       stock: sql<number>`coalesce(${stock.stock}, 0)`.mapWith(Number),

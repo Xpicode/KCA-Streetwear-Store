@@ -1,17 +1,18 @@
 /**
- * Cart lives in a cookie as { [variantId]: qty }. Small, no DB rows for abandoned carts.
+ * Cart lives in a cookie as { [variantId]: qty } — one cookie per storefront channel, so a
+ * wholesale cart and a retail cart never mix. Small, no DB rows for abandoned carts.
  * Prices are never stored here — always recomputed from the catalog on read.
  */
 import "server-only";
 import { cookies } from "next/headers";
+import { CHANNELS, type Channel } from "@/lib/channel";
 
-const COOKIE = "ws_cart";
 export type Cart = Record<string, number>;
 
-export async function readCart(): Promise<Cart> {
+export async function readCart(channel: Channel): Promise<Cart> {
   const jar = await cookies();
   try {
-    const raw = jar.get(COOKIE)?.value;
+    const raw = jar.get(CHANNELS[channel].cartCookie)?.value;
     const parsed = raw ? (JSON.parse(raw) as Cart) : {};
     return Object.fromEntries(Object.entries(parsed).filter(([, q]) => Number.isFinite(q) && q > 0));
   } catch {
@@ -19,14 +20,15 @@ export async function readCart(): Promise<Cart> {
   }
 }
 
-export async function writeCart(cart: Cart) {
+export async function writeCart(channel: Channel, cart: Cart) {
   const jar = await cookies();
+  const name = CHANNELS[channel].cartCookie;
   const clean = Object.fromEntries(Object.entries(cart).filter(([, q]) => q > 0));
   if (Object.keys(clean).length === 0) {
-    jar.delete(COOKIE);
+    jar.delete(name);
     return;
   }
-  jar.set(COOKIE, JSON.stringify(clean), {
+  jar.set(name, JSON.stringify(clean), {
     httpOnly: true,
     sameSite: "lax",
     secure: process.env.NODE_ENV === "production",

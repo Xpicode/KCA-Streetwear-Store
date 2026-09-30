@@ -6,6 +6,7 @@ import { z } from "zod";
 import { and, eq, sql } from "drizzle-orm";
 import { db } from "@/db";
 import { customers, orders } from "@/db/schema";
+import { CHANNELS, CHANNEL_KEYS, type Channel } from "@/lib/channel";
 import { getShopper, normalizePhone, rememberShopper } from "@/lib/shopper";
 import { signPayload } from "@/lib/auth";
 import { readCart, writeCart } from "@/lib/cart";
@@ -14,9 +15,13 @@ import { OrderError } from "@/lib/orders";
 import type { ActionState } from "@/components/ui/form-message";
 import { PAYMENT_OPTIONS } from "@/components/shop/payment-options";
 
+const channelSchema = z.enum(CHANNEL_KEYS as [Channel, ...Channel[]]);
+
 const schema = z.object({
-  shopName: z.string().trim().min(2, "Enter your shop name"),
-  contactName: z.string().trim().min(2, "Enter the person receiving the order"),
+  channel: channelSchema,
+  shopName: z.string().trim().min(2, "Enter your name"),
+  // retail buyers give one name; wholesale asks for the shop and the person receiving
+  contactName: z.string().trim().max(120).optional().default(""),
   phone: z.string().trim().min(7, "Enter a contact number"),
   email: z.string().trim().toLowerCase().email("Enter a valid email").optional().or(z.literal("")),
   address: z.string().trim().min(5, "Enter the delivery address"),
@@ -48,7 +53,7 @@ function diffDetails(typed: ContactDetails, onFile: { shopName: string; contactN
   const check = (label: string, a: string | undefined, b: string | null) => {
     if (a && norm(a) !== norm(b)) out.push(`${label} "${a}" (on file "${b ?? "—"}")`);
   };
-  check("shop name", typed.shopName, onFile.shopName);
+  check("name", typed.shopName, onFile.shopName);
   check("contact", typed.contactName, onFile.contactName);
   check("address", typed.address, onFile.address);
   check("email", typed.email, onFile.email);
@@ -61,7 +66,7 @@ function diffDetails(typed: ContactDetails, onFile: { shopName: string; contactN
  *   2. an existing customer with the same phone number (digits compared)         → unverified
  *   3. otherwise a new, auto-approved customer row                                → verified
  */
-async function resolveCustomer(d: ContactDetails): Promise<ResolvedCustomer> {
+async function resolveCustomer(channel: Channel, d: ContactDetails): Promise<ResolvedCustomer> {
   const digits = normalizePhone(d.phone);
   const details = {
     shopName: d.shopName,
@@ -71,7 +76,7 @@ async function resolveCustomer(d: ContactDetails): Promise<ResolvedCustomer> {
     ...(d.email ? { email: d.email } : {}),
   };
 
-  const remembered = await getShopper();
+  const remembered = await getShopper(channel);
   if (remembered && remembered.status !== "blocked" && (!remembered.phone || normalizePhone(remembered.phone) === digits)) {
     await db.update(customers).set(details).where(eq(customers.id, remembered.id));
     return { id: remembered.id, priceGroup: remembered.priceGroup, verified: true, differences: [] };
@@ -113,16 +118,19 @@ export async function placeOrder(_prev: ActionState, formData: FormData): Promis
   const parsed = schema.safeParse(Object.fromEntries(formData));
   if (!parsed.success) return { error: parsed.error.issues[0].message };
   const d = parsed.data;
+  const channel = d.channel;
+  const base = CHANNELS[channel].base;
+  const contactName = d.contactName || d.shopName;
   let customer: ResolvedCustomer;
   try {
-    customer = await resolveCustomer(d);
+    customer = await resolveCustomer(channel, { ...d, contactName });
   } catch {
-    return { error: "We couldn't save your details — if you used an email, it may already belong to another shop. Try leaving email blank." };
+    return { error: "We couldn't save your details — if you used an email, it may already belong to another customer. Try leaving email blank." };
   }
   const payment = PAYMENT_OPTIONS.find((p) => p.value === d.payment)?.label ?? d.payment;
 
   const note = [
-    `Deliver to: ${d.shopName} · ${d.contactName} · ${d.phone} · ${d.address.replace(/\s*\n\s*/g, ", ")}`,
+    `Deliver to: ${d.shopName}${contactName !== d.shopName ? ` · ${contactName}` : ""} · ${d.phone} · ${d.address.replace(/\s*\n\s*/g, ", ")}`,
     `Preferred payment: ${payment}`,
     d.note ? `Note: ${d.note}` : null,
     customer.verified
@@ -133,28 +141,29 @@ export async function placeOrder(_prev: ActionState, formData: FormData): Promis
     .filter(Boolean)
     .join("\n");
 
-  const cart = await readCart();
+  const cart = await readCart(channel);
   let order: { id: number; orderNo: string };
   try {
-    order = await createStorefrontOrder({ customerId: customer.id, priceGroup: customer.priceGroup, cart, note });
+    order = await createStorefrontOrder({ channel, customerId: customer.id, priceGroup: customer.priceGroup, cart, note });
   } catch (e) {
     if (e instanceof CartProblem) return { error: e.problems.join(" · ") };
     if (e instanceof OrderError) return { error: e.message };
     throw e;
   }
 
-  await writeCart({});
-  revalidatePath("/shop", "layout");
+  await writeCart(channel, {});
+  revalidatePath(base, "layout");
   revalidatePath("/admin", "layout");
   if (customer.verified) {
-    await rememberShopper(customer.id);
-    redirect(`/shop/orders/${order.id}?placed=1`);
+    await rememberShopper(channel, customer.id);
+    redirect(`${base}/orders/${order.id}?placed=1`);
   }
   // unverified: this device may follow this one order, not the matched customer's history
-  redirect(`/shop/orders/${order.id}?placed=1&t=${encodeURIComponent(orderToken(order.id))}`);
+  redirect(`${base}/orders/${order.id}?placed=1&t=${encodeURIComponent(orderToken(order.id))}`);
 }
 
 const trackSchema = z.object({
+  channel: channelSchema,
   orderNo: z.string().trim().min(1, "Enter your order number"),
   phone: z.string().trim().min(7, "Enter the contact number used on the order"),
 });
@@ -176,5 +185,5 @@ export async function trackOrder(_prev: ActionState, formData: FormData): Promis
     .where(and(eq(orders.orderNo, no), sql`regexp_replace(coalesce(${customers.phone}, ''), '\\D', '', 'g') = ${digits}`))
     .limit(1);
   if (!row) return { error: "No order found with that number and contact number." };
-  redirect(`/shop/orders/${row.id}?t=${encodeURIComponent(orderToken(row.id))}`);
+  redirect(`${CHANNELS[parsed.data.channel].base}/orders/${row.id}?t=${encodeURIComponent(orderToken(row.id))}`);
 }

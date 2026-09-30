@@ -33,8 +33,9 @@ shop name, contact number, and address; the device that placed an order is remem
 | URL            | What it is                                                       |
 | -------------- | ---------------------------------------------------------------- |
 | `/`            | Public landing page                                              |
-| `/shop`        | Catalog → cart → order request (no account, no online payment)   |
-| `/shop/orders` | Buyer's orders (remembered per device, or order no. + phone)     |
+| `/shop`        | Wholesale catalog → cart → order request (no account, no online payment) |
+| `/retail`      | Retail store: same products at the per-product retail price, buy 1+ |
+| `/shop/orders`, `/retail/orders` | Buyer's orders (remembered per device, or order no. + phone) |
 | `/admin`       | Dashboard: profit today / this week / this month                 |
 | `/admin/...`   | Products, stock-in, orders pipeline, customers, reports, settings|
 
@@ -158,3 +159,8 @@ login); the landing page stays light. Brand name and contact details: `lib/brand
   the FIFO blend of the stock batches actually consumed.
 - Wholesale tiers: quantity discounts per style, optionally per price group; minimum
   order quantity per style.
+- Two storefront channels on one catalog and one stock (`lib/channel.ts`): **wholesale**
+  (`/shop`) uses the wholesale price, tiers and MOQ; **retail** (`/retail`) uses the
+  product's *Retail price* (set in admin; blank = not sold in retail), no tiers, buy 1+.
+  Each channel keeps its own cart and remembered customer; orders record the channel in
+  `orders.source` (`storefront` = wholesale, `retail`, `manual`).

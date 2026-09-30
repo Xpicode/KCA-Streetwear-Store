@@ -5,13 +5,13 @@ import { cn } from "@/lib/utils";
 type Cat = { slug: string; name: string };
 
 /** Category chips (?category=slug) + a search box that only shows on phones (the header has one on desktop). */
-export function CatalogFilters({ categories, active, q }: { categories: Cat[]; active?: string; q?: string }) {
+export function CatalogFilters({ base, categories, active, q }: { base: string; categories: Cat[]; active?: string; q?: string }) {
   const href = (slug?: string) => {
     const sp = new URLSearchParams();
     if (q) sp.set("q", q);
     if (slug) sp.set("category", slug);
     const s = sp.toString();
-    return s ? `/shop?${s}` : "/shop";
+    return s ? `${base}?${s}` : base;
   };
   const chip = (isActive: boolean) =>
     cn(
@@ -21,7 +21,7 @@ export function CatalogFilters({ categories, active, q }: { categories: Cat[]; a
 
   return (
     <div className="flex flex-col gap-3">
-      <form action="/shop" className="flex h-11 items-center gap-2 rounded-lg border border-zinc-200 bg-white px-3 md:hidden">
+      <form action={base} className="flex h-11 items-center gap-2 rounded-lg border border-zinc-200 bg-white px-3 md:hidden">
         {active && <input type="hidden" name="category" value={active} />}
         <Search className="size-4 text-zinc-500" />
         <input

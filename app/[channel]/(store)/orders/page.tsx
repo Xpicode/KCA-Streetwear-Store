@@ -1,5 +1,7 @@
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import { ChevronRight, PackageOpen } from "lucide-react";
+import { channelFromSlug, type ChannelInfo } from "@/lib/channel";
 import { getShopper } from "@/lib/shopper";
 import { TrackOrderForm } from "./track-form";
 import { listCustomerOrders } from "@/lib/queries/shop-orders";
@@ -8,9 +10,13 @@ import { fmtDate, OrderStatusBadge, PaymentBadge } from "@/components/shop/order
 
 export const dynamic = "force-dynamic";
 
-export default async function OrdersPage() {
-  const customer = await getShopper();
-  if (!customer) return <TrackOnly />;
+export default async function OrdersPage({ params }: { params: Promise<{ channel: string }> }) {
+  const { channel: slug } = await params;
+  const channel = channelFromSlug(slug);
+  if (!channel) notFound();
+  const { base } = channel;
+  const customer = await getShopper(channel.key);
+  if (!customer) return <TrackOnly channel={channel} />;
   const rows = await listCustomerOrders(customer.id);
   const open = rows.filter((r) => !["paid", "cancelled"].includes(r.status));
   const owed = rows.filter((r) => r.status !== "cancelled").reduce((a, r) => a + r.balance, 0);
@@ -25,7 +31,7 @@ export default async function OrdersPage() {
             {owed > 0 ? ` · ${peso(owed)} unpaid` : ""}
           </p>
         </div>
-        <Link href="/shop" className="hidden h-9 items-center rounded-lg border border-zinc-300 bg-white px-3 text-sm font-bold sm:flex">
+        <Link href={base} className="hidden h-9 items-center rounded-lg border border-zinc-300 bg-white px-3 text-sm font-bold sm:flex">
           Shop again
         </Link>
       </div>
@@ -35,7 +41,7 @@ export default async function OrdersPage() {
           <PackageOpen className="mx-auto mb-3 size-8 text-zinc-400" />
           <p className="text-sm font-bold">No orders yet.</p>
           <p className="mt-1 text-sm font-medium text-zinc-500">Your order requests and their status will show here.</p>
-          <Link href="/shop" className="mt-5 inline-flex h-10 items-center rounded-lg bg-brand-700 px-4 text-sm font-bold text-white">
+          <Link href={base} className="mt-5 inline-flex h-10 items-center rounded-lg bg-brand-700 px-4 text-sm font-bold text-white">
             Browse the catalog
           </Link>
         </div>
@@ -60,7 +66,7 @@ export default async function OrdersPage() {
                 {rows.map((o) => (
                   <tr key={o.id} className="hover:bg-zinc-50">
                     <td className="px-4 py-3">
-                      <Link href={`/shop/orders/${o.id}`} className="font-extrabold hover:underline">
+                      <Link href={`${base}/orders/${o.id}`} className="font-extrabold hover:underline">
                         {o.orderNo}
                       </Link>
                     </td>
@@ -76,7 +82,7 @@ export default async function OrdersPage() {
                     <td className="px-4 py-3">{o.status === "cancelled" ? <span className="text-zinc-400">—</span> : <PaymentBadge status={o.paymentStatus} />}</td>
                     <td className="px-4 py-3 text-right font-bold">{o.status === "cancelled" ? "—" : o.balance > 0 ? peso(o.balance) : <span className="text-zinc-400">₱0</span>}</td>
                     <td className="px-2 py-3 text-zinc-400">
-                      <Link href={`/shop/orders/${o.id}`} aria-label={`Open ${o.orderNo}`} className="flex size-9 items-center justify-center rounded-lg hover:bg-zinc-100 hover:text-zinc-900">
+                      <Link href={`${base}/orders/${o.id}`} aria-label={`Open ${o.orderNo}`} className="flex size-9 items-center justify-center rounded-lg hover:bg-zinc-100 hover:text-zinc-900">
                         <ChevronRight className="size-4" />
                       </Link>
                     </td>
@@ -90,7 +96,7 @@ export default async function OrdersPage() {
           <ul className="flex flex-col gap-3 md:hidden">
             {rows.map((o) => (
               <li key={o.id}>
-                <Link href={`/shop/orders/${o.id}`} className="block rounded-xl border border-zinc-200 bg-white p-4 active:bg-zinc-50">
+                <Link href={`${base}/orders/${o.id}`} className="block rounded-xl border border-zinc-200 bg-white p-4 active:bg-zinc-50">
                   <div className="flex items-center justify-between gap-3">
                     <span className="text-base font-extrabold">{o.orderNo}</span>
                     <OrderStatusBadge status={o.status} />
@@ -114,7 +120,7 @@ export default async function OrdersPage() {
   );
 }
 
-function TrackOnly() {
+function TrackOnly({ channel }: { channel: ChannelInfo }) {
   return (
     <div className="mx-auto flex max-w-md flex-col gap-5 py-6">
       <div>
@@ -123,8 +129,8 @@ function TrackOnly() {
           Orders placed from this device show up here automatically. From another phone, enter an order number and its contact number — that opens that one order only.
         </p>
       </div>
-      <TrackOrderForm />
-      <Link href="/shop" className="text-sm font-bold text-brand-700">
+      <TrackOrderForm channel={channel.key} />
+      <Link href={channel.base} className="text-sm font-bold text-brand-700">
         ← Back to catalog
       </Link>
     </div>

@@ -84,7 +84,11 @@ export default async function ProductDetailPage({
       {/* Summary tiles */}
       <div className="grid grid-cols-1 sm:grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
         <Tile label="Cost" value={p.avgCost ? peso(p.avgCost) : "—"} sub="weighted avg of open batches" />
-        <Tile label="Price" value={peso(p.basePrice)} sub={p.tiers.length ? `${p.tiers.length} quantity tier${p.tiers.length > 1 ? "s" : ""}` : "no tiers"} />
+        <Tile
+          label="Wholesale price"
+          value={peso(p.basePrice)}
+          sub={`${p.tiers.length ? `${p.tiers.length} quantity tier${p.tiers.length > 1 ? "s" : ""}` : "no tiers"} · retail ${p.retailPrice != null ? peso(p.retailPrice) : "not sold"}`}
+        />
         <Tile
           label="Margin"
           value={p.avgCost ? `${Math.round(margin)}%` : "—"}

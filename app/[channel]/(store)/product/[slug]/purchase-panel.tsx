@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState, useTransition } from "react";
 import { Check, ShoppingCart } from "lucide-react";
 import { addToCart } from "@/actions/cart";
 import type { CatalogProduct, CatalogVariant } from "@/lib/queries/catalog";
+import { CHANNELS } from "@/lib/channel";
 import { unitPriceFor, nextTier } from "@/lib/pricing";
 import { peso } from "@/lib/format";
 import { cn } from "@/lib/utils";
@@ -20,6 +21,8 @@ function pickerButton(active: boolean, disabled: boolean) {
 }
 
 export function PurchasePanel({ product: p, priceGroup, inCart }: { product: CatalogProduct; priceGroup: string; inCart: Record<string, number> }) {
+  const { base: basePath, label } = CHANNELS[p.channel];
+  const retail = p.channel === "retail";
   const sizes = useMemo(() => [...new Set(p.variants.map((v) => v.size).filter((s): s is string => !!s))], [p.variants]);
   const colors = useMemo(() => [...new Set(p.variants.map((v) => v.color).filter((c): c is string => !!c))], [p.variants]);
   const hasSizes = sizes.length > 0;
@@ -53,7 +56,7 @@ export function PurchasePanel({ product: p, priceGroup, inCart }: { product: Cat
   function add() {
     if (!variant) return;
     startTransition(async () => {
-      const r = await addToCart(variant.id, qty);
+      const r = await addToCart(p.channel, variant.id, qty);
       setFlash(r?.error ? r.error : "added");
     });
   }
@@ -78,7 +81,7 @@ export function PurchasePanel({ product: p, priceGroup, inCart }: { product: Cat
               Add {next.minQty - qty} more to get {peso(next.price)}/{p.unit}
             </>
           ) : (
-            <>Wholesale price</>
+            <>{label} price</>
           )}
         </p>
         {ranges.length > 1 && (
@@ -136,7 +139,8 @@ export function PurchasePanel({ product: p, priceGroup, inCart }: { product: Cat
         <div className="mb-2 flex items-baseline justify-between text-xs font-bold text-zinc-700">
           <span>Quantity</span>
           <span className="font-medium text-zinc-500">
-            {variant ? (variant.available > 0 ? `${variant.available} available` : "Out of stock") : "Pick an option"} · min {p.moq} per style
+            {variant ? (variant.available > 0 ? `${variant.available} available` : "Out of stock") : "Pick an option"}
+            {retail ? "" : ` · min ${p.moq} per style`}
           </span>
         </div>
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
@@ -170,7 +174,7 @@ export function PurchasePanel({ product: p, priceGroup, inCart }: { product: Cat
           <p className="mt-2 text-xs font-semibold text-brand-700">
             <Check className="mr-1 inline size-3.5" />
             {cartQty} pcs of this option already in your cart ·{" "}
-            <Link href="/shop/cart" className="underline">
+            <Link href={`${basePath}/cart`} className="underline">
               view cart
             </Link>
           </p>

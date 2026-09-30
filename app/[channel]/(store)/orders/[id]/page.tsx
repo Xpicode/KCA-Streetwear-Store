@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CheckCircle2, ChevronLeft, RotateCcw } from "lucide-react";
 import { redirect } from "next/navigation";
+import { channelFromSlug } from "@/lib/channel";
 import { getShopper } from "@/lib/shopper";
 import { verifyPayload } from "@/lib/auth";
 import { getShopOrder } from "@/lib/queries/shop-orders";
@@ -16,20 +17,23 @@ export default async function OrderDetailPage({
   params,
   searchParams,
 }: {
-  params: Promise<{ id: string }>;
+  params: Promise<{ channel: string; id: string }>;
   searchParams: Promise<{ placed?: string; reorder?: string; t?: string }>;
 }) {
-  const [{ id }, { placed, reorder, t }] = await Promise.all([params, searchParams]);
+  const [{ channel: slug, id }, { placed, reorder, t }] = await Promise.all([params, searchParams]);
+  const channel = channelFromSlug(slug);
+  if (!channel) notFound();
+  const { base } = channel;
   const orderId = Number(id);
   if (!Number.isInteger(orderId)) notFound();
   const order = await getShopOrder(orderId);
   if (!order) notFound();
 
   // Access: the device that placed orders for this customer, or a signed token for exactly this order.
-  const shopper = await getShopper();
+  const shopper = await getShopper(channel.key);
   const isOwner = shopper?.id === order.customerId;
   const tracked = !isOwner && verifyPayload<{ oid: number; exp: number }>(t)?.oid === orderId;
-  if (!isOwner && !tracked) redirect("/shop/orders");
+  if (!isOwner && !tracked) redirect(`${base}/orders`);
   const customer = { address: order.address };
 
   const noteLines = order.note?.split("\n").filter(Boolean) ?? [];
@@ -37,7 +41,7 @@ export default async function OrderDetailPage({
 
   return (
     <div className="mx-auto flex max-w-3xl flex-col gap-5">
-      <Link href="/shop/orders" className="inline-flex items-center gap-1 text-sm font-bold text-zinc-500 hover:text-zinc-900">
+      <Link href={`${base}/orders`} className="inline-flex items-center gap-1 text-sm font-bold text-zinc-500 hover:text-zinc-900">
         <ChevronLeft className="size-4" /> My orders
       </Link>
 
@@ -69,6 +73,7 @@ export default async function OrderDetailPage({
         </div>
         {canReorder && (
           <form action={reorderForm}>
+            <input type="hidden" name="channel" value={channel.key} />
             <input type="hidden" name="orderId" value={order.id} />
             <SubmitButton variant="outline" pendingText="Adding…" className="h-9 px-3">
               <RotateCcw className="size-4" /> Reorder
@@ -102,7 +107,7 @@ export default async function OrderDetailPage({
             {order.lines.map((l) => (
               <tr key={l.id}>
                 <td className="px-5 py-3">
-                  <Link href={`/shop/product/${l.slug}`} className="font-bold hover:underline">
+                  <Link href={`${base}/product/${l.slug}`} className="font-bold hover:underline">
                     {l.name}
                   </Link>
                   <div className="text-xs font-medium text-zinc-500">

@@ -1,5 +1,7 @@
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import { ArrowRight, AlertTriangle, ShoppingBag } from "lucide-react";
+import { channelFromSlug } from "@/lib/channel";
 import { getShopperPriceGroup } from "@/lib/shopper";
 import { readCart } from "@/lib/cart";
 import { getCartLines } from "@/lib/queries/catalog";
@@ -9,11 +11,20 @@ import { CartLineRow } from "./cart-line";
 
 export const dynamic = "force-dynamic";
 
-export default async function CartPage({ searchParams }: { searchParams: Promise<{ reordered?: string }> }) {
-  const { reordered } = await searchParams;
-  const priceGroup = await getShopperPriceGroup();
-  const cart = await readCart();
-  const summary = await getCartLines(cart, priceGroup);
+export default async function CartPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ channel: string }>;
+  searchParams: Promise<{ reordered?: string }>;
+}) {
+  const [{ channel: slug }, { reordered }] = await Promise.all([params, searchParams]);
+  const channel = channelFromSlug(slug);
+  if (!channel) notFound();
+  const { base, key } = channel;
+  const priceGroup = await getShopperPriceGroup(key);
+  const cart = await readCart(key);
+  const summary = await getCartLines(cart, priceGroup, key);
   const { lines, subtotal, units, problems, ok } = summary;
 
   if (lines.length === 0) {
@@ -23,9 +34,13 @@ export default async function CartPage({ searchParams }: { searchParams: Promise
           <ShoppingBag className="size-6" />
         </div>
         <h1 className="text-2xl font-extrabold tracking-tight">Your cart is empty</h1>
-        <p className="mt-2 text-sm font-medium text-zinc-500">Pick a style from the catalog — minimum 12 pcs per style, any mix of sizes and colors.</p>
-        <Link href="/shop" className="mt-6 inline-flex h-11 items-center rounded-lg bg-brand-700 px-5 text-sm font-bold text-white">
-          Browse the catalog
+        <p className="mt-2 text-sm font-medium text-zinc-500">
+          {key === "retail"
+            ? "Pick anything from the store — buy one piece or more."
+            : "Pick a style from the catalog — minimum 12 pcs per style, any mix of sizes and colors."}
+        </p>
+        <Link href={base} className="mt-6 inline-flex h-11 items-center rounded-lg bg-brand-700 px-5 text-sm font-bold text-white">
+          {key === "retail" ? "Browse the store" : "Browse the catalog"}
         </Link>
       </div>
     );
@@ -36,7 +51,7 @@ export default async function CartPage({ searchParams }: { searchParams: Promise
       <div>
         <h1 className="text-2xl font-extrabold tracking-tight">Your cart</h1>
         <p className="text-sm font-medium text-zinc-500">
-          {lines.length} {lines.length === 1 ? "line" : "lines"} · {units} pcs · prices update with quantity
+          {lines.length} {lines.length === 1 ? "line" : "lines"} · {units} pcs{key === "retail" ? "" : " · prices update with quantity"}
         </p>
       </div>
 
@@ -49,7 +64,7 @@ export default async function CartPage({ searchParams }: { searchParams: Promise
       <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_340px] lg:items-start">
         <ul className="divide-y divide-zinc-100 rounded-xl border border-zinc-200 bg-white">
           {lines.map((l) => (
-            <CartLineRow key={l.variantId} line={l} />
+            <CartLineRow key={l.variantId} channel={key} line={l} />
           ))}
         </ul>
 
@@ -84,7 +99,7 @@ export default async function CartPage({ searchParams }: { searchParams: Promise
           )}
 
           <Link
-            href="/shop/checkout"
+            href={`${base}/checkout`}
             aria-disabled={!ok}
             tabIndex={ok ? 0 : -1}
             className={cn(
@@ -97,7 +112,7 @@ export default async function CartPage({ searchParams }: { searchParams: Promise
           <p className="text-xs font-medium text-zinc-500">
             No payment now. We confirm stock and total first — your order ships once payment is received.
           </p>
-          <Link href="/shop" className="text-center text-sm font-bold text-zinc-600 hover:text-zinc-900">
+          <Link href={base} className="text-center text-sm font-bold text-zinc-600 hover:text-zinc-900">
             Keep browsing
           </Link>
         </aside>
@@ -111,7 +126,7 @@ export default async function CartPage({ searchParams }: { searchParams: Promise
             <div className="text-lg font-extrabold leading-tight">{peso(subtotal)}</div>
           </div>
           <Link
-            href="/shop/checkout"
+            href={`${base}/checkout`}
             aria-disabled={!ok}
             className={cn(
               "flex h-12 flex-1 items-center justify-center gap-2 rounded-xl text-sm font-bold text-white",

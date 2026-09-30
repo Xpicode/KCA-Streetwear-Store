@@ -109,6 +109,8 @@ async function main() {
         name: d.name,
         categoryId: cat[d.cat],
         basePrice: d.price,
+        // sample retail price: wholesale + 60%
+        retailPrice: Math.round(d.price * 1.6),
         baseCost: d.cost,
         moq: 12,
         reorderLevel: d.reorder,

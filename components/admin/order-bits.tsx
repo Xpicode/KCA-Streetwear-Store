@@ -37,7 +37,7 @@ export function fmtDateTime(d: Date | string | null | undefined) {
   })}`;
 }
 
-export const SOURCE_LABEL: Record<string, string> = { storefront: "Storefront", manual: "Manual" };
+export const SOURCE_LABEL: Record<string, string> = { storefront: "Wholesale shop", retail: "Retail store", manual: "Manual" };
 
 export function sourceLabel(source: string) {
   return SOURCE_LABEL[source] ?? source;

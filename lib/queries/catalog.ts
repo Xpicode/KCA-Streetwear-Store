@@ -1,13 +1,18 @@
 /**
  * Storefront reads: catalog cards, product detail, and the cart joined to live catalog data.
  * Prices are always computed here from the catalog (never from the cookie).
+ *
+ * Channel rules (see lib/channel.ts):
+ *   wholesale — base price / variant override, price-group tiers, per-style MOQ
+ *   retail    — flat products.retail_price, no tiers, MOQ 1; products without a retail price are hidden
  */
 import "server-only";
-import { and, eq, ilike, inArray, or } from "drizzle-orm";
+import { and, eq, ilike, inArray, isNotNull, or } from "drizzle-orm";
 import { db } from "@/db";
 import { categories, priceTiers, productVariants, products } from "@/db/schema";
 import { unitPriceFor, type Tier } from "@/lib/pricing";
 import type { Cart } from "@/lib/cart";
+import type { Channel } from "@/lib/channel";
 import { variantLabel, variantSummary } from "@/components/shop/variant-label";
 
 export type CatalogVariant = {
@@ -19,6 +24,7 @@ export type CatalogVariant = {
 };
 
 export type CatalogProduct = {
+  channel: Channel;
   id: number;
   slug: string;
   name: string;
@@ -30,7 +36,7 @@ export type CatalogProduct = {
   basePrice: number;
   moq: number;
   unit: string;
-  tiers: Tier[]; // only tiers this customer's price group can use
+  tiers: Tier[]; // only tiers this customer's price group can use (always empty for retail)
   variants: CatalogVariant[]; // active only
   available: number; // sum over variants
 };
@@ -52,6 +58,7 @@ type RawProduct = {
   description: string | null;
   imageUrl: string | null;
   basePrice: number;
+  retailPrice: number | null;
   moq: number;
   unit: string;
   category: { name: string; slug: string } | null;
@@ -59,19 +66,23 @@ type RawProduct = {
   tiers: { minQty: number; price: number; priceGroup: string | null }[];
 };
 
-function shape(p: RawProduct, priceGroup: string): CatalogProduct | null {
+function shape(p: RawProduct, priceGroup: string, channel: Channel): CatalogProduct | null {
+  const retail = channel === "retail";
+  if (retail && p.retailPrice == null) return null;
   const variants = p.variants
     .filter((v) => v.isActive)
     .map((v) => ({
       id: v.id,
       size: v.size,
       color: v.color,
-      priceOverride: v.priceOverride,
+      // variant price overrides are a wholesale concept; retail is one flat price per product
+      priceOverride: retail ? null : v.priceOverride,
       available: Math.max(0, v.stockOnHand - v.stockReserved),
     }))
     .sort((a, b) => a.id - b.id);
   if (variants.length === 0) return null;
   return {
+    channel,
     id: p.id,
     slug: p.slug,
     name: p.name,
@@ -80,20 +91,21 @@ function shape(p: RawProduct, priceGroup: string): CatalogProduct | null {
     imageUrl: p.imageUrl,
     category: p.category?.name ?? null,
     categorySlug: p.category?.slug ?? null,
-    basePrice: p.basePrice,
-    moq: p.moq,
+    basePrice: retail ? p.retailPrice! : p.basePrice,
+    moq: retail ? 1 : p.moq,
     unit: p.unit,
-    tiers: tiersFor(p.tiers, priceGroup),
+    tiers: retail ? [] : tiersFor(p.tiers, priceGroup),
     variants,
     available: variants.reduce((a, v) => a + v.available, 0),
   };
 }
 
-export type CatalogFilters = { q?: string; category?: string; priceGroup: string };
+export type CatalogFilters = { q?: string; category?: string; priceGroup: string; channel: Channel };
 
 /** Active products that have at least one active variant, for the catalog grid. */
 export async function getCatalog(f: CatalogFilters): Promise<CatalogProduct[]> {
   const where = [eq(products.isActive, true)];
+  if (f.channel === "retail") where.push(isNotNull(products.retailPrice));
   if (f.q?.trim()) {
     const like = `%${f.q.trim()}%`;
     where.push(or(ilike(products.name, like), ilike(products.sku, like), ilike(products.description, like))!);
@@ -108,15 +120,15 @@ export async function getCatalog(f: CatalogFilters): Promise<CatalogProduct[]> {
     with: { category: true, variants: true, tiers: true },
     orderBy: (p, { asc }) => [asc(p.name)],
   });
-  return rows.map((r) => shape(r, f.priceGroup)).filter((p): p is CatalogProduct => p !== null);
+  return rows.map((r) => shape(r, f.priceGroup, f.channel)).filter((p): p is CatalogProduct => p !== null);
 }
 
-export async function getProductBySlug(slug: string, priceGroup: string): Promise<CatalogProduct | null> {
+export async function getProductBySlug(slug: string, priceGroup: string, channel: Channel): Promise<CatalogProduct | null> {
   const row = await db.query.products.findFirst({
     where: and(eq(products.slug, slug), eq(products.isActive, true)),
     with: { category: true, variants: true, tiers: true },
   });
-  return row ? shape(row, priceGroup) : null;
+  return row ? shape(row, priceGroup, channel) : null;
 }
 
 export async function getShopCategories() {
@@ -155,10 +167,14 @@ export type CartSummary = {
   ok: boolean;
 };
 
-/** Join the cookie cart to live data. Lines whose variant/product vanished or went inactive are dropped. */
-export async function getCartLines(cart: Cart, priceGroup: string): Promise<CartSummary> {
+/**
+ * Join the cookie cart to live data. Lines whose variant/product vanished, went inactive, or
+ * (retail) lost their retail price are dropped.
+ */
+export async function getCartLines(cart: Cart, priceGroup: string, channel: Channel): Promise<CartSummary> {
   const ids = Object.keys(cart).map(Number).filter((n) => Number.isInteger(n) && n > 0);
   if (ids.length === 0) return { lines: [], subtotal: 0, units: 0, problems: [], ok: true };
+  const retail = channel === "retail";
 
   const rows = await db
     .select({
@@ -173,6 +189,7 @@ export async function getCartLines(cart: Cart, priceGroup: string): Promise<Cart
       name: products.name,
       imageUrl: products.imageUrl,
       basePrice: products.basePrice,
+      retailPrice: products.retailPrice,
       moq: products.moq,
       category: categories.name,
       categorySlug: categories.slug,
@@ -180,12 +197,18 @@ export async function getCartLines(cart: Cart, priceGroup: string): Promise<Cart
     .from(productVariants)
     .innerJoin(products, eq(productVariants.productId, products.id))
     .leftJoin(categories, eq(products.categoryId, categories.id))
-    .where(and(inArray(productVariants.id, ids), eq(productVariants.isActive, true), eq(products.isActive, true)));
+    .where(
+      and(
+        inArray(productVariants.id, ids),
+        eq(productVariants.isActive, true),
+        eq(products.isActive, true),
+        ...(retail ? [isNotNull(products.retailPrice)] : [])
+      )
+    );
 
   const productIds = [...new Set(rows.map((r) => r.productId))];
-  const tierRows = productIds.length
-    ? await db.select().from(priceTiers).where(inArray(priceTiers.productId, productIds))
-    : [];
+  const tierRows =
+    !retail && productIds.length ? await db.select().from(priceTiers).where(inArray(priceTiers.productId, productIds)) : [];
   const tiersByProduct = new Map<number, Tier[]>();
   for (const pid of productIds) tiersByProduct.set(pid, tiersFor(tierRows.filter((t) => t.productId === pid), priceGroup));
 
@@ -198,13 +221,16 @@ export async function getCartLines(cart: Cart, priceGroup: string): Promise<Cart
       const qty = cart[String(r.variantId)];
       const tiers = tiersByProduct.get(r.productId) ?? [];
       const sQty = styleQty.get(r.productId) ?? qty;
+      const moq = retail ? 1 : r.moq;
       // tier is judged on the style total, so 6 black + 6 white tees still unlock the 12+ price
-      const unitPrice = unitPriceFor({ basePrice: r.basePrice, priceOverride: r.priceOverride, tiers, qty: sQty, priceGroup });
-      const base = r.priceOverride ?? r.basePrice;
+      const unitPrice = retail
+        ? r.retailPrice!
+        : unitPriceFor({ basePrice: r.basePrice, priceOverride: r.priceOverride, tiers, qty: sQty, priceGroup });
+      const base = retail ? r.retailPrice! : (r.priceOverride ?? r.basePrice);
       const available = Math.max(0, r.stockOnHand - r.stockReserved);
       const next = tiers.filter((t) => t.minQty > sQty && t.price < unitPrice).sort((a, b) => a.minQty - b.minQty)[0] ?? null;
       const problems: string[] = [];
-      if (sQty < r.moq) problems.push(`Minimum ${r.moq} pcs for this style (you have ${sQty})`);
+      if (sQty < moq) problems.push(`Minimum ${moq} pcs for this style (you have ${sQty})`);
       if (qty > available) problems.push(available === 0 ? "Out of stock right now" : `Only ${available} available`);
       return {
         variantId: r.variantId,
@@ -216,7 +242,7 @@ export async function getCartLines(cart: Cart, priceGroup: string): Promise<Cart
         categorySlug: r.categorySlug,
         variant: variantLabel(r),
         qty,
-        moq: r.moq,
+        moq,
         available,
         unitPrice,
         basePrice: base,

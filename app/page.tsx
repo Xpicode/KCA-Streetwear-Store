@@ -46,6 +46,9 @@ export default async function LandingPage() {
             <a href="#pricing" className="hover:text-zinc-900">Pricing</a>
             <a href="#contact" className="hover:text-zinc-900">Contact</a>
           </nav>
+          <Link href="/retail" className="hidden h-10 items-center rounded-lg border border-zinc-300 bg-white px-4 text-sm font-bold hover:bg-zinc-50 sm:flex">
+            Retail store
+          </Link>
           <Link href="/shop" className="flex h-10 items-center gap-2 rounded-lg bg-zinc-900 px-4 text-sm font-bold text-white hover:bg-zinc-800">
             Browse catalog <ArrowRight className="size-4" />
           </Link>
@@ -227,7 +230,8 @@ export default async function LandingPage() {
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 px-5 py-8 text-sm font-medium text-zinc-500 sm:flex-row">
           <div>© {new Date().getFullYear()} {BRAND.name} {BRAND.tagline} · {BRAND.city}</div>
           <div className="flex gap-6">
-            <Link href="/shop" className="hover:text-zinc-900">Catalog</Link>
+            <Link href="/shop" className="hover:text-zinc-900">Wholesale catalog</Link>
+            <Link href="/retail" className="hover:text-zinc-900">Retail store</Link>
             <Link href="/shop/orders" className="hover:text-zinc-900">Track order</Link>
             <Link href="/admin/login" className="hover:text-zinc-900">Staff sign in</Link>
           </div>

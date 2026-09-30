@@ -60,6 +60,7 @@ export type ProductDetail = {
   description: string | null;
   imageUrl: string | null;
   basePrice: number;
+  retailPrice: number | null;
   baseCost: number;
   unit: string;
   moq: number;
@@ -93,6 +94,7 @@ export async function getProductDetail(id: number): Promise<ProductDetail | null
       description: products.description,
       imageUrl: products.imageUrl,
       basePrice: products.basePrice,
+      retailPrice: products.retailPrice,
       baseCost: products.baseCost,
       unit: products.unit,
       moq: products.moq,

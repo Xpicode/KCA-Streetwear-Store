@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
+import { channelFromSlug } from "@/lib/channel";
 import { getShopper } from "@/lib/shopper";
 import { readCart } from "@/lib/cart";
 import { getCartLines } from "@/lib/queries/catalog";
@@ -9,16 +10,20 @@ import { CheckoutForm } from "./checkout-form";
 
 export const dynamic = "force-dynamic";
 
-export default async function CheckoutPage() {
-  const shopper = await getShopper();
-  const cart = await readCart();
-  const summary = await getCartLines(cart, shopper?.priceGroup ?? "standard");
+export default async function CheckoutPage({ params }: { params: Promise<{ channel: string }> }) {
+  const { channel: slug } = await params;
+  const channel = channelFromSlug(slug);
+  if (!channel) notFound();
+  const { base, key } = channel;
+  const shopper = await getShopper(key);
+  const cart = await readCart(key);
+  const summary = await getCartLines(cart, shopper?.priceGroup ?? "standard", key);
   // nothing to send, or the cart still has MOQ / stock problems → back to the cart to fix
-  if (summary.lines.length === 0 || !summary.ok) redirect("/shop/cart");
+  if (summary.lines.length === 0 || !summary.ok) redirect(`${base}/cart`);
 
   return (
     <div className="flex flex-col gap-5">
-      <Link href="/shop/cart" className="inline-flex items-center gap-1 text-sm font-bold text-zinc-500 hover:text-zinc-900">
+      <Link href={`${base}/cart`} className="inline-flex items-center gap-1 text-sm font-bold text-zinc-500 hover:text-zinc-900">
         <ChevronLeft className="size-4" /> Back to cart
       </Link>
       <div>
@@ -27,7 +32,7 @@ export default async function CheckoutPage() {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-start">
-        <CheckoutForm shopper={shopper} />
+        <CheckoutForm channel={key} shopper={shopper} />
 
         <aside className="rounded-xl border border-zinc-200 bg-white lg:sticky lg:top-24">
           <div className="border-b border-zinc-100 px-5 py-3">

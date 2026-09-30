@@ -84,6 +84,8 @@ export const products = pgTable(
     description: text("description"),
     imageUrl: text("image_url"),
     basePrice: money("base_price").notNull(),
+    /** Retail store price per unit (no tiers, no MOQ). NULL = not sold in the retail store. */
+    retailPrice: money("retail_price"),
     /** What one unit costs you (supplier price). Used for the profit preview; actual sold cost still comes from stock batches. */
     baseCost: money("base_cost").notNull().default(0),
     unit: text("unit").notNull().default("pc"),

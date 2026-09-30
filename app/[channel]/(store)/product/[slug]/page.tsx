@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
+import { channelFromSlug } from "@/lib/channel";
 import { getShopperPriceGroup } from "@/lib/shopper";
 import { readCart } from "@/lib/cart";
 import { getProductBySlug } from "@/lib/queries/catalog";
@@ -12,17 +13,20 @@ import { PurchasePanel } from "./purchase-panel";
 
 export const dynamic = "force-dynamic";
 
-export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = await params;
-  const priceGroup = await getShopperPriceGroup();
-  const [product, cart] = await Promise.all([getProductBySlug(slug, priceGroup), readCart()]);
+export default async function ProductPage({ params }: { params: Promise<{ channel: string; slug: string }> }) {
+  const { channel: channelSlug, slug } = await params;
+  const channel = channelFromSlug(channelSlug);
+  if (!channel) notFound();
+  const retail = channel.key === "retail";
+  const priceGroup = await getShopperPriceGroup(channel.key);
+  const [product, cart] = await Promise.all([getProductBySlug(slug, priceGroup, channel.key), readCart(channel.key)]);
   if (!product) notFound();
   const ranges = tierRanges(product.basePrice, product.tiers);
 
   return (
     <div className="flex flex-col gap-5">
       <Link
-        href={product.categorySlug ? `/shop?category=${product.categorySlug}` : "/shop"}
+        href={product.categorySlug ? `${channel.base}?category=${product.categorySlug}` : channel.base}
         className="inline-flex items-center gap-1 text-sm font-bold text-zinc-500 hover:text-zinc-900"
       >
         <ChevronLeft className="size-4" /> {product.category ?? "Catalog"}
@@ -41,31 +45,34 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             </p>
             <h1 className="mt-1 text-2xl font-extrabold tracking-tight sm:text-3xl">{product.name}</h1>
             <p className="mt-1 text-sm font-medium text-zinc-500">
-              {variantSummary(product.variants)} · {product.available} pcs available · min {product.moq} per style
+              {variantSummary(product.variants)} · {product.available} pcs available
+              {retail ? "" : ` · min ${product.moq} per style`}
             </p>
             {product.description && <p className="mt-3 text-sm leading-relaxed font-medium text-zinc-700">{product.description}</p>}
           </div>
 
           <PurchasePanel product={product} priceGroup={priceGroup} inCart={cart} />
 
-          <div className="rounded-xl border border-zinc-200 bg-white">
-            <div className="border-b border-zinc-100 px-4 py-2.5 text-[11px] font-bold tracking-wider text-zinc-500 uppercase">Wholesale pricing</div>
-            <table className="w-full text-sm tabular-nums">
-              <tbody className="divide-y divide-zinc-100">
-                {ranges.map((r) => (
-                  <tr key={r.from}>
-                    <td className="px-4 py-2 font-semibold text-zinc-700">{r.label}</td>
-                    <td className="px-4 py-2 text-right font-extrabold">
-                      {peso(r.price)} <span className="text-xs font-medium text-zinc-500">/{product.unit}</span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            <p className="px-4 py-2.5 text-xs font-medium text-zinc-500">
-              Tier price counts every size and color of this style together. Prices are confirmed when we check stock.
-            </p>
-          </div>
+          {!retail && (
+            <div className="rounded-xl border border-zinc-200 bg-white">
+              <div className="border-b border-zinc-100 px-4 py-2.5 text-[11px] font-bold tracking-wider text-zinc-500 uppercase">Wholesale pricing</div>
+              <table className="w-full text-sm tabular-nums">
+                <tbody className="divide-y divide-zinc-100">
+                  {ranges.map((r) => (
+                    <tr key={r.from}>
+                      <td className="px-4 py-2 font-semibold text-zinc-700">{r.label}</td>
+                      <td className="px-4 py-2 text-right font-extrabold">
+                        {peso(r.price)} <span className="text-xs font-medium text-zinc-500">/{product.unit}</span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              <p className="px-4 py-2.5 text-xs font-medium text-zinc-500">
+                Tier price counts every size and color of this style together. Prices are confirmed when we check stock.
+              </p>
+            </div>
+          )}
         </div>
       </div>
     </div>

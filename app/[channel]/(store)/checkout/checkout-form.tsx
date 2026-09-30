@@ -9,27 +9,45 @@ import { Field } from "@/components/ui/label";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { FormMessage } from "@/components/ui/form-message";
 import type { Shopper } from "@/lib/shopper";
+import type { Channel } from "@/lib/channel";
 
-export function CheckoutForm({ shopper }: { shopper: Shopper | null }) {
+export function CheckoutForm({ channel, shopper }: { channel: Channel; shopper: Shopper | null }) {
   const c = shopper;
+  const retail = channel === "retail";
   const [state, action] = useActionState(placeOrder, null);
   return (
     <form action={action} className="flex flex-col gap-6">
+      <input type="hidden" name="channel" value={channel} />
       <section className="rounded-xl border border-zinc-200 bg-white p-5">
         <h2 className="text-[15px] font-extrabold">Deliver to</h2>
-        <p className="mb-4 text-xs font-medium text-zinc-500">{c ? "Prefilled from your last order — edit anything that changed." : "We use your number to match future orders to your shop."}</p>
+        <p className="mb-4 text-xs font-medium text-zinc-500">
+          {c ? "Prefilled from your last order — edit anything that changed." : retail ? "We use your number to match future orders to you." : "We use your number to match future orders to your shop."}
+        </p>
         <div className="flex flex-col gap-4">
-          <Field label="Shop / business name">
-            <Input name="shopName" defaultValue={c?.shopName ?? ""} required autoFocus={!c} />
-          </Field>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <Field label="Contact person">
-              <Input name="contactName" defaultValue={c?.contactName ?? ""} required />
-            </Field>
-            <Field label="Contact number">
-              <Input name="phone" type="tel" defaultValue={c?.phone ?? ""} required />
-            </Field>
-          </div>
+          {retail ? (
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Field label="Full name">
+                <Input name="shopName" defaultValue={c?.shopName ?? ""} required autoFocus={!c} />
+              </Field>
+              <Field label="Contact number">
+                <Input name="phone" type="tel" defaultValue={c?.phone ?? ""} required />
+              </Field>
+            </div>
+          ) : (
+            <>
+              <Field label="Shop / business name">
+                <Input name="shopName" defaultValue={c?.shopName ?? ""} required autoFocus={!c} />
+              </Field>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <Field label="Contact person">
+                  <Input name="contactName" defaultValue={c?.contactName ?? ""} required />
+                </Field>
+                <Field label="Contact number">
+                  <Input name="phone" type="tel" defaultValue={c?.phone ?? ""} required />
+                </Field>
+              </div>
+            </>
+          )}
           <Field label="Delivery address">
             <Textarea name="address" defaultValue={c?.address ?? ""} required />
           </Field>
@@ -60,7 +78,7 @@ export function CheckoutForm({ shopper }: { shopper: Shopper | null }) {
 
       <section className="rounded-xl border border-zinc-200 bg-white p-5">
         <Field label="Note for us (optional)" hint="Preferred delivery day, substitutions you'd accept, anything we should know.">
-          <Textarea name="note" placeholder="e.g. Deliver Tuesday morning; OK to swap Navy for Black if short." />
+          <Textarea name="note" placeholder={retail ? "e.g. Deliver after 5pm; call before arriving." : "e.g. Deliver Tuesday morning; OK to swap Navy for Black if short."} />
         </Field>
       </section>
 

@@ -5,6 +5,7 @@ import { useEffect, useState, useTransition } from "react";
 import { Check, ShoppingCart } from "lucide-react";
 import { addToCart } from "@/actions/cart";
 import type { CatalogProduct } from "@/lib/queries/catalog";
+import { CHANNELS } from "@/lib/channel";
 import { variantLabel, variantSummary } from "./variant-label";
 import { peso } from "@/lib/format";
 import { cn } from "@/lib/utils";
@@ -13,6 +14,7 @@ import { ProductImage, StockBadge } from "./product-image";
 import { QtyStepper } from "./qty-stepper";
 
 export function ProductCard({ product: p, inCart }: { product: CatalogProduct; inCart: Record<string, number> }) {
+  const { base: basePath } = CHANNELS[p.channel];
   const firstInStock = p.variants.reduce((best, v) => (v.available > best.available ? v : best), p.variants[0]);
   const [variantId, setVariantId] = useState(firstInStock.id);
   const [qty, setQty] = useState(p.moq);
@@ -33,14 +35,14 @@ export function ProductCard({ product: p, inCart }: { product: CatalogProduct; i
 
   function add() {
     startTransition(async () => {
-      const r = await addToCart(variant.id, qty);
+      const r = await addToCart(p.channel, variant.id, qty);
       setFlash(r?.error ? r.error : "added");
     });
   }
 
   return (
     <article className="flex flex-col overflow-hidden rounded-xl border border-zinc-200 bg-white transition-shadow hover:shadow-md">
-      <Link href={`/shop/product/${p.slug}`} className="relative block aspect-[4/3] overflow-hidden bg-zinc-100">
+      <Link href={`${basePath}/product/${p.slug}`} className="relative block aspect-[4/3] overflow-hidden bg-zinc-100">
         <ProductImage name={p.name} imageUrl={p.imageUrl} categorySlug={p.categorySlug} textClass="text-4xl" />
         <StockBadge available={p.available} moq={p.moq} className="absolute top-2 left-2" />
         {cartQty > 0 && (
@@ -52,7 +54,7 @@ export function ProductCard({ product: p, inCart }: { product: CatalogProduct; i
 
       <div className="flex flex-1 flex-col gap-3 p-3 sm:p-4">
         <div>
-          <Link href={`/shop/product/${p.slug}`} className="line-clamp-2 text-sm font-extrabold leading-snug hover:underline sm:text-[15px]">
+          <Link href={`${basePath}/product/${p.slug}`} className="line-clamp-2 text-sm font-extrabold leading-snug hover:underline sm:text-[15px]">
             {p.name}
           </Link>
           <p className="mt-0.5 text-xs font-medium text-zinc-500">{variantSummary(p.variants)}</p>

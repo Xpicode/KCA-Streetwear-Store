@@ -29,8 +29,17 @@ export async function seedBasics() {
 
   const [tee] = await db
     .insert(products)
-    .values({ sku: "TEE", slug: "tee", name: "Tee", basePrice: 100, baseCost: 50, unit: "pc", moq: 5, reorderLevel: 0, isActive: true })
+    .values({ sku: "TEE", slug: "tee", name: "Tee", basePrice: 100, retailPrice: 150, baseCost: 50, unit: "pc", moq: 5, reorderLevel: 0, isActive: true })
     .returning({ id: products.id });
+  // wholesale-only product (no retail price) with 10 in stock
+  const [cap] = await db
+    .insert(products)
+    .values({ sku: "CAP", slug: "cap", name: "Cap", basePrice: 80, retailPrice: null, baseCost: 40, unit: "pc", moq: 6, reorderLevel: 0, isActive: true })
+    .returning({ id: products.id });
+  const [capVariant] = await db
+    .insert(productVariants)
+    .values({ productId: cap.id, size: null, color: null, stockOnHand: 10, stockReserved: 0, isActive: true })
+    .returning({ id: productVariants.id });
   const [active] = await db
     .insert(productVariants)
     .values({ productId: tee.id, size: "M", color: null, stockOnHand: 20, stockReserved: 0, isActive: true })
@@ -56,5 +65,7 @@ export async function seedBasics() {
     productId: tee.id,
     variantId: active.id,
     inactiveVariantId: inactive.id,
+    capProductId: cap.id,
+    capVariantId: capVariant.id,
   };
 }

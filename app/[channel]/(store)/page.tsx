@@ -1,3 +1,5 @@
+import { notFound } from "next/navigation";
+import { channelFromSlug } from "@/lib/channel";
 import { getShopperPriceGroup } from "@/lib/shopper";
 import { readCart } from "@/lib/cart";
 import { getCartLines, getCatalog, getShopCategories } from "@/lib/queries/catalog";
@@ -7,16 +9,20 @@ import { MobileCartBar } from "@/components/shop/mobile-cart-bar";
 
 export const dynamic = "force-dynamic";
 
+type Params = Promise<{ channel: string }>;
 type SearchParams = Promise<{ q?: string; category?: string }>;
 
-export default async function CatalogPage({ searchParams }: { searchParams: SearchParams }) {
-  const { q, category } = await searchParams;
-  const priceGroup = await getShopperPriceGroup();
-  const cart = await readCart();
+export default async function CatalogPage({ params, searchParams }: { params: Params; searchParams: SearchParams }) {
+  const [{ channel: slug }, { q, category }] = await Promise.all([params, searchParams]);
+  const channel = channelFromSlug(slug);
+  if (!channel) notFound();
+  const retail = channel.key === "retail";
+  const priceGroup = await getShopperPriceGroup(channel.key);
+  const cart = await readCart(channel.key);
   const [products, categories, cartSummary] = await Promise.all([
-    getCatalog({ q, category, priceGroup: priceGroup }),
+    getCatalog({ q, category, priceGroup, channel: channel.key }),
     getShopCategories(),
-    getCartLines(cart, priceGroup),
+    getCartLines(cart, priceGroup, channel.key),
   ]);
   const activeCategory = categories.find((c) => c.slug === category);
   const moq = products[0]?.moq ?? 12;
@@ -24,19 +30,21 @@ export default async function CatalogPage({ searchParams }: { searchParams: Sear
   return (
     <div className="flex flex-col gap-5 pb-20 md:pb-0">
       <div>
-        <h1 className="text-2xl font-extrabold tracking-tight">{activeCategory ? activeCategory.name : "Catalog"}</h1>
+        <h1 className="text-2xl font-extrabold tracking-tight">{activeCategory ? activeCategory.name : retail ? "Retail store" : "Catalog"}</h1>
         <p className="text-sm font-medium text-zinc-500">
           {q ? (
             <>
               {products.length} {products.length === 1 ? "result" : "results"} for “{q}”
             </>
+          ) : retail ? (
+            <>Retail prices · buy one piece or more · delivery nationwide</>
           ) : (
             <>Wholesale prices · minimum {moq} pcs per style, mix sizes and colors</>
           )}
         </p>
       </div>
 
-      <CatalogFilters categories={categories} active={category} q={q} />
+      <CatalogFilters base={channel.base} categories={categories} active={category} q={q} />
 
       {products.length === 0 ? (
         <div className="rounded-xl border border-dashed border-zinc-300 bg-white px-6 py-16 text-center">
@@ -51,7 +59,7 @@ export default async function CatalogPage({ searchParams }: { searchParams: Sear
         </div>
       )}
 
-      <MobileCartBar lines={cartSummary.lines.length} units={cartSummary.units} subtotal={cartSummary.subtotal} />
+      <MobileCartBar base={channel.base} lines={cartSummary.lines.length} units={cartSummary.units} subtotal={cartSummary.subtotal} />
     </div>
   );
 }

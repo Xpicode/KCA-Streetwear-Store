@@ -1,18 +1,21 @@
 import Link from "next/link";
-import { ShoppingCart, Search, PackageSearch } from "lucide-react";
+import { ShoppingCart, Search, PackageSearch, ArrowLeftRight } from "lucide-react";
 import type { Shopper } from "@/lib/shopper";
+import { CHANNELS, otherChannel, type Channel } from "@/lib/channel";
 import { BRAND } from "@/lib/brand";
 import { ThemeToggle } from "@/components/theme-toggle";
 
-export function ShopHeader({ shopper, cartCount }: { shopper: Shopper | null; cartCount: number }) {
+export function ShopHeader({ channel, shopper, cartCount }: { channel: Channel; shopper: Shopper | null; cartCount: number }) {
+  const { base, label } = CHANNELS[channel];
+  const other = otherChannel(channel);
   return (
     <header className="sticky top-0 z-20 border-b border-zinc-200 bg-white/95 backdrop-blur">
       <div className="mx-auto flex h-16 max-w-7xl items-center gap-3 px-4 sm:gap-6 sm:px-6">
-        <Link href="/shop" className="shrink-0 font-extrabold">
-          {BRAND.name} <span className="hidden font-semibold text-zinc-500 sm:inline">{BRAND.tagline}</span>
+        <Link href={base} className="shrink-0 font-extrabold">
+          {BRAND.name} <span className="hidden font-semibold text-zinc-500 sm:inline">{label}</span>
         </Link>
 
-        <form action="/shop" className="hidden h-10 w-96 items-center gap-2 rounded-lg border border-zinc-200 bg-zinc-50 px-3 md:flex">
+        <form action={base} className="hidden h-10 w-96 items-center gap-2 rounded-lg border border-zinc-200 bg-zinc-50 px-3 md:flex">
           <Search className="size-4 text-zinc-500" />
           <input name="q" placeholder="Search tees, caps, bags…" className="w-full bg-transparent text-sm font-medium outline-none placeholder:text-zinc-400" />
         </form>
@@ -20,7 +23,11 @@ export function ShopHeader({ shopper, cartCount }: { shopper: Shopper | null; ca
         <div className="flex-1" />
 
         <div className="flex items-center gap-3 text-sm font-semibold text-zinc-600 sm:gap-5">
-          <Link href="/shop/orders" className="flex items-center gap-1.5 whitespace-nowrap hover:text-zinc-900">
+          <Link href={other.base} title={`Switch to the ${other.label.toLowerCase()} store`} className="hidden items-center gap-1.5 whitespace-nowrap hover:text-zinc-900 lg:flex">
+            <ArrowLeftRight className="size-4" />
+            {other.label}
+          </Link>
+          <Link href={`${base}/orders`} className="flex items-center gap-1.5 whitespace-nowrap hover:text-zinc-900">
             <PackageSearch className="size-4 sm:hidden" />
             <span className="hidden sm:inline">My orders</span>
           </Link>
@@ -33,7 +40,7 @@ export function ShopHeader({ shopper, cartCount }: { shopper: Shopper | null; ca
             </span>
           )}
           <ThemeToggle className="hidden sm:flex" />
-          <Link href="/shop/cart" className="flex h-10 items-center gap-2 rounded-lg bg-zinc-900 px-3 text-sm font-bold text-white sm:px-4">
+          <Link href={`${base}/cart`} className="flex h-10 items-center gap-2 rounded-lg bg-zinc-900 px-3 text-sm font-bold text-white sm:px-4">
             <ShoppingCart className="size-4" />
             <span className="hidden sm:inline">Cart</span>
             {cartCount > 0 && (

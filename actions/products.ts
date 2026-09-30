@@ -51,6 +51,11 @@ const productSchema = z.object({
   description: optionalText,
   imageUrl: optionalText,
   basePrice: money,
+  /** blank = not sold in the retail store */
+  retailPrice: z
+    .union([z.literal(""), money])
+    .optional()
+    .transform((v) => (v === "" || v == null ? null : v)),
   baseCost: money,
   unit: z.enum(["pc", "dozen", "set"], { message: "Pick a unit" }),
   moq: z.coerce.number().int().min(1, "MOQ must be at least 1"),
@@ -104,6 +109,7 @@ function readForm(formData: FormData): { data: ProductInput; newCategory: string
     description: formData.get("description"),
     imageUrl: formData.get("imageUrl"),
     basePrice: formData.get("basePrice"),
+    retailPrice: formData.get("retailPrice") ?? "",
     baseCost: formData.get("baseCost") ?? 0,
     unit: formData.get("unit"),
     moq: formData.get("moq"),

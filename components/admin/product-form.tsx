@@ -24,6 +24,8 @@ export type ProductFormValues = {
   description: string | null;
   imageUrl: string | null;
   basePrice: number;
+  /** null = not sold in the retail store */
+  retailPrice: number | null;
   baseCost: number;
   unit: string;
   moq: number;
@@ -62,6 +64,7 @@ const EMPTY: ProductFormValues = {
   description: "",
   imageUrl: "",
   basePrice: 0,
+  retailPrice: null,
   baseCost: 0,
   unit: "pc",
   moq: 1,
@@ -78,13 +81,14 @@ const num = (s: string) => {
 };
 
 /** Live profit + margin readout under the cost / selling price inputs. */
-function ProfitPreview({ cost, price }: { cost: string; price: string }) {
+function ProfitPreview({ cost, price, label = "" }: { cost: string; price: string; label?: string }) {
   const c = num(cost);
   const s = num(price);
+  const prefix = label ? `${label} ` : "";
   if (c == null || s == null || s <= 0) {
     return (
       <p className="rounded-lg bg-zinc-50 px-3 py-2.5 text-xs font-semibold text-zinc-500">
-        Enter cost and selling price to see the profit per unit.
+        Enter cost and {label ? label.toLowerCase() : "selling"} price to see the profit per unit.
       </p>
     );
   }
@@ -101,7 +105,7 @@ function ProfitPreview({ cost, price }: { cost: string; price: string }) {
     >
       <div>
         <div className={cn("text-[11px] font-bold uppercase tracking-wider", losing ? "text-red-600" : "text-brand-700")}>
-          {losing ? "Losing per unit" : "Profit per unit"}
+          {prefix}{losing ? "losing per unit" : "profit per unit"}
         </div>
         <div className={cn("text-lg font-extrabold tabular-nums", losing ? "text-red-700" : "text-brand-900")}>
           {peso(profit)}
@@ -162,6 +166,7 @@ export function ProductForm({
   const [categoryId, setCategoryId] = useState(p.categoryId != null ? String(p.categoryId) : "");
   const [price, setPrice] = useState(p.basePrice ? String(p.basePrice) : "");
   const [cost, setCost] = useState(p.baseCost ? String(p.baseCost) : "");
+  const [retailPrice, setRetailPrice] = useState(p.retailPrice != null ? String(p.retailPrice) : "");
 
   // photo: an uploaded file wins over the pasted link; preview shows whichever is set
   const fileRef = useRef<HTMLInputElement>(null);
@@ -347,11 +352,23 @@ export function ProductForm({
               <Field label="Cost per unit (₱)" hint="What you pay your supplier.">
                 <Input name="baseCost" type="number" step="0.01" min="0" value={cost} onChange={(e) => setCost(e.target.value)} placeholder="0.00" />
               </Field>
-              <Field label="Selling price (₱)" hint="Per unit, before quantity tiers.">
+              <Field label="Wholesale price (₱)" hint="Per unit, before quantity tiers.">
                 <Input name="basePrice" type="number" step="0.01" min="0" value={price} onChange={(e) => setPrice(e.target.value)} required placeholder="0.00" />
               </Field>
             </div>
             <ProfitPreview cost={cost} price={price} />
+            <Field label="Retail price (₱)" hint="Per piece in the retail store (no minimum, no tiers). Leave blank to hide this product from the retail store.">
+              <Input
+                name="retailPrice"
+                type="number"
+                step="0.01"
+                min="0"
+                value={retailPrice}
+                onChange={(e) => setRetailPrice(e.target.value)}
+                placeholder="Not sold in retail"
+              />
+            </Field>
+            {retailPrice.trim() !== "" && <ProfitPreview cost={cost} price={retailPrice} label="Retail" />}
             <Field label="Unit">
               <Select name="unit" defaultValue={p.unit}>
                 {UNITS.map((u) => (

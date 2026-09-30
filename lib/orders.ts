@@ -37,7 +37,7 @@ export type NewOrderInput = {
   customerId: number;
   lines: NewOrderLine[];
   note?: string | null;
-  source?: "storefront" | "manual";
+  source?: "storefront" | "retail" | "manual";
   discount?: number;
   /** Admin user id when entered by staff; null for storefront requests. */
   handledBy?: number | null;

@@ -5,12 +5,14 @@ import { useState, useTransition } from "react";
 import { Trash2, AlertTriangle } from "lucide-react";
 import { removeFromCart, setCartQty } from "@/actions/cart";
 import type { CartLine as Line } from "@/lib/queries/catalog";
+import { CHANNELS, type Channel } from "@/lib/channel";
 import { peso } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { QtyStepper } from "@/components/shop/qty-stepper";
 import { ProductImage } from "@/components/shop/product-image";
 
-export function CartLineRow({ line }: { line: Line }) {
+export function CartLineRow({ channel, line }: { channel: Channel; line: Line }) {
+  const { base } = CHANNELS[channel];
   const [qty, setQty] = useState(line.qty);
   const [pending, startTransition] = useTransition();
   // when the server's quantity changes (e.g. clamped to stock), drop the local edit and follow it
@@ -23,20 +25,20 @@ export function CartLineRow({ line }: { line: Line }) {
   function commit(next: number) {
     setQty(next);
     startTransition(async () => {
-      await setCartQty(line.variantId, next);
+      await setCartQty(channel, line.variantId, next);
     });
   }
 
   return (
     <li className={cn("flex gap-3 p-4 sm:gap-4", pending && "opacity-70")}>
-      <Link href={`/shop/product/${line.slug}`} className="size-16 shrink-0 overflow-hidden rounded-lg border border-zinc-200 sm:size-20">
+      <Link href={`${base}/product/${line.slug}`} className="size-16 shrink-0 overflow-hidden rounded-lg border border-zinc-200 sm:size-20">
         <ProductImage name={line.name} imageUrl={line.imageUrl} categorySlug={line.categorySlug} textClass="text-lg" />
       </Link>
 
       <div className="flex min-w-0 flex-1 flex-col gap-2">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <Link href={`/shop/product/${line.slug}`} className="block truncate text-sm font-extrabold hover:underline sm:text-[15px]">
+            <Link href={`${base}/product/${line.slug}`} className="block truncate text-sm font-extrabold hover:underline sm:text-[15px]">
               {line.name}
             </Link>
             <p className="text-xs font-medium text-zinc-500">{line.variant}</p>
@@ -53,7 +55,7 @@ export function CartLineRow({ line }: { line: Line }) {
           <QtyStepper value={qty} onChange={commit} min={1} size="sm" ariaLabel={`Quantity for ${line.name} ${line.variant}`} />
           <button
             type="button"
-            onClick={() => startTransition(async () => void (await removeFromCart(line.variantId)))}
+            onClick={() => startTransition(async () => void (await removeFromCart(channel, line.variantId)))}
             className="flex h-9 items-center gap-1 rounded-lg px-2 text-xs font-bold text-zinc-500 hover:bg-zinc-100 hover:text-red-700"
           >
             <Trash2 className="size-4" /> Remove

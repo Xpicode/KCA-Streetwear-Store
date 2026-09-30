@@ -105,7 +105,10 @@ export default async function ProductsPage({ searchParams }: { searchParams: Sea
                     </span>
                   </td>
                   <td className="px-4 py-3 text-right text-zinc-700">{p.cost ? peso(p.cost) : "—"}</td>
-                  <td className="px-4 py-3 text-right font-bold">{peso(p.price)}</td>
+                  <td className="px-4 py-3 text-right">
+                    <div className="font-bold">{peso(p.price)}</div>
+                    <div className="text-xs font-medium text-zinc-500">{p.retailPrice != null ? `retail ${peso(p.retailPrice)}` : "no retail"}</div>
+                  </td>
                   <td className="px-4 py-3 text-right font-bold text-brand-700">
                     {p.cost ? `${Math.round(margin)}%` : "—"}
                   </td>
