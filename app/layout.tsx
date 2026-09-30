@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { headers } from "next/headers";
+import { Suspense } from "react";
 import "./globals.css";
 import { THEME_INIT_SCRIPT } from "@/lib/theme";
 
@@ -33,7 +34,11 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
             thing that runs before first paint (next/script beforeInteractive waits for Next's JS). */}
         <script nonce={nonce} suppressHydrationWarning dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
       </head>
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        {/* Suspense keeps page errors out of the document shell: the shell (with the theme
+            script) is always server-rendered, and a failing page falls to app/error.tsx. */}
+        <Suspense>{children}</Suspense>
+      </body>
     </html>
   );
 }
