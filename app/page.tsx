@@ -73,9 +73,9 @@ export default async function LandingPage() {
       <section className="border-b border-zinc-950">
         <div className={`${container} pt-12 pb-10 lg:pt-16`}>
           <h1 className="font-display text-[15vw] uppercase leading-[0.86] tracking-tight sm:text-[13vw] lg:text-[10rem] xl:text-[11.5rem]">
-            Streetwear
+            Stock up<span className="text-zinc-300">.</span>
             <br />
-            for resellers<span className="text-zinc-300">.</span>
+            Sell out<span className="text-zinc-300">.</span>
           </h1>
           <div className="mt-10 grid gap-8 border-t border-zinc-950 pt-8 lg:grid-cols-[1.2fr_1fr_auto] lg:items-end">
             <p className="max-w-md text-lg font-medium text-zinc-600">
