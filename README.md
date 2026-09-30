@@ -132,7 +132,7 @@ actions/        server actions (orders, stock, customers, settings, auth)
 lib/            business rules: orders pipeline, pricing, stock, auth, rate limit, brand
 lib/queries/    read queries for every screen
 db/             schema, migrations, seed, client
-components/     ui primitives, admin + shop + landing components
+components/     ui primitives, admin + shop components
 proxy.ts        edge auth gate + CSP nonce (runs before every page)
 tests/          vitest unit + integration tests
 public/landing/ landing page artwork (swap for real photos)
