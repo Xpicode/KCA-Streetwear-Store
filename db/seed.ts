@@ -10,6 +10,7 @@ import { sql } from "drizzle-orm";
 import { loadEnvLocal } from "./env";
 import * as s from "./schema";
 import { hashPassword } from "../lib/auth-hash";
+import { insertSampleProduct, SAMPLE_CATEGORIES, SAMPLE_PRODUCTS, SAMPLE_SUPPLIERS } from "./sample-data";
 
 loadEnvLocal();
 const url = process.env.DIRECT_URL ?? process.env.DATABASE_URL;
@@ -58,82 +59,19 @@ async function main() {
   ]);
 
   // --- categories --------------------------------------------------------------
-  const cats = await db
-    .insert(s.categories)
-    .values([
-      { name: "Tees", slug: "tees", sortOrder: 1 },
-      { name: "Caps", slug: "caps", sortOrder: 2 },
-      { name: "Outerwear", slug: "outerwear", sortOrder: 3 },
-      { name: "Bottoms", slug: "bottoms", sortOrder: 4 },
-      { name: "Accessories", slug: "accessories", sortOrder: 5 },
-    ])
-    .returning();
+  const cats = await db.insert(s.categories).values(SAMPLE_CATEGORIES).returning();
   const cat = Object.fromEntries(cats.map((c) => [c.slug, c.id]));
 
   // --- suppliers ---------------------------------------------------------------
-  const [supA, supB] = await db
-    .insert(s.suppliers)
-    .values([
-      { name: "Divisoria Garments Trading", phone: "[0917 000 0001]" },
-      { name: "Metro Caps Supply", phone: "[0917 000 0002]" },
-    ])
-    .returning();
+  const [supA, supB] = await db.insert(s.suppliers).values(SAMPLE_SUPPLIERS).returning();
 
   // --- products + variants + tiers -------------------------------------------
-  type P = {
-    sku: string; name: string; cat: string; price: number; tier: number; cost: number;
-    reorder: number; sizes: (string | null)[]; colors: (string | null)[]; perVariant: number;
-  };
-  const defs: P[] = [
-    { sku: "TEE-001", name: "Plain Cotton Tee", cat: "tees", price: 150, tier: 140, cost: 95, reorder: 60, sizes: ["S", "M", "L", "XL", "XXL"], colors: ["White", "Black", "Grey", "Navy"], perVariant: 60 },
-    { sku: "TEE-002", name: "Oversized Tee", cat: "tees", price: 220, tier: 205, cost: 140, reorder: 40, sizes: ["M", "L", "XL", "XXL"], colors: ["Sand", "Black", "Olive"], perVariant: 40 },
-    { sku: "CAP-001", name: "Snapback Cap", cat: "caps", price: 195, tier: 180, cost: 120, reorder: 24, sizes: [null], colors: ["Black", "Navy", "Grey", "White", "Red"], perVariant: 60 },
-    { sku: "CAP-002", name: "Trucker Cap Mesh", cat: "caps", price: 140, tier: 130, cost: 85, reorder: 24, sizes: [null], colors: ["Black", "Khaki", "Red", "Navy"], perVariant: 52 },
-    { sku: "CAP-003", name: "Bucket Hat Canvas", cat: "caps", price: 175, tier: 165, cost: 110, reorder: 20, sizes: [null], colors: ["Beige", "Black", "Olive"], perVariant: 30 },
-    { sku: "HOD-001", name: "Zip Hoodie", cat: "outerwear", price: 560, tier: 530, cost: 380, reorder: 20, sizes: ["M", "L", "XL", "XXL"], colors: ["Grey", "Black", "Navy"], perVariant: 12 },
-    { sku: "JOG-001", name: "Jogger Pants", cat: "bottoms", price: 390, tier: 370, cost: 260, reorder: 20, sizes: ["M", "L", "XL", "XXL"], colors: ["Black", "Grey"], perVariant: 30 },
-    { sku: "JKT-001", name: "Denim Jacket", cat: "outerwear", price: 890, tier: 850, cost: 620, reorder: 8, sizes: ["S", "M", "L", "XL"], colors: [null], perVariant: 13 },
-    { sku: "BAG-001", name: "Canvas Tote Bag", cat: "accessories", price: 110, tier: 100, cost: 60, reorder: 40, sizes: [null], colors: ["Natural", "Black", "Printed"], perVariant: 86 },
-    { sku: "SOC-001", name: "Crew Socks 3-pack", cat: "accessories", price: 95, tier: 88, cost: 55, reorder: 50, sizes: [null], colors: ["Mixed"], perVariant: 22 },
-    { sku: "BLT-001", name: "Leather-look Belt", cat: "accessories", price: 210, tier: 195, cost: 130, reorder: 12, sizes: ["S", "M", "L"], colors: ["Black", "Brown"], perVariant: 16 },
-    { sku: "ACC-001", name: "Beaded Bracelet Set", cat: "accessories", price: 75, tier: 68, cost: 35, reorder: 60, sizes: [null], colors: ["Assorted"], perVariant: 410 },
-  ];
-
+  const defs = SAMPLE_PRODUCTS;
   const variantIds: Record<string, number[]> = {};
   for (const d of defs) {
-    const [p] = await db
-      .insert(s.products)
-      .values({
-        sku: d.sku,
-        slug: d.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, ""),
-        name: d.name,
-        categoryId: cat[d.cat],
-        basePrice: d.price,
-        // sample retail price: wholesale + 60%
-        retailPrice: Math.round(d.price * 1.6),
-        baseCost: d.cost,
-        moq: 12,
-        reorderLevel: d.reorder,
-      })
-      .returning();
-
-    await db.insert(s.priceTiers).values({ productId: p.id, minQty: 12, price: d.tier });
-
-    const rows = [];
-    for (const size of d.sizes) for (const color of d.colors) rows.push({ productId: p.id, size, color, stockOnHand: 0 });
-    const vs = await db.insert(s.productVariants).values(rows).returning();
-    variantIds[d.sku] = vs.map((v) => v.id);
-
     // one stock-in batch per variant, dated 20 days ago
-    const supplier = d.cat === "caps" ? supB.id : supA.id;
-    for (const v of vs) {
-      await db.insert(s.stockBatches).values({
-        variantId: v.id, supplierId: supplier, qtyReceived: d.perVariant, qtyRemaining: d.perVariant,
-        unitCost: d.cost, receivedAt: daysAgo(20), reference: "SEED",
-      });
-      await db.insert(s.stockMovements).values({ variantId: v.id, type: "in", qty: d.perVariant, note: "Opening stock" });
-      await db.update(s.productVariants).set({ stockOnHand: d.perVariant }).where(sql`${s.productVariants.id} = ${v.id}`);
-    }
+    const supplierId = d.cat === "caps" ? supB.id : supA.id;
+    variantIds[d.sku] = await insertSampleProduct(db, d, { categoryId: cat[d.cat], supplierId }, daysAgo(20));
   }
 
   // --- customers ---------------------------------------------------------------

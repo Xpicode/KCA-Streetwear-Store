@@ -14,7 +14,8 @@
     "db:setup": "tsx db/migrate.ts && tsx db/seed.ts",
     "test": "vitest run",
     "test:watch": "vitest",
-    "db:create-owner": "tsx db/create-owner.ts"
+    "db:create-owner": "tsx db/create-owner.ts",
+    "db:sample-products": "tsx db/sample-products.ts"
   },
   "dependencies": {
     "clsx": "^2.1.1",

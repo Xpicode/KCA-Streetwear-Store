@@ -53,6 +53,7 @@ The admin works on phones and tablets (menu in the top bar) as well as desktop.
 | `npm run db:seed`     | Load sample data (wipes all tables first; local only)   |
 | `npm run db:setup`    | Both of the above                                       |
 | `npm run db:create-owner` | Create / reset the owner login on a real database (see Deploying) |
+| `npm run db:sample-products` | Add the sample catalog to any database without wiping it (skips SKUs that exist) |
 | `npm run db:generate` | Make a new migration after editing `db/schema.ts`       |
 | `npm run db:studio`   | Browse the database in Drizzle Studio                   |
 
