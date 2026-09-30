@@ -11,7 +11,7 @@ export function ShopHeader({ channel, shopper, cartCount }: { channel: Channel; 
   return (
     <header className="sticky top-0 z-20 border-b border-zinc-200 bg-white/95 backdrop-blur">
       <div className="mx-auto flex h-16 max-w-7xl items-center gap-3 px-4 sm:gap-6 sm:px-6">
-        <Link href={base} className="shrink-0 font-extrabold">
+        <Link href="/" className="shrink-0 font-extrabold">
           {BRAND.name}
         </Link>
 
