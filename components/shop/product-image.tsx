@@ -1,45 +1,13 @@
+/* eslint-disable @next/next/no-img-element -- photos are plain uploads; placeholder art is local */
 import { cn } from "@/lib/utils";
+import { artFor } from "@/components/landing/site";
 
-/** Soft colour per category so the grid still reads well before photos are uploaded. */
-const PALETTE: Record<string, string> = {
-  tees: "bg-sky-100 text-sky-700",
-  caps: "bg-amber-100 text-amber-700",
-  outerwear: "bg-indigo-100 text-indigo-700",
-  bottoms: "bg-teal-100 text-teal-700",
-  accessories: "bg-rose-100 text-rose-700",
-};
-const FALLBACK = ["bg-zinc-100 text-zinc-600", "bg-lime-100 text-lime-700", "bg-violet-100 text-violet-700", "bg-orange-100 text-orange-700"];
-
-function initials(name: string) {
-  return name
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((w) => w[0]?.toUpperCase())
-    .join("");
-}
-
-export function ProductImage({
-  name,
-  imageUrl,
-  categorySlug,
-  className,
-  textClass = "text-3xl",
-}: {
-  name: string;
-  imageUrl: string | null;
-  categorySlug: string | null;
-  className?: string;
-  textClass?: string;
-}) {
-  if (imageUrl) {
-    // eslint-disable-next-line @next/next/no-img-element
-    return <img src={imageUrl} alt={name} className={cn("h-full w-full object-cover", className)} />;
-  }
-  const tone = (categorySlug && PALETTE[categorySlug]) ?? FALLBACK[name.length % FALLBACK.length];
+/** Product photo, or a grey tile with the category's placeholder art until a photo is uploaded. */
+export function ProductImage({ name, imageUrl, categorySlug, className }: { name: string; imageUrl: string | null; categorySlug: string | null; className?: string }) {
+  if (imageUrl) return <img src={imageUrl} alt={name} className={cn("h-full w-full object-cover", className)} />;
   return (
-    <div className={cn("flex h-full w-full items-center justify-center font-extrabold tracking-tight select-none", tone, textClass, className)} aria-hidden>
-      {initials(name)}
+    <div className={cn("flex h-full w-full items-center justify-center bg-zinc-100", className)} aria-hidden>
+      <img src={artFor(categorySlug)} alt="" className="size-2/5 opacity-60 grayscale" />
     </div>
   );
 }

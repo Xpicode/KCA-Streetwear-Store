@@ -149,7 +149,7 @@ them through `.claude/skills/`, a machine-local symlink that `npx skills install
 One system: Tailwind utilities on the **zinc** scale for surfaces and text, and a single
 **brand** accent scale (`bg-brand-700`, `text-brand-800`, …) defined once in
 `app/globals.css`. To rebrand, replace that `--color-brand-*` block (and the dark-mode
-values in the same file). Dark mode is a palette swap inside `.theme-zone` (admin, shop,
+values in the same file); it is currently black to match the logo. Dark mode is a palette swap inside `.theme-zone` (admin, shop,
 login); the landing page stays light. Brand name and contact details: `lib/brand.ts`.
 
 ## Key business rules

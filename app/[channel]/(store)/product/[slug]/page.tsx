@@ -34,7 +34,7 @@ export default async function ProductPage({ params }: { params: Promise<{ channe
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-[minmax(0,5fr)_minmax(0,4fr)] lg:gap-10">
         <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-zinc-200 bg-zinc-100 lg:aspect-square">
-          <ProductImage name={product.name} imageUrl={product.imageUrl} categorySlug={product.categorySlug} textClass="text-7xl" />
+          <ProductImage name={product.name} imageUrl={product.imageUrl} categorySlug={product.categorySlug} />
           <StockBadge available={product.available} moq={product.moq} className="absolute top-3 left-3" />
         </div>
 
