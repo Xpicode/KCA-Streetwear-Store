@@ -168,6 +168,75 @@ export function StoreCatalog({ channel, products, categories, active, q }: { cha
         </ol>
         <p className={`mt-4 ${label}`}>Payment: GCash · Maya · Bank transfer · Pickup in Cavite by arrangement</p>
       </section>
+
+      {/* pricing */}
+      <section className="border-t border-zinc-950 px-6 py-12">
+        <div className="flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <div className={label}>Pricing</div>
+            <h2 className="mt-2 font-display text-4xl uppercase leading-none sm:text-5xl">
+              {retail ? "One price. No minimum." : "Buy more, pay less per piece."}
+            </h2>
+          </div>
+          <Link href="/pricing" className="flex items-center gap-1 text-xs font-bold uppercase tracking-[0.15em] underline-offset-4 hover:underline">
+            Full details <ArrowUpRight className="size-4" />
+          </Link>
+        </div>
+        <div className="mt-8 grid gap-10 lg:grid-cols-[1fr_minmax(0,24rem)] lg:gap-16">
+          <ul className="divide-y divide-zinc-200 border-y border-zinc-200">
+            {(retail
+              ? [
+                  ["Per piece", "Every product shows its retail price per piece. Buy one or ten, the price does not change."],
+                  ["Same stock as the shops", "Retail pieces come from the same warehouse stock as wholesale orders, so what you see is what ships."],
+                  ["Shipping", "Prices do not include delivery. We quote the courier fee with your confirmed total, or arrange pickup."],
+                  ["No surprises", "The total we confirm is the total you pay. Nothing is charged before you see it."],
+                ]
+              : [
+                  ["Minimum per style", `${moq} pcs per style, not per size or color. 4 small, 4 medium and 4 large of the same tee count as 12.`],
+                  ["Quantity tiers", "Each style has its own tiers. The more pieces of that style in the order, the lower the per-piece price. The cart applies the best one on its own."],
+                  ["Regular buyers", "Shops that reorder with us can be moved to a better price group. Your prices then show automatically on this device."],
+                  ["Shipping", "Prices do not include delivery. We quote the courier fee with your confirmed total, or arrange pickup."],
+                ]
+            ).map(([title, text], i) => (
+              <li key={title} className="reveal grid gap-2 py-5 sm:grid-cols-[12rem_1fr] sm:gap-6" style={{ "--i": i } as React.CSSProperties}>
+                <h3 className="font-bold uppercase leading-tight">{title}</h3>
+                <p className="text-sm font-medium text-zinc-600">{text}</p>
+              </li>
+            ))}
+          </ul>
+          <div className="reveal self-start border border-zinc-950 p-6">
+            <div className={label}>{retail ? "Example · Plain cotton tee" : "Example · Plain cotton tee · per piece"}</div>
+            <table className="mt-4 w-full border-t border-zinc-950 font-mono text-sm">
+              <tbody>
+                {(retail
+                  ? [
+                      ["1 pc", "₱240", "retail price"],
+                      ["3 pcs", "₱240", "same price each"],
+                      ["10 pcs", "₱240", "same price each"],
+                    ]
+                  : [
+                      ["1 – 11 pcs", "₱150", "retail store"],
+                      ["12 – 47 pcs", "₱140", "wholesale, first tier"],
+                      ["48+ pcs", "₱130", "wholesale, volume tier"],
+                    ]
+                ).map(([qty, price, note], i, arr) => (
+                  <tr key={qty} className="border-b border-zinc-200">
+                    <td className="py-3 pr-4">
+                      <div className={i === arr.length - 1 && !retail ? "font-bold" : ""}>{qty}</div>
+                      <div className="text-xs text-zinc-500">{note}</div>
+                    </td>
+                    <td className="py-3 text-right">
+                      <span className="font-display text-2xl">{price}</span>
+                      <span className="ml-1 text-xs text-zinc-500">/pc</span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <p className="mt-3 text-xs font-medium text-zinc-500">Illustrative. Live prices are on each product page.</p>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }
