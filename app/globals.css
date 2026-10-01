@@ -55,6 +55,7 @@
 /* sections: fade up when scrolled into view (components/landing/reveal.tsx adds .is-visible) */
 .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.22, 1, 0.36, 1); transition-delay: calc(var(--i, 0) * 80ms); }
 .reveal.is-visible { opacity: 1; transform: none; }
+.no-reveal .reveal { opacity: 1; transform: none; transition: none; }
 /* text links: underline grows in from the left */
 .ink { background: linear-gradient(currentColor, currentColor) no-repeat 0 100% / 0 1px; transition: background-size 0.3s; }
 .ink:hover { background-size: 100% 1px; }
