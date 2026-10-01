@@ -6,6 +6,7 @@ import { getLandingData } from "@/lib/queries/landing";
 import { peso } from "@/lib/format";
 import { BRAND } from "@/lib/brand";
 import { RevealOnScroll } from "@/components/landing/reveal";
+import { Carousel } from "@/components/landing/carousel";
 
 export const dynamic = "force-dynamic";
 
@@ -113,34 +114,33 @@ export default async function LandingPage() {
 
       {/* stock */}
       {featured.length > 0 && (
-        <section id="stock" className="border-b border-zinc-950">
+        <section id="stock" className="overflow-hidden border-b border-zinc-950">
           <div className={`${container} pb-16`}>
-            <SectionBar no={no()} title="In stock now" link={{ href: "/shop", label: "Full catalog" }} />
-            <div className="grid grid-cols-2 gap-px border border-zinc-950 bg-zinc-950 lg:grid-cols-4">
+            <Carousel heading={<SectionBar no={no()} title="In stock now" />} link={{ href: "/shop", label: "View all" }}>
               {featured.map((p, i) => (
-                <Link key={p.id} href={`/shop/product/${p.slug}`} className="reveal group flex flex-col bg-white" style={{ "--i": i } as React.CSSProperties}>
-                  <div className="aspect-square overflow-hidden bg-zinc-100">
-                    {p.imageUrl ? (
-                      <img src={p.imageUrl} alt={p.name} className="h-full w-full object-cover transition duration-500 group-hover:scale-105" />
-                    ) : (
-                      <div className="flex h-full items-center justify-center">
-                        <img src={artFor(p.category?.toLowerCase())} alt="" className="size-2/5 opacity-60 grayscale" />
-                      </div>
-                    )}
-                  </div>
-                  <div className="flex items-start justify-between gap-3 border-t border-zinc-950 p-4">
-                    <div className="min-w-0">
-                      <div className={label}>{p.category ?? "Style"}</div>
-                      <div className="mt-1 font-bold uppercase leading-tight group-hover:underline underline-offset-4">{p.name}</div>
+                <li key={p.id} className="reveal w-64 shrink-0 snap-start sm:w-80" style={{ "--i": i } as React.CSSProperties}>
+                  <Link href={`/shop/product/${p.slug}`} className="group block">
+                    <div className="relative aspect-square overflow-hidden bg-zinc-100">
+                      {p.imageUrl ? (
+                        <img src={p.imageUrl} alt={p.name} className="h-full w-full object-cover transition duration-500 group-hover:scale-105" />
+                      ) : (
+                        <div className="flex h-full items-center justify-center">
+                          <img src={artFor(p.category?.toLowerCase())} alt="" className="size-2/5 opacity-60 grayscale transition duration-500 group-hover:scale-110" />
+                        </div>
+                      )}
+                      {p.stock <= 0 && (
+                        <span className="absolute top-3 left-3 bg-zinc-950 px-2 py-1 text-[10px] font-bold uppercase tracking-[0.15em] text-white">Sold out</span>
+                      )}
                     </div>
-                    <div className="shrink-0 text-right">
-                      <div className="font-display text-xl leading-none">{peso(p.price)}</div>
-                      <div className={`mt-1 ${label}`}>per pc</div>
+                    <div className={`mt-4 ${label}`}>{p.category ?? "Style"}</div>
+                    <div className="mt-1 font-bold uppercase leading-tight group-hover:underline underline-offset-4">{p.name}</div>
+                    <div className="mt-1 font-display text-xl leading-none">
+                      {peso(p.price)} <span className={label}>per pc</span>
                     </div>
-                  </div>
-                </Link>
+                  </Link>
+                </li>
               ))}
-            </div>
+            </Carousel>
           </div>
         </section>
       )}
