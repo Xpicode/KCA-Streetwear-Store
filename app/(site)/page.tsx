@@ -1,17 +1,12 @@
 /* eslint-disable @next/next/no-img-element -- product photos are plain uploads; category art is local SVG */
 import Link from "next/link";
-import { Anton } from "next/font/google";
 import { ArrowUpRight } from "lucide-react";
 import { getLandingData } from "@/lib/queries/landing";
 import { peso } from "@/lib/format";
-import { BRAND } from "@/lib/brand";
-import { RevealOnScroll } from "@/components/landing/reveal";
 import { Carousel } from "@/components/landing/carousel";
+import { SectionBar, container, label, navLink } from "@/components/landing/site";
 
 export const dynamic = "force-dynamic";
-
-// display face for the landing page only (see --font-display in globals.css)
-const display = Anton({ weight: "400", subsets: ["latin"], variable: "--font-anton" });
 
 const ART: Record<string, string> = {
   tees: "/landing/tee.svg",
@@ -21,10 +16,6 @@ const ART: Record<string, string> = {
   accessories: "/landing/tote.svg",
 };
 const artFor = (slug: string | null | undefined) => (slug && ART[slug]) || "/landing/box.svg";
-
-const label = "font-mono text-[10px] font-medium uppercase tracking-[0.2em] text-zinc-500";
-const navLink = "text-xs font-bold uppercase tracking-[0.15em]";
-const container = "mx-auto max-w-[1400px] px-5";
 
 export default async function LandingPage() {
   const { cats, featured, stats } = await getLandingData();
@@ -40,38 +31,7 @@ export default async function LandingPage() {
   ]);
 
   return (
-    <div className={`${display.variable} min-h-screen bg-white text-zinc-950`}>
-      <RevealOnScroll />
-      <div className="bg-zinc-950 text-white">
-        <div className={`${container} flex h-8 items-center justify-between font-mono text-[10px] uppercase tracking-[0.2em]`}>
-          <span>Wholesale + retail · {BRAND.city}</span>
-          <span className="hidden sm:inline">Open 24/7 · order anytime</span>
-        </div>
-      </div>
-
-      <header className="sticky top-0 z-30 border-b border-zinc-950 bg-white">
-        <div className={`${container} flex h-16 items-center justify-between gap-6`}>
-          <Link href="/" className="font-display text-2xl uppercase leading-none">
-            {BRAND.short}
-            <span className="text-zinc-400"> / </span>
-            Streetwear
-          </Link>
-          <nav className={`hidden items-center gap-8 lg:flex ${navLink}`}>
-            <a href="#stock" className="ink">Stock</a>
-            <a href="#categories" className="ink">Categories</a>
-            <a href="#how" className="ink">How to order</a>
-            <a href="#pricing" className="ink">Pricing</a>
-            <a href="#contact" className="ink">Contact</a>
-          </nav>
-          <div className="flex items-center gap-5">
-            <Link href="/shop" className={`ink hidden sm:inline ${navLink}`}>Wholesale</Link>
-            <Link href="/retail" className={`flex h-10 items-center gap-2 bg-zinc-950 px-4 text-white hover:bg-zinc-800 ${navLink}`}>
-              Shop retail <ArrowUpRight className="size-4" />
-            </Link>
-          </div>
-        </div>
-      </header>
-
+    <>
       {/* hero */}
       <section className="relative border-b border-zinc-950 bg-zinc-950 text-white">
         <img src="/landing/hero.jpg" alt="" className="absolute inset-0 h-full w-full object-cover object-right" />
@@ -231,34 +191,7 @@ export default async function LandingPage() {
         </div>
       </section>
 
-      <footer id="contact" className="overflow-hidden bg-zinc-950 text-white">
-        <div className={`${container} pt-16 pb-6`}>
-          <div className="grid gap-10 md:grid-cols-[1fr_auto] md:items-end">
-            <div>
-              <h2 className="reveal font-display text-4xl uppercase leading-none sm:text-6xl">Questions? Message us.</h2>
-              <div className="mt-6 flex flex-col gap-1 font-mono text-sm text-zinc-400">
-                <span>{BRAND.phone}</span>
-                <span>{BRAND.email}</span>
-                <span>{BRAND.city}</span>
-              </div>
-            </div>
-            <nav className={`grid grid-cols-2 gap-x-12 gap-y-3 ${navLink}`}>
-              <Link href="/shop" className="ink">Wholesale catalog</Link>
-              <Link href="/retail" className="ink">Retail store</Link>
-              <Link href="/shop/orders" className="ink">Track order</Link>
-              <Link href="/admin/login" className="ink">Staff sign in</Link>
-            </nav>
-          </div>
-          <div aria-hidden className="reveal mt-14 -mb-3 select-none font-display text-[12.5vw] uppercase leading-[0.8] whitespace-nowrap xl:text-[11rem]">
-            {BRAND.name}
-          </div>
-          <div className="mt-4 flex flex-wrap justify-between gap-2 border-t border-white/20 pt-4 font-mono text-[10px] uppercase tracking-[0.2em] text-zinc-500">
-            <span>© {new Date().getFullYear()} {BRAND.name}</span>
-            <span>Wholesale + retail streetwear</span>
-          </div>
-        </div>
-      </footer>
-    </div>
+    </>
   );
 }
 
@@ -269,22 +202,6 @@ function Stat({ value, label: text }: { value: string; label: string }) {
     <div>
       <dt className="font-display text-4xl leading-none sm:text-5xl">{value}</dt>
       <dd className={`mt-2 ${label}`}>{text}</dd>
-    </div>
-  );
-}
-
-function SectionBar({ no, title, link, dark }: { no: string; title: string; link?: { href: string; label: string }; dark?: boolean }) {
-  return (
-    <div className="reveal flex items-end justify-between gap-6 py-8 sm:py-10">
-      <div className="flex items-baseline gap-4">
-        <span className={`font-mono text-xs ${dark ? "text-zinc-500" : "text-zinc-400"}`}>{no}</span>
-        <h2 className="font-display text-3xl uppercase leading-none sm:text-5xl">{title}</h2>
-      </div>
-      {link ? (
-        <Link href={link.href} className={`flex shrink-0 items-center gap-1 underline-offset-4 hover:underline ${navLink}`}>
-          {link.label} <ArrowUpRight className="size-4" />
-        </Link>
-      ) : null}
     </div>
   );
 }

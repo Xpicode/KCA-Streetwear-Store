@@ -32,7 +32,7 @@ shop name, contact number, and address; the device that placed an order is remem
 
 | URL            | What it is                                                       |
 | -------------- | ---------------------------------------------------------------- |
-| `/`            | Public landing page                                              |
+| `/`            | Public landing page (+ `/how-to-order`, `/pricing`, `/contact`)  |
 | `/shop`        | Wholesale catalog → cart → order request (no account, no online payment) |
 | `/retail`      | Retail store: same products at the per-product retail price, buy 1+ |
 | `/shop/orders`, `/retail/orders` | Buyer's orders (remembered per device, or order no. + phone) |
@@ -128,7 +128,7 @@ insecure requests. New migrations are applied with `npm run db:migrate` (uses `D
 ## Where things live
 
 ```
-app/            pages: landing, admin/(app), shop/(store)
+app/            pages: (site) landing + info pages, admin/(app), [channel]/(store)
 actions/        server actions (orders, stock, customers, settings, auth)
 lib/            business rules: orders pipeline, pricing, stock, auth, rate limit, brand
 lib/queries/    read queries for every screen
