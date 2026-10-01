@@ -58,7 +58,19 @@
 /* text links: underline grows in from the left */
 .ink { background: linear-gradient(currentColor, currentColor) no-repeat 0 100% / 0 1px; transition: background-size 0.3s; }
 .ink:hover { background-size: 100% 1px; }
+/* first-load logo curtain (components/landing/splash.tsx): logo fades in, then the sheet lifts */
+@keyframes splash-out {
+  0%, 75% { transform: none; }
+  100% { transform: translateY(-100%); }
+}
+@keyframes splash-logo {
+  from { opacity: 0; transform: scale(0.92); }
+  to { opacity: 1; transform: none; }
+}
+.splash { animation: splash-out 2s cubic-bezier(0.76, 0, 0.24, 1) forwards; }
+.splash-logo { animation: splash-logo 0.7s 0.1s cubic-bezier(0.22, 1, 0.36, 1) both; }
 @media (prefers-reduced-motion: reduce) {
+  .splash { display: none; }
   .marquee, .rise { animation: none; }
   .reveal { opacity: 1; transform: none; transition: none; }
 }
