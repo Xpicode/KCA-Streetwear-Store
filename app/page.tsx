@@ -5,6 +5,7 @@ import { ArrowUpRight } from "lucide-react";
 import { getLandingData } from "@/lib/queries/landing";
 import { peso } from "@/lib/format";
 import { BRAND } from "@/lib/brand";
+import { RevealOnScroll } from "@/components/landing/reveal";
 
 export const dynamic = "force-dynamic";
 
@@ -39,6 +40,7 @@ export default async function LandingPage() {
 
   return (
     <div className={`${display.variable} min-h-screen bg-white text-zinc-950`}>
+      <RevealOnScroll />
       <div className="bg-zinc-950 text-white">
         <div className={`${container} flex h-8 items-center justify-between font-mono text-[10px] uppercase tracking-[0.2em]`}>
           <span>Wholesale + retail · {BRAND.city}</span>
@@ -54,14 +56,14 @@ export default async function LandingPage() {
             Streetwear
           </Link>
           <nav className={`hidden items-center gap-8 lg:flex ${navLink}`}>
-            <a href="#stock" className="hover:underline underline-offset-4">Stock</a>
-            <a href="#categories" className="hover:underline underline-offset-4">Categories</a>
-            <a href="#how" className="hover:underline underline-offset-4">How to order</a>
-            <a href="#pricing" className="hover:underline underline-offset-4">Pricing</a>
-            <a href="#contact" className="hover:underline underline-offset-4">Contact</a>
+            <a href="#stock" className="ink">Stock</a>
+            <a href="#categories" className="ink">Categories</a>
+            <a href="#how" className="ink">How to order</a>
+            <a href="#pricing" className="ink">Pricing</a>
+            <a href="#contact" className="ink">Contact</a>
           </nav>
           <div className="flex items-center gap-5">
-            <Link href="/shop" className={`hidden underline-offset-4 hover:underline sm:inline ${navLink}`}>Wholesale</Link>
+            <Link href="/shop" className={`ink hidden sm:inline ${navLink}`}>Wholesale</Link>
             <Link href="/retail" className={`flex h-10 items-center gap-2 bg-zinc-950 px-4 text-white hover:bg-zinc-800 ${navLink}`}>
               Shop retail <ArrowUpRight className="size-4" />
             </Link>
@@ -73,22 +75,21 @@ export default async function LandingPage() {
       <section className="border-b border-zinc-950">
         <div className={`${container} pt-12 pb-10 lg:pt-16`}>
           <h1 className="font-display text-[15vw] uppercase leading-[0.86] tracking-tight sm:text-[13vw] lg:text-[10rem] xl:text-[11.5rem]">
-            Stock up<span className="text-zinc-300">.</span>
-            <br />
-            Sell out<span className="text-zinc-300">.</span>
+            <span className="rise block">Stock up<span className="text-zinc-300">.</span></span>
+            <span className="rise block [--i:1]">Sell out<span className="text-zinc-300">.</span></span>
           </h1>
           <div className="mt-10 grid gap-8 border-t border-zinc-950 pt-8 lg:grid-cols-[1.2fr_1fr_auto] lg:items-end">
-            <p className="max-w-md text-lg font-medium text-zinc-600">
+            <p className="rise max-w-md text-lg font-medium text-zinc-600 [--i:2]">
               Tees, caps, hoodies and bags from our own stock. Browse what&rsquo;s in the warehouse right now, mix sizes and
               colors, and send an order request in minutes. No account. We confirm by message, you pay by GCash, Maya or bank
               transfer, and it ships the same day.
             </p>
-            <dl className="grid grid-cols-3 gap-6">
+            <dl className="rise grid grid-cols-3 gap-6 [--i:3]">
               {stats.styles > 0 && <Stat value={`${stats.styles}+`} label="styles in stock" />}
               <Stat value={`${stats.minMoq}`} label="pcs min. per style" />
               <Stat value="24/7" label="open, order anytime" />
             </dl>
-            <div className="flex flex-wrap gap-3">
+            <div className="rise flex flex-wrap gap-3 [--i:4]">
               <Link href="/retail" className={`flex h-12 items-center gap-2 bg-zinc-950 px-6 text-white hover:bg-zinc-800 ${navLink}`}>
                 Shop retail <ArrowUpRight className="size-4" />
               </Link>
@@ -116,8 +117,8 @@ export default async function LandingPage() {
           <div className={`${container} pb-16`}>
             <SectionBar no={no()} title="In stock now" link={{ href: "/shop", label: "Full catalog" }} />
             <div className="grid grid-cols-2 gap-px border border-zinc-950 bg-zinc-950 lg:grid-cols-4">
-              {featured.map((p) => (
-                <Link key={p.id} href={`/shop/product/${p.slug}`} className="group flex flex-col bg-white">
+              {featured.map((p, i) => (
+                <Link key={p.id} href={`/shop/product/${p.slug}`} className="reveal group flex flex-col bg-white" style={{ "--i": i } as React.CSSProperties}>
                   <div className="aspect-square overflow-hidden bg-zinc-100">
                     {p.imageUrl ? (
                       <img src={p.imageUrl} alt={p.name} className="h-full w-full object-cover transition duration-500 group-hover:scale-105" />
@@ -154,7 +155,8 @@ export default async function LandingPage() {
                 <li key={c.id} className="border-b border-zinc-950">
                   <Link
                     href={`/shop?category=${c.slug}`}
-                    className="group flex items-center gap-4 px-2 py-5 transition hover:bg-zinc-950 hover:text-white sm:gap-8 sm:py-7"
+                    className="reveal group relative isolate flex items-center gap-4 px-2 py-5 transition hover:text-white before:absolute before:inset-0 before:-z-10 before:-translate-x-full before:bg-zinc-950 before:transition-transform before:duration-300 hover:before:translate-x-0 sm:gap-8 sm:py-7"
+                    style={{ "--i": i } as React.CSSProperties}
                   >
                     <span className="w-8 font-mono text-xs text-zinc-500 group-hover:text-zinc-400">{String(i + 1).padStart(2, "0")}</span>
                     <span className="flex-1 font-display text-4xl uppercase leading-none sm:text-6xl">{c.name}</span>
@@ -187,7 +189,7 @@ export default async function LandingPage() {
         <div className={`${container} pb-16`}>
           <SectionBar no={no()} title="Wholesale pricing" />
           <div className="grid border-t border-zinc-950 lg:grid-cols-2">
-            <div className="py-8 lg:border-r lg:border-zinc-950 lg:pr-12">
+            <div className="reveal py-8 lg:border-r lg:border-zinc-950 lg:pr-12">
               <p className="max-w-md text-lg font-medium text-zinc-600">
                 Buy more of a style, pay less per piece. Tiers count every size and color of the same style together, so you
                 can mix and still hit the better price.
@@ -198,7 +200,7 @@ export default async function LandingPage() {
                 <Perk n="c" text="We confirm the final total before anything ships." />
               </ul>
             </div>
-            <div className="py-8 lg:pl-12">
+            <div className="reveal py-8 lg:pl-12 [--i:1]">
               <div className={label}>Example · Plain cotton tee</div>
               <table className="mt-4 w-full border-t border-zinc-950 font-mono text-sm">
                 <tbody>
@@ -223,7 +225,7 @@ export default async function LandingPage() {
             cta="Open the catalog"
             className="border-b border-zinc-950 md:border-r md:border-b-0"
           />
-          <Channel href="/retail" question="Buying for yourself?" title="Retail" text="Single pieces at retail price. Same stock, same fast dispatch." cta="Shop retail" />
+          <Channel href="/retail" className="[--i:1]" question="Buying for yourself?" title="Retail" text="Single pieces at retail price. Same stock, same fast dispatch." cta="Shop retail" />
         </div>
       </section>
 
@@ -231,7 +233,7 @@ export default async function LandingPage() {
         <div className={`${container} pt-16 pb-6`}>
           <div className="grid gap-10 md:grid-cols-[1fr_auto] md:items-end">
             <div>
-              <h2 className="font-display text-4xl uppercase leading-none sm:text-6xl">Questions? Message us.</h2>
+              <h2 className="reveal font-display text-4xl uppercase leading-none sm:text-6xl">Questions? Message us.</h2>
               <div className="mt-6 flex flex-col gap-1 font-mono text-sm text-zinc-400">
                 <span>{BRAND.phone}</span>
                 <span>{BRAND.email}</span>
@@ -239,13 +241,13 @@ export default async function LandingPage() {
               </div>
             </div>
             <nav className={`grid grid-cols-2 gap-x-12 gap-y-3 ${navLink}`}>
-              <Link href="/shop" className="hover:underline underline-offset-4">Wholesale catalog</Link>
-              <Link href="/retail" className="hover:underline underline-offset-4">Retail store</Link>
-              <Link href="/shop/orders" className="hover:underline underline-offset-4">Track order</Link>
-              <Link href="/admin/login" className="hover:underline underline-offset-4">Staff sign in</Link>
+              <Link href="/shop" className="ink">Wholesale catalog</Link>
+              <Link href="/retail" className="ink">Retail store</Link>
+              <Link href="/shop/orders" className="ink">Track order</Link>
+              <Link href="/admin/login" className="ink">Staff sign in</Link>
             </nav>
           </div>
-          <div aria-hidden className="mt-14 -mb-3 select-none font-display text-[12.5vw] uppercase leading-[0.8] whitespace-nowrap xl:text-[11rem]">
+          <div aria-hidden className="reveal mt-14 -mb-3 select-none font-display text-[12.5vw] uppercase leading-[0.8] whitespace-nowrap xl:text-[11rem]">
             {BRAND.name}
           </div>
           <div className="mt-4 flex flex-wrap justify-between gap-2 border-t border-white/20 pt-4 font-mono text-[10px] uppercase tracking-[0.2em] text-zinc-500">
@@ -271,7 +273,7 @@ function Stat({ value, label: text }: { value: string; label: string }) {
 
 function SectionBar({ no, title, link, dark }: { no: string; title: string; link?: { href: string; label: string }; dark?: boolean }) {
   return (
-    <div className="flex items-end justify-between gap-6 py-8 sm:py-10">
+    <div className="reveal flex items-end justify-between gap-6 py-8 sm:py-10">
       <div className="flex items-baseline gap-4">
         <span className={`font-mono text-xs ${dark ? "text-zinc-500" : "text-zinc-400"}`}>{no}</span>
         <h2 className="font-display text-3xl uppercase leading-none sm:text-5xl">{title}</h2>
@@ -287,7 +289,7 @@ function SectionBar({ no, title, link, dark }: { no: string; title: string; link
 
 function Step({ n, title, text, last }: { n: string; title: string; text: string; last?: boolean }) {
   return (
-    <li className={`flex flex-col p-6 sm:p-8 ${last ? "" : "border-b border-white/20 md:border-r md:border-b-0"}`}>
+    <li className={`reveal flex flex-col p-6 sm:p-8 ${last ? "" : "border-b border-white/20 md:border-r md:border-b-0"}`} style={{ "--i": Number(n) } as React.CSSProperties}>
       <span className="font-display text-6xl leading-none text-white/25">{n}</span>
       <h3 className="mt-10 text-lg font-bold uppercase leading-tight">{title}</h3>
       <p className="mt-3 text-sm font-medium text-zinc-400">{text}</p>
@@ -322,7 +324,7 @@ function TierRow({ qty, price, note, best }: { qty: string; price: string; note:
 
 function Channel({ href, question, title, text, cta, className = "" }: { href: string; question: string; title: string; text: string; cta: string; className?: string }) {
   return (
-    <Link href={href} className={`group flex min-h-72 flex-col gap-4 py-10 transition hover:bg-zinc-950 hover:text-white md:px-10 ${className}`}>
+    <Link href={href} className={`reveal group flex min-h-72 flex-col gap-4 py-10 transition hover:bg-zinc-950 hover:text-white md:px-10 ${className}`}>
       <span className={`${label} group-hover:text-zinc-400`}>{question}</span>
       <span className="font-display text-6xl uppercase leading-none sm:text-8xl">{title}</span>
       <span className="max-w-xs text-sm font-medium text-zinc-500 group-hover:text-zinc-400">{text}</span>
