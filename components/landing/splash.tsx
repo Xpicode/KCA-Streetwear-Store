@@ -1,47 +1,24 @@
 "use client";
 
 /* eslint-disable @next/next/no-img-element -- static logo, no resizing needed */
-import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useRef, useState } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 
 gsap.registerPlugin(useGSAP);
 
-const KEY = "kca-splash";
-const subscribe = () => () => {};
-// decided once per page load, before the effect below marks the splash as seen
-let decision: "show" | "skip" | null = null;
-const getSnapshot = () => {
-  if (decision === null) {
-    try {
-      decision = sessionStorage.getItem(KEY) === "1" ? "skip" : "show";
-    } catch {
-      decision = "show";
-    }
-  }
-  return decision;
-};
-
 /**
- * Logo curtain shown on the first load of the site in a browser session. Rendered on the
- * server so it is on screen from the first paint; later reloads in the same tab skip it.
- * The sequence is a GSAP timeline: logo sharpens in, a line fills, the white sheet lifts
+ * Logo curtain shown on every full page load of the public site. Rendered on the server so
+ * it is on screen from the first paint; client-side navigation keeps the layout mounted, so
+ * moving between pages does not replay it. The sequence is a GSAP timeline: logo sharpens in, a line fills, the white sheet lifts
  * and a black sheet chases it off the top of the screen.
  */
 export function Splash() {
-  const phase = useSyncExternalStore(subscribe, getSnapshot, () => "show");
   const [done, setDone] = useState(false);
   const root = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    try {
-      sessionStorage.setItem(KEY, "1");
-    } catch {}
-  }, []);
-
   useGSAP(
     () => {
-      if (phase === "skip") return;
       if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
         setDone(true);
         return;
@@ -54,10 +31,10 @@ export function Splash() {
         .to(".splash-white", { yPercent: -100, duration: 0.65, ease: "power4.inOut" }, 1.6)
         .to(".splash-black", { yPercent: -100, duration: 0.65, ease: "power4.inOut" }, 1.75);
     },
-    { scope: root, dependencies: [phase] }
+    { scope: root }
   );
 
-  if (phase === "skip" || done) return null;
+  if (done) return null;
   return (
     <div ref={root} aria-hidden className="splash fixed inset-0 z-50">
       <div className="splash-black absolute inset-0 bg-zinc-950" />
