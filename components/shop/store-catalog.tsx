@@ -6,12 +6,17 @@ import { peso } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { RevealOnScroll } from "@/components/landing/reveal";
 import { artFor } from "@/components/landing/site";
+import { CHANNELS, type Channel } from "@/lib/channel";
+import { bestTier } from "./tiers";
 
 type Cat = { slug: string; name: string };
 const label = "font-mono text-[10px] font-medium uppercase tracking-[0.2em] text-zinc-500";
 
-/** Consumer-facing catalog for /retail: photo banner, bold category tabs and a tile grid that links to the product page. */
-export function RetailCatalog({ base, products, categories, active, q }: { base: string; products: CatalogProduct[]; categories: Cat[]; active?: string; q?: string }) {
+/** Catalog for /shop and /retail: photo banner, bold category tabs and a tile grid that links to the product page. */
+export function StoreCatalog({ channel, products, categories, active, q }: { channel: Channel; products: CatalogProduct[]; categories: Cat[]; active?: string; q?: string }) {
+  const { base } = CHANNELS[channel];
+  const retail = channel === "retail";
+  const moq = products[0]?.moq ?? 12;
   const current = categories.find((c) => c.slug === active);
   const href = (slug?: string) => {
     const sp = new URLSearchParams();
@@ -35,10 +40,14 @@ export function RetailCatalog({ base, products, categories, active, q }: { base:
         <img src="/landing/hero.jpg" alt="" className="absolute inset-0 h-full w-full object-cover object-right" />
         <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/90 via-zinc-950/40 to-zinc-950/10" />
         <div className="relative flex min-h-72 flex-col justify-end gap-3 px-6 pt-24 pb-8 sm:min-h-96 sm:pb-10">
-          <div className="rise font-mono text-[10px] uppercase tracking-[0.2em] text-zinc-300">Retail · single pieces · same stock as the shops</div>
-          <h1 className="rise font-display text-6xl uppercase leading-[0.9] tracking-tight [--i:1] sm:text-8xl">{current ? current.name : "Shop the drop"}</h1>
+          <div className="rise font-mono text-[10px] uppercase tracking-[0.2em] text-zinc-300">
+            {retail ? "Retail · single pieces · same stock as the shops" : `Wholesale · min ${moq} pcs per style · mix sizes and colors`}
+          </div>
+          <h1 className="rise font-display text-6xl uppercase leading-[0.9] tracking-tight [--i:1] sm:text-8xl">{current ? current.name : retail ? "Shop the drop" : "Stock up"}</h1>
           <p className="rise max-w-md text-sm font-medium text-zinc-200 [--i:2] sm:text-base">
-            Pick a size and color, order in a minute, pay by GCash, Maya or bank transfer once we confirm.
+            {retail
+              ? "Pick a size and color, order in a minute, pay by GCash, Maya or bank transfer once we confirm."
+              : "Tier prices drop as you add more of a style. Send the request, we confirm the total, you pay by GCash, Maya or bank transfer."}
           </p>
         </div>
       </section>
@@ -83,7 +92,8 @@ export function RetailCatalog({ base, products, categories, active, q }: { base:
         <ul className="grid grid-cols-2 gap-x-4 gap-y-10 px-6 py-8 md:grid-cols-3 xl:grid-cols-4">
           {products.map((p, i) => {
             const out = p.available <= 0;
-            const low = !out && p.available <= 3;
+            const low = !out && p.available <= (retail ? 3 : p.moq * 2);
+            const tier = retail ? null : bestTier(p.basePrice, p.tiers);
             return (
               <li key={p.id} className="reveal" style={{ "--i": i % 4 } as React.CSSProperties}>
                 <Link href={`${base}/product/${p.slug}`} className="group block">
@@ -98,7 +108,7 @@ export function RetailCatalog({ base, products, categories, active, q }: { base:
                     {out ? (
                       <span className="absolute top-3 left-3 bg-zinc-950 px-2 py-1 text-[10px] font-bold uppercase tracking-[0.15em] text-white">Sold out</span>
                     ) : low ? (
-                      <span className="absolute top-3 left-3 bg-white px-2 py-1 text-[10px] font-bold uppercase tracking-[0.15em] text-zinc-950">Only {p.available} left</span>
+                      <span className="absolute top-3 left-3 bg-white px-2 py-1 text-[10px] font-bold uppercase tracking-[0.15em] text-zinc-950">{retail ? `Only ${p.available} left` : `Low · ${p.available} pcs`}</span>
                     ) : null}
                     <span className="absolute right-3 bottom-3 flex size-9 items-center justify-center bg-white text-zinc-950 opacity-0 transition group-hover:opacity-100">
                       <ArrowUpRight className="size-4" />
@@ -106,8 +116,15 @@ export function RetailCatalog({ base, products, categories, active, q }: { base:
                   </div>
                   <div className={`mt-3 ${label}`}>{p.category ?? "Style"}</div>
                   <div className="mt-1 line-clamp-2 font-bold uppercase leading-tight group-hover:underline underline-offset-4">{p.name}</div>
-                  <div className="mt-1 font-display text-xl leading-none">
-                    {peso(p.basePrice)} <span className={label}>per {p.unit}</span>
+                  <div className="mt-1 flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                    <span className="font-display text-xl leading-none">
+                      {peso(p.basePrice)} <span className={label}>per {p.unit}</span>
+                    </span>
+                    {!retail && tier && (
+                      <span className="bg-zinc-100 px-1.5 py-0.5 font-mono text-[10px] font-medium uppercase tracking-[0.15em] text-zinc-700">
+                        {peso(tier.price)} at {tier.minQty}+
+                      </span>
+                    )}
                   </div>
                 </Link>
               </li>
