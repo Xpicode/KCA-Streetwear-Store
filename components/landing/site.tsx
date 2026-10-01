@@ -7,6 +7,16 @@ export const label = "font-mono text-[10px] font-medium uppercase tracking-[0.2e
 export const navLink = "text-xs font-bold uppercase tracking-[0.15em]";
 export const container = "mx-auto max-w-[1400px] px-5";
 
+/** Placeholder art per category slug, used wherever a product has no photo yet. */
+const ART: Record<string, string> = {
+  tees: "/landing/tee.svg",
+  caps: "/landing/cap.svg",
+  outerwear: "/landing/hoodie.svg",
+  bottoms: "/landing/pants.svg",
+  accessories: "/landing/tote.svg",
+};
+export const artFor = (slug: string | null | undefined) => (slug && ART[slug]) || "/landing/box.svg";
+
 const NAV = [
   { href: "/", label: "Home" },
   { href: "/how-to-order", label: "How to order" },

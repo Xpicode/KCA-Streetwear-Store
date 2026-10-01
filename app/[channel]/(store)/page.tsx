@@ -6,6 +6,7 @@ import { getCartLines, getCatalog, getShopCategories } from "@/lib/queries/catal
 import { CatalogFilters } from "@/components/shop/catalog-filters";
 import { ProductCard } from "@/components/shop/product-card";
 import { MobileCartBar } from "@/components/shop/mobile-cart-bar";
+import { RetailCatalog } from "@/components/shop/retail-catalog";
 
 export const dynamic = "force-dynamic";
 
@@ -27,17 +28,24 @@ export default async function CatalogPage({ params, searchParams }: { params: Pa
   const activeCategory = categories.find((c) => c.slug === category);
   const moq = products[0]?.moq ?? 12;
 
+  if (retail) {
+    return (
+      <>
+        <RetailCatalog base={channel.base} products={products} categories={categories} active={category} q={q} />
+        <MobileCartBar base={channel.base} lines={cartSummary.lines.length} units={cartSummary.units} subtotal={cartSummary.subtotal} />
+      </>
+    );
+  }
+
   return (
     <div className="flex flex-col gap-5 pb-20 md:pb-0">
       <div>
-        <h1 className="text-2xl font-extrabold tracking-tight">{activeCategory ? activeCategory.name : retail ? "Retail store" : "Catalog"}</h1>
+        <h1 className="text-2xl font-extrabold tracking-tight">{activeCategory ? activeCategory.name : "Catalog"}</h1>
         <p className="text-sm font-medium text-zinc-500">
           {q ? (
             <>
               {products.length} {products.length === 1 ? "result" : "results"} for “{q}”
             </>
-          ) : retail ? (
-            <>Retail prices · buy one piece or more · delivery nationwide</>
           ) : (
             <>Wholesale prices · minimum {moq} pcs per style, mix sizes and colors</>
           )}

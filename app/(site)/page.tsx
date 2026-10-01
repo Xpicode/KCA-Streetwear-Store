@@ -4,18 +4,10 @@ import { ArrowUpRight } from "lucide-react";
 import { getLandingData } from "@/lib/queries/landing";
 import { peso } from "@/lib/format";
 import { Carousel } from "@/components/landing/carousel";
-import { SectionBar, container, label, navLink } from "@/components/landing/site";
+import { SectionBar, artFor, container, label, navLink } from "@/components/landing/site";
 
 export const dynamic = "force-dynamic";
 
-const ART: Record<string, string> = {
-  tees: "/landing/tee.svg",
-  caps: "/landing/cap.svg",
-  outerwear: "/landing/hoodie.svg",
-  bottoms: "/landing/pants.svg",
-  accessories: "/landing/tote.svg",
-};
-const artFor = (slug: string | null | undefined) => (slug && ART[slug]) || "/landing/box.svg";
 
 export default async function LandingPage() {
   const { cats, featured, stats } = await getLandingData();
