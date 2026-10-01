@@ -132,6 +132,42 @@ export function StoreCatalog({ channel, products, categories, active, q }: { cha
           })}
         </ul>
       )}
+
+      {/* how to order */}
+      <section className="border-t border-zinc-950 px-6 py-12">
+        <div className="flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <div className={label}>How to order</div>
+            <h2 className="mt-2 font-display text-4xl uppercase leading-none sm:text-5xl">No account. No payment up front.</h2>
+          </div>
+          <Link href="/how-to-order" className="flex items-center gap-1 text-xs font-bold uppercase tracking-[0.15em] underline-offset-4 hover:underline">
+            Full details <ArrowUpRight className="size-4" />
+          </Link>
+        </div>
+        <ol className="mt-8 grid gap-px border border-zinc-950 bg-zinc-950 md:grid-cols-4">
+          {(retail
+            ? [
+                ["Pick", "Open a product, choose the size and color, set how many. Stock shown is live."],
+                ["Send", "Checkout asks for your name, mobile number and address. That is all."],
+                ["Confirm", "We message you the final total with delivery. Nothing is charged yet."],
+                ["Pay & ship", "Pay by GCash, Maya or bank transfer and send the reference. It ships the same day."],
+              ]
+            : [
+                ["Build", `At least ${moq} pcs per style, sizes and colors mixed. The tier price applies on its own.`],
+                ["Send", "Checkout asks for your shop name, contact person, mobile number and address."],
+                ["Confirm", "We check stock and message you the final total with delivery. Nothing is charged yet."],
+                ["Pay & ship", "Pay by GCash, Maya or bank transfer and send the reference. It ships the same day."],
+              ]
+          ).map(([title, text], i) => (
+            <li key={title} className="reveal flex flex-col gap-3 bg-white p-6" style={{ "--i": i } as React.CSSProperties}>
+              <span className="font-display text-4xl leading-none text-zinc-300">{String(i + 1).padStart(2, "0")}</span>
+              <h3 className="font-bold uppercase leading-tight">{title}</h3>
+              <p className="text-sm font-medium text-zinc-600">{text}</p>
+            </li>
+          ))}
+        </ol>
+        <p className={`mt-4 ${label}`}>Payment: GCash · Maya · Bank transfer · Pickup in Cavite by arrangement</p>
+      </section>
     </div>
   );
 }
