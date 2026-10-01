@@ -155,7 +155,7 @@ export default async function LandingPage() {
                 <li key={c.id} className="border-b border-zinc-950">
                   <Link
                     href={`/shop?category=${c.slug}`}
-                    className="reveal group relative isolate flex items-center gap-4 px-2 py-5 transition hover:text-white before:absolute before:inset-0 before:-z-10 before:-translate-x-full before:bg-zinc-950 before:transition-transform before:duration-300 hover:before:translate-x-0 sm:gap-8 sm:py-7"
+                    className="reveal group relative isolate flex items-center gap-4 overflow-hidden px-2 py-5 transition hover:text-white before:absolute before:inset-0 before:-z-10 before:-translate-x-full before:bg-zinc-950 before:transition-transform before:duration-300 hover:before:translate-x-0 sm:gap-8 sm:py-7"
                     style={{ "--i": i } as React.CSSProperties}
                   >
                     <span className="w-8 font-mono text-xs text-zinc-500 group-hover:text-zinc-400">{String(i + 1).padStart(2, "0")}</span>
