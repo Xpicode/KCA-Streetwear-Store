@@ -14,6 +14,7 @@ import { CartProblem, createStorefrontOrder } from "@/lib/shop-orders";
 import { OrderError } from "@/lib/orders";
 import type { ActionState } from "@/components/ui/form-message";
 import { PAYMENT_OPTIONS } from "@/components/shop/payment-options";
+import { formatAddress, type AddressParts } from "@/lib/address";
 
 const channelSchema = z.enum(CHANNEL_KEYS as [Channel, ...Channel[]]);
 
@@ -24,12 +25,17 @@ const schema = z.object({
   contactName: z.string().trim().max(120).optional().default(""),
   phone: z.string().trim().min(7, "Enter a contact number"),
   email: z.string().trim().toLowerCase().email("Enter a valid email").optional().or(z.literal("")),
-  address: z.string().trim().min(5, "Enter the delivery address"),
+  addrStreet: z.string().trim().min(3, "Enter the house / unit number and street").max(200),
+  addrSubdivision: z.string().trim().max(120).optional().default(""),
+  addrBarangay: z.string().trim().min(2, "Enter the barangay").max(120),
+  addrCity: z.string().trim().min(2, "Enter the city or municipality").max(120),
+  addrProvince: z.string().trim().max(120).optional().default(""),
+  addrZip: z.string().trim().regex(/^[0-9]{4}$/, "ZIP code is 4 digits").optional().or(z.literal("")),
   payment: z.enum(PAYMENT_OPTIONS.map((p) => p.value) as [string, ...string[]], { message: "Pick a preferred payment" }),
   note: z.string().trim().max(1000, "Note is too long").optional().default(""),
 });
 
-type ContactDetails = { shopName: string; contactName: string; phone: string; email?: string; address: string };
+type ContactDetails = { shopName: string; contactName: string; phone: string; email?: string; address: string; addressParts: AddressParts };
 
 type ResolvedCustomer = {
   id: number;
@@ -73,6 +79,7 @@ async function resolveCustomer(channel: Channel, d: ContactDetails): Promise<Res
     contactName: d.contactName,
     phone: d.phone,
     address: d.address,
+    addressParts: d.addressParts,
     ...(d.email ? { email: d.email } : {}),
   };
 
@@ -121,16 +128,28 @@ export async function placeOrder(_prev: ActionState, formData: FormData): Promis
   const channel = d.channel;
   const base = CHANNELS[channel].base;
   const contactName = d.contactName || d.shopName;
+  const addressParts: AddressParts = {
+    street: d.addrStreet,
+    subdivision: d.addrSubdivision,
+    barangay: d.addrBarangay,
+    city: d.addrCity,
+    province: d.addrProvince,
+    zip: d.addrZip ?? "",
+  };
+  const address = formatAddress(addressParts);
   let customer: ResolvedCustomer;
   try {
-    customer = await resolveCustomer(channel, { ...d, contactName });
+    customer = await resolveCustomer(channel, { shopName: d.shopName, contactName, phone: d.phone, email: d.email, address, addressParts });
   } catch {
     return { error: "We couldn't save your details — if you used an email, it may already belong to another customer. Try leaving email blank." };
   }
   const payment = PAYMENT_OPTIONS.find((p) => p.value === d.payment)?.label ?? d.payment;
 
   const note = [
-    `Deliver to: ${d.shopName}${contactName !== d.shopName ? ` · ${contactName}` : ""} · ${d.phone} · ${d.address.replace(/\s*\n\s*/g, ", ")}`,
+    contactName !== d.shopName ? `Shop: ${d.shopName}` : null,
+    `Receiver Name: ${contactName}`,
+    `Contact Number: ${d.phone}`,
+    `Address: ${address}`,
     `Preferred payment: ${payment}`,
     d.note ? `Note: ${d.note}` : null,
     customer.verified

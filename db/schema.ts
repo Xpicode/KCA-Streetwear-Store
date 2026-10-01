@@ -1,4 +1,5 @@
 import {
+  jsonb,
   pgTable,
   pgEnum,
   serial,
@@ -11,6 +12,7 @@ import {
   uniqueIndex,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
+import type { AddressParts } from "../lib/address";
 
 // ---------------------------------------------------------------------------
 // Enums
@@ -58,6 +60,8 @@ export const customers = pgTable("customers", {
   phone: text("phone"),
   email: text("email").unique(),
   address: text("address"),
+  /** The checkout address fields as typed, so the form can be prefilled next time. `address` is the one-line version. */
+  addressParts: jsonb("address_parts").$type<AddressParts>(),
   priceGroup: text("price_group").notNull().default("standard"),
   status: customerStatus("status").notNull().default("pending"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),

@@ -57,6 +57,13 @@
       "when": 1790751748665,
       "tag": "0007_product-retail-price",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1790847374582,
+      "tag": "0008_customer-address-parts",
+      "breakpoints": true
     }
   ]
 }

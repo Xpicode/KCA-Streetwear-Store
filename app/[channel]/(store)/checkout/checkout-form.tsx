@@ -13,6 +13,7 @@ import type { Channel } from "@/lib/channel";
 
 export function CheckoutForm({ channel, shopper }: { channel: Channel; shopper: Shopper | null }) {
   const c = shopper;
+  const a = c?.addressParts;
   const retail = channel === "retail";
   const [state, action] = useActionState(placeOrder, null);
   return (
@@ -48,9 +49,32 @@ export function CheckoutForm({ channel, shopper }: { channel: Channel; shopper: 
               </div>
             </>
           )}
-          <Field label="Delivery address">
-            <Textarea name="address" defaultValue={c?.address ?? ""} required />
-          </Field>
+          <fieldset className="flex flex-col gap-4">
+            <legend className="mb-3 text-xs font-bold text-zinc-700">Delivery address</legend>
+            <Field label="House / unit / block number & street name">
+              {/* customers from before the split have one address line: start them in this field */}
+              <Input name="addrStreet" defaultValue={a?.street ?? c?.address ?? ""} placeholder="e.g. 123 St. Jude Street" autoComplete="address-line1" required />
+            </Field>
+            <Field label="Subdivision / village / building (optional)">
+              <Input name="addrSubdivision" defaultValue={a?.subdivision ?? ""} placeholder="e.g. Greenview Subdivision" autoComplete="address-line2" />
+            </Field>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Field label="Barangay">
+                <Input name="addrBarangay" defaultValue={a?.barangay ?? ""} placeholder="e.g. Barangay Vasra" required />
+              </Field>
+              <Field label="City or municipality">
+                <Input name="addrCity" defaultValue={a?.city ?? ""} placeholder="e.g. Quezon City" autoComplete="address-level2" required />
+              </Field>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Field label="Province" hint="Leave blank, or write Metro Manila if it applies.">
+                <Input name="addrProvince" defaultValue={a?.province ?? ""} placeholder="e.g. Cavite" autoComplete="address-level1" />
+              </Field>
+              <Field label="Postal / ZIP code (optional)">
+                <Input name="addrZip" defaultValue={a?.zip ?? ""} placeholder="e.g. 1128" inputMode="numeric" pattern="[0-9]{4}" maxLength={4} autoComplete="postal-code" />
+              </Field>
+            </div>
+          </fieldset>
           <Field label="Email (optional)" hint="Only if you want order updates by email too.">
             <Input name="email" type="email" defaultValue={c?.email ?? ""} />
           </Field>

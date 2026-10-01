@@ -12,6 +12,7 @@ import { db } from "@/db";
 import { customers } from "@/db/schema";
 import { signPayload, verifyPayload } from "@/lib/auth";
 import { CHANNELS, type Channel } from "@/lib/channel";
+import type { AddressParts } from "@/lib/address";
 
 const MAX_AGE = 60 * 60 * 24 * 365;
 
@@ -22,6 +23,7 @@ export type Shopper = {
   email: string | null;
   phone: string | null;
   address: string | null;
+  addressParts: AddressParts | null;
   priceGroup: string;
   status: "pending" | "approved" | "blocked";
 };
@@ -38,6 +40,7 @@ export const getShopper = cache(async (channel: Channel): Promise<Shopper | null
       email: customers.email,
       phone: customers.phone,
       address: customers.address,
+      addressParts: customers.addressParts,
       priceGroup: customers.priceGroup,
       status: customers.status,
     })
