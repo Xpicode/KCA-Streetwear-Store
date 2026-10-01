@@ -12,8 +12,7 @@ gsap.registerPlugin(useGSAP);
  * it is on screen from the first paint; client-side navigation keeps the layout mounted, so
  * moving between pages does not replay it.
  *
- * GSAP timeline: the logo sharpens in, the line under it fills while a counter runs 0 → 100,
- * then the white sheet lifts and a black sheet chases it off the top of the screen.
+ * GSAP timeline: the logo sharpens in, the line under it fills, then the white sheet lifts and a black sheet chases it off the top of the screen.
  */
 export function Splash() {
   const [done, setDone] = useState(false);
@@ -25,14 +24,11 @@ export function Splash() {
         setDone(true);
         return;
       }
-      const count = root.current!.querySelector<HTMLElement>(".splash-count")!;
-      const progress = { v: 0 };
       gsap
         .timeline({ defaults: { ease: "power3.out" }, onComplete: () => setDone(true) })
         .to(".splash-logo", { opacity: 1, scale: 1, filter: "blur(0px)", duration: 0.9 }, 0.1)
         .to(".splash-meter", { opacity: 1, duration: 0.4 }, 0.3)
         .to(".splash-bar", { scaleX: 1, duration: 1.6, ease: "power2.inOut" }, 0.3)
-        .to(progress, { v: 100, duration: 1.6, ease: "power2.inOut", onUpdate: () => (count.textContent = String(Math.round(progress.v))) }, 0.3)
         .to(".splash-logo", { y: -12, duration: 0.5, ease: "power2.in" }, 1.75)
         .to(".splash-meter", { opacity: 0, duration: 0.3 }, 1.9)
         .to(".splash-white", { yPercent: -100, duration: 0.65, ease: "power4.inOut" }, 2.05)
@@ -47,13 +43,8 @@ export function Splash() {
       <div className="splash-black absolute inset-0 bg-zinc-950" />
       <div className="splash-white absolute inset-0 flex flex-col items-center justify-center bg-white">
         <img src="/landing/logo.png" alt="" className="splash-logo w-64 scale-90 opacity-0 blur-lg sm:w-96" />
-        <div className="splash-meter mt-10 flex flex-col items-center gap-3 opacity-0">
-          <div className="h-0.5 w-40 overflow-hidden bg-zinc-200">
-            <div className="splash-bar h-full w-full origin-left scale-x-0 bg-zinc-950" />
-          </div>
-          <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-zinc-500">
-            Loading <span className="splash-count tabular-nums text-zinc-950">0</span>%
-          </div>
+        <div className="splash-meter mt-10 h-0.5 w-40 overflow-hidden bg-zinc-200 opacity-0">
+          <div className="splash-bar h-full w-full origin-left scale-x-0 bg-zinc-950" />
         </div>
       </div>
     </div>
