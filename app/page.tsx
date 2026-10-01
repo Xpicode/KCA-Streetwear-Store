@@ -73,28 +73,30 @@ export default async function LandingPage() {
       </header>
 
       {/* hero */}
-      <section className="border-b border-zinc-950">
-        <div className={`${container} pt-12 pb-10 lg:pt-16`}>
+      <section className="relative border-b border-zinc-950 bg-zinc-950 text-white">
+        <img src="/landing/hero.jpg" alt="" className="absolute inset-0 h-full w-full object-cover object-right" />
+        <div className="absolute inset-0 bg-gradient-to-r from-zinc-950/90 via-zinc-950/60 to-zinc-950/30" />
+        <div className={`${container} relative pt-16 pb-12 lg:pt-24 lg:pb-16`}>
           <h1 className="font-display text-[15vw] uppercase leading-[0.86] tracking-tight sm:text-[13vw] lg:text-[10rem] xl:text-[11.5rem]">
-            <span className="rise block">Stock up<span className="text-zinc-300">.</span></span>
-            <span className="rise block [--i:1]">Sell out<span className="text-zinc-300">.</span></span>
+            <span className="rise block">Stock up<span className="text-white/40">.</span></span>
+            <span className="rise block [--i:1]">Sell out<span className="text-white/40">.</span></span>
           </h1>
-          <div className="mt-10 grid gap-8 border-t border-zinc-950 pt-8 lg:grid-cols-[1.2fr_1fr_auto] lg:items-end">
-            <p className="rise max-w-md text-lg font-medium text-zinc-600 [--i:2]">
+          <div className="mt-10 grid gap-8 border-t border-white/30 pt-8 lg:grid-cols-[1.2fr_1fr_auto] lg:items-end">
+            <p className="rise max-w-md text-lg font-medium text-zinc-200 [--i:2]">
               Tees, caps, hoodies and bags from our own stock. Browse what&rsquo;s in the warehouse right now, mix sizes and
               colors, and send an order request in minutes. No account. We confirm by message, you pay by GCash, Maya or bank
               transfer, and it ships the same day.
             </p>
-            <dl className="rise grid grid-cols-3 gap-6 [--i:3]">
+            <dl className="rise grid grid-cols-3 gap-6 [--i:3] [&_dd]:text-zinc-300">
               {stats.styles > 0 && <Stat value={`${stats.styles}+`} label="styles in stock" />}
               <Stat value={`${stats.minMoq}`} label="pcs min. per style" />
               <Stat value="24/7" label="open, order anytime" />
             </dl>
             <div className="rise flex flex-wrap gap-3 [--i:4]">
-              <Link href="/retail" className={`flex h-12 items-center gap-2 bg-zinc-950 px-6 text-white hover:bg-zinc-800 ${navLink}`}>
+              <Link href="/retail" className={`flex h-12 items-center gap-2 bg-white px-6 text-zinc-950 hover:bg-zinc-200 ${navLink}`}>
                 Shop retail <ArrowUpRight className="size-4" />
               </Link>
-              <Link href="/shop" className={`flex h-12 items-center border border-zinc-950 px-6 hover:bg-zinc-100 ${navLink}`}>
+              <Link href="/shop" className={`flex h-12 items-center border border-white px-6 hover:bg-white/10 ${navLink}`}>
                 Wholesale catalog
               </Link>
             </div>
