@@ -7,7 +7,7 @@ import { readCart } from "@/lib/cart";
 import { getCartLines } from "@/lib/queries/catalog";
 import { peso } from "@/lib/format";
 import { cn } from "@/lib/utils";
-import { CartLineRow } from "./cart-line";
+import { CartLineRow } from "@/components/shop/cart-line";
 
 export const dynamic = "force-dynamic";
 

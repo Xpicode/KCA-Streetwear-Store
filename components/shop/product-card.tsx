@@ -6,6 +6,7 @@ import { Check, ShoppingCart } from "lucide-react";
 import { addToCart } from "@/actions/cart";
 import type { CatalogProduct } from "@/lib/queries/catalog";
 import { CHANNELS } from "@/lib/channel";
+import { cartDrawer } from "@/lib/cart-drawer";
 import { variantLabel, variantSummary } from "./variant-label";
 import { peso } from "@/lib/format";
 import { cn } from "@/lib/utils";
@@ -37,6 +38,7 @@ export function ProductCard({ product: p, inCart }: { product: CatalogProduct; i
     startTransition(async () => {
       const r = await addToCart(p.channel, variant.id, qty);
       setFlash(r?.error ? r.error : "added");
+      if (!r?.error) cartDrawer.open();
     });
   }
 

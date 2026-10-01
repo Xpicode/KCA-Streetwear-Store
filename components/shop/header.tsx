@@ -1,9 +1,10 @@
 import Link from "next/link";
-import { ShoppingCart, Search, PackageSearch, ArrowLeftRight } from "lucide-react";
+import { Search, PackageSearch, ArrowLeftRight } from "lucide-react";
 import type { Shopper } from "@/lib/shopper";
 import { CHANNELS, otherChannel, type Channel } from "@/lib/channel";
 import { BRAND } from "@/lib/brand";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { CartButton } from "./cart-button";
 
 export function ShopHeader({ channel, shopper, cartCount }: { channel: Channel; shopper: Shopper | null; cartCount: number }) {
   const { base } = CHANNELS[channel];
@@ -40,13 +41,7 @@ export function ShopHeader({ channel, shopper, cartCount }: { channel: Channel; 
             </span>
           )}
           <ThemeToggle className="hidden sm:flex" />
-          <Link href={`${base}/cart`} className="flex h-10 items-center gap-2 rounded-lg bg-zinc-900 px-3 text-sm font-bold text-white sm:px-4">
-            <ShoppingCart className="size-4" />
-            <span className="hidden sm:inline">Cart</span>
-            {cartCount > 0 && (
-              <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-brand-600 px-1.5 text-[11px]">{cartCount}</span>
-            )}
-          </Link>
+          <CartButton count={cartCount} />
         </div>
       </div>
     </header>

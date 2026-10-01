@@ -32,7 +32,7 @@ export default async function CatalogPage({ params, searchParams }: { params: Pa
     return (
       <>
         <RetailCatalog base={channel.base} products={products} categories={categories} active={category} q={q} />
-        <MobileCartBar base={channel.base} lines={cartSummary.lines.length} units={cartSummary.units} subtotal={cartSummary.subtotal} />
+        <MobileCartBar lines={cartSummary.lines.length} units={cartSummary.units} subtotal={cartSummary.subtotal} />
       </>
     );
   }
@@ -67,7 +67,7 @@ export default async function CatalogPage({ params, searchParams }: { params: Pa
         </div>
       )}
 
-      <MobileCartBar base={channel.base} lines={cartSummary.lines.length} units={cartSummary.units} subtotal={cartSummary.subtotal} />
+      <MobileCartBar lines={cartSummary.lines.length} units={cartSummary.units} subtotal={cartSummary.subtotal} />
     </div>
   );
 }

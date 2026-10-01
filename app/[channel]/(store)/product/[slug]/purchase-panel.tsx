@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState, useTransition } from "react";
 import { Check, ShoppingCart } from "lucide-react";
 import { addToCart } from "@/actions/cart";
+import { cartDrawer } from "@/lib/cart-drawer";
 import type { CatalogProduct, CatalogVariant } from "@/lib/queries/catalog";
 import { CHANNELS } from "@/lib/channel";
 import { unitPriceFor, nextTier } from "@/lib/pricing";
@@ -58,6 +59,7 @@ export function PurchasePanel({ product: p, priceGroup, inCart }: { product: Cat
     startTransition(async () => {
       const r = await addToCart(p.channel, variant.id, qty);
       setFlash(r?.error ? r.error : "added");
+      if (!r?.error) cartDrawer.open();
     });
   }
 

@@ -8,8 +8,8 @@ import type { CartLine as Line } from "@/lib/queries/catalog";
 import { CHANNELS, type Channel } from "@/lib/channel";
 import { peso } from "@/lib/format";
 import { cn } from "@/lib/utils";
-import { QtyStepper } from "@/components/shop/qty-stepper";
-import { ProductImage } from "@/components/shop/product-image";
+import { QtyStepper } from "./qty-stepper";
+import { ProductImage } from "./product-image";
 
 export function CartLineRow({ channel, line }: { channel: Channel; line: Line }) {
   const { base } = CHANNELS[channel];
