@@ -57,7 +57,9 @@ export default async function ProductDetailPage({
           </Link>
           <div className="flex items-center gap-3">
             <h1 className="truncate text-2xl font-extrabold tracking-tight">{p.name}</h1>
-            <Badge tone={p.isActive ? "green" : "red"}>{p.isActive ? "Active" : "Inactive"}</Badge>
+            <Badge tone={p.isActive ? "green" : "red"}>
+              {!p.isActive ? "Hidden" : p.showIn === "both" ? "Wholesale + retail" : p.showIn === "wholesale" ? "Wholesale only" : "Retail only"}
+            </Badge>
           </div>
           <p className="text-sm font-medium text-zinc-500">
             {p.sku} · {p.category ?? "No category"} · per {p.unit} · MOQ {p.moq}

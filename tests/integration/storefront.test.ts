@@ -2,7 +2,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { eq } from "drizzle-orm";
 import { db } from "@/db";
-import { orderItems, orders } from "@/db/schema";
+import { orderItems, orders, products } from "@/db/schema";
 import { getCartLines, getCatalog, getProductBySlug } from "@/lib/queries/catalog";
 import { CartProblem, createStorefrontOrder } from "@/lib/shop-orders";
 import { resetDb, seedBasics } from "../helpers/fixtures";
@@ -96,5 +96,22 @@ describe("retail channel", () => {
     expect(line).toMatchObject({ qty: 2, unitPrice: 150, lineTotal: 300 });
     const [row] = await db.select({ source: orders.source, total: orders.total }).from(orders).where(eq(orders.id, o.id));
     expect(row).toMatchObject({ source: "retail", total: 300 });
+  });
+});
+
+describe("show on website", () => {
+  it("a product limited to one store is not listed, opened or kept in the cart in the other", async () => {
+    const slugs = async (channel: "wholesale" | "retail") => (await getCatalog({ priceGroup: "standard", channel })).map((p) => p.slug);
+
+    await db.update(products).set({ showIn: "retail" }).where(eq(products.id, fx.productId));
+    expect(await slugs("wholesale")).toEqual(["cap"]);
+    expect(await slugs("retail")).toEqual(["tee"]);
+    expect(await getProductBySlug("tee", "standard", "wholesale")).toBeNull();
+    expect((await getCartLines({ [fx.variantId]: 5 }, "standard", "wholesale")).lines).toEqual([]);
+
+    await db.update(products).set({ showIn: "wholesale" }).where(eq(products.id, fx.productId));
+    expect(await slugs("wholesale")).toEqual(["cap", "tee"]);
+    expect(await slugs("retail")).toEqual([]);
+    expect(await getProductBySlug("tee", "standard", "retail")).toBeNull();
   });
 });

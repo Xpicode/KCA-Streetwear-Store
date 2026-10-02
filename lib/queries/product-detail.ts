@@ -66,6 +66,7 @@ export type ProductDetail = {
   moq: number;
   reorderLevel: number;
   isActive: boolean;
+  showIn: "both" | "wholesale" | "retail";
   categoryId: number | null;
   category: string | null;
   createdAt: Date;
@@ -100,6 +101,7 @@ export async function getProductDetail(id: number): Promise<ProductDetail | null
       moq: products.moq,
       reorderLevel: products.reorderLevel,
       isActive: products.isActive,
+      showIn: products.showIn,
       categoryId: products.categoryId,
       category: categories.name,
       createdAt: products.createdAt,

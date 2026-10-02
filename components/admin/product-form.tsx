@@ -31,6 +31,7 @@ export type ProductFormValues = {
   moq: number;
   reorderLevel: number;
   isActive: boolean;
+  showIn: "both" | "wholesale" | "retail";
 };
 
 export type VariantFormRow = {
@@ -70,6 +71,7 @@ const EMPTY: ProductFormValues = {
   moq: 1,
   reorderLevel: 0,
   isActive: true,
+  showIn: "both",
 };
 
 let keySeq = 1;
@@ -391,11 +393,14 @@ export function ProductForm({
                 <Input name="initialStock" type="number" min="0" step="1" defaultValue={0} />
               </Field>
             )}
-            <label className="flex min-h-10 cursor-pointer items-center gap-3 rounded-lg border border-zinc-200 px-3 py-2">
-              <input type="checkbox" name="isActive" defaultChecked={p.isActive} className="size-4 accent-brand-700" />
-              <span className="text-sm font-bold">Active</span>
-              <span className="text-xs text-zinc-500">Inactive products are hidden from the storefront and stock-in.</span>
-            </label>
+            <Field label="Show on website" hint="Where customers can see this product. The retail store also needs a retail price. Hidden products are left out of stock-in too.">
+              <Select name="visibility" defaultValue={p.isActive ? p.showIn : "hidden"}>
+                <option value="both">Wholesale and retail</option>
+                <option value="wholesale">Wholesale store only</option>
+                <option value="retail">Retail store only</option>
+                <option value="hidden">Hidden (not on the website)</option>
+              </Select>
+            </Field>
           </CardBody>
         </Card>
       </div>

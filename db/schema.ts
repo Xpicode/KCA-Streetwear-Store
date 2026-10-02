@@ -27,6 +27,8 @@ export const orderStatus = pgEnum("order_status", [
   "paid",
   "cancelled",
 ]);
+/** Which store(s) list a product. Hiding it from both is products.is_active = false. */
+export const productShowIn = pgEnum("product_show_in", ["both", "wholesale", "retail"]);
 export const paymentStatus = pgEnum("payment_status", ["unpaid", "partial", "paid"]);
 export const movementType = pgEnum("movement_type", ["in", "sale", "adjust", "return"]);
 export const paymentMethod = pgEnum("payment_method", ["cash", "bank", "ewallet"]);
@@ -96,6 +98,7 @@ export const products = pgTable(
     moq: integer("moq").notNull().default(1),
     reorderLevel: integer("reorder_level").notNull().default(0),
     isActive: boolean("is_active").notNull().default(true),
+    showIn: productShowIn("show_in").notNull().default("both"),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (t) => [index("products_category_idx").on(t.categoryId)]

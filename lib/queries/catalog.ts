@@ -5,6 +5,7 @@
  * Channel rules (see lib/channel.ts):
  *   wholesale — base price / variant override, price-group tiers, per-style MOQ
  *   retail    — flat products.retail_price, no tiers, MOQ 1; products without a retail price are hidden
+ * A product can also be limited to one store (products.show_in) — see onShelf().
  */
 import "server-only";
 import { and, eq, ilike, inArray, isNotNull, or } from "drizzle-orm";
@@ -100,12 +101,20 @@ function shape(p: RawProduct, priceGroup: string, channel: Channel): CatalogProd
   };
 }
 
+/** On a store's shelf: active, shown in that store, and (retail) has a retail price. Every storefront read and the cart go through this. */
+export function onShelf(channel: Channel) {
+  return and(
+    eq(products.isActive, true),
+    inArray(products.showIn, ["both", channel]),
+    ...(channel === "retail" ? [isNotNull(products.retailPrice)] : [])
+  )!;
+}
+
 export type CatalogFilters = { q?: string; category?: string; priceGroup: string; channel: Channel };
 
 /** Active products that have at least one active variant, for the catalog grid. */
 export async function getCatalog(f: CatalogFilters): Promise<CatalogProduct[]> {
-  const where = [eq(products.isActive, true)];
-  if (f.channel === "retail") where.push(isNotNull(products.retailPrice));
+  const where = [onShelf(f.channel)];
   if (f.q?.trim()) {
     const like = `%${f.q.trim()}%`;
     where.push(or(ilike(products.name, like), ilike(products.sku, like), ilike(products.description, like))!);
@@ -125,7 +134,7 @@ export async function getCatalog(f: CatalogFilters): Promise<CatalogProduct[]> {
 
 export async function getProductBySlug(slug: string, priceGroup: string, channel: Channel): Promise<CatalogProduct | null> {
   const row = await db.query.products.findFirst({
-    where: and(eq(products.slug, slug), eq(products.isActive, true)),
+    where: and(eq(products.slug, slug), onShelf(channel)),
     with: { category: true, variants: true, tiers: true },
   });
   return row ? shape(row, priceGroup, channel) : null;
@@ -201,8 +210,7 @@ export async function getCartLines(cart: Cart, priceGroup: string, channel: Chan
       and(
         inArray(productVariants.id, ids),
         eq(productVariants.isActive, true),
-        eq(products.isActive, true),
-        ...(retail ? [isNotNull(products.retailPrice)] : [])
+        onShelf(channel)
       )
     );
 

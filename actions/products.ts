@@ -62,6 +62,7 @@ const productSchema = z.object({
   reorderLevel: z.coerce.number().int().min(0, "Reorder level can't be negative"),
   initialStock: z.coerce.number().int().min(0, "Starting stock can't be negative").max(1_000_000, "Starting stock is too large").optional().default(0),
   isActive: z.boolean(),
+  showIn: z.enum(["both", "wholesale", "retail"], { message: "Pick where to show this product" }),
   variants: z.array(variantSchema),
   tiers: z.array(tierSchema),
 });
@@ -101,6 +102,8 @@ function readForm(formData: FormData): { data: ProductInput; newCategory: string
     return { error: "Enter the new category's name." };
   }
 
+  // one "Show on website" selection: "hidden" is the old Active switch turned off
+  const visibility = String(formData.get("visibility") ?? "both");
   const parsed = productSchema.safeParse({
     name: formData.get("name"),
     sku: formData.get("sku"),
@@ -115,7 +118,8 @@ function readForm(formData: FormData): { data: ProductInput; newCategory: string
     moq: formData.get("moq"),
     reorderLevel: formData.get("reorderLevel"),
     initialStock: formData.get("initialStock") ?? 0,
-    isActive: formData.get("isActive") === "on",
+    isActive: visibility !== "hidden",
+    showIn: visibility === "hidden" ? "both" : visibility,
     variants,
     tiers,
   });
@@ -125,6 +129,7 @@ function readForm(formData: FormData): { data: ProductInput; newCategory: string
   data.sku = data.sku.toUpperCase();
   data.slug = data.slug ? slugify(data.slug) : slugify(data.name);
   if (!data.slug) return { error: "Enter a name or a slug that contains letters or numbers." };
+  if (data.showIn === "retail" && data.retailPrice == null) return { error: "Enter a retail price to show this product in the retail store." };
 
   // a product with no options still gets one default variant; the form-level
   // starting stock belongs to it (with variant rows, each row carries its own)

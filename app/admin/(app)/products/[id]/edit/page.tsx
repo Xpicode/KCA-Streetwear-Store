@@ -48,6 +48,7 @@ export default async function EditProductPage({ params }: { params: Promise<{ id
           moq: product.moq,
           reorderLevel: product.reorderLevel,
           isActive: product.isActive,
+          showIn: product.showIn,
         }}
         initialVariants={product.variants.map((v) => ({
           id: v.id,

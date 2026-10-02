@@ -1,6 +1,6 @@
 "use server";
 
-import { and, eq, inArray, isNotNull } from "drizzle-orm";
+import { and, eq, inArray } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
@@ -10,6 +10,7 @@ import { CHANNELS, isChannel, type Channel } from "@/lib/channel";
 import { getShopper } from "@/lib/shopper";
 import { readCart, writeCart } from "@/lib/cart";
 import { getCustomerOrderLines } from "@/lib/queries/shop-orders";
+import { onShelf } from "@/lib/queries/catalog";
 import type { ActionState } from "@/components/ui/form-message";
 
 const qtySchema = z.number().int().min(0).max(9999);
@@ -26,7 +27,7 @@ function revalidateShop(channel: Channel) {
   revalidatePath(CHANNELS[channel].base, "layout");
 }
 
-/** Only variants that are active, belong to an active product, and (retail) have a retail price may enter the cart. */
+/** Only active variants of a product on this store's shelf may enter the cart. */
 async function activeVariantIds(channel: Channel, ids: number[]) {
   if (ids.length === 0) return new Set<number>();
   const rows = await db
@@ -37,8 +38,7 @@ async function activeVariantIds(channel: Channel, ids: number[]) {
       and(
         inArray(productVariants.id, ids),
         eq(productVariants.isActive, true),
-        eq(products.isActive, true),
-        ...(channel === "retail" ? [isNotNull(products.retailPrice)] : [])
+        onShelf(channel)
       )
     );
   return new Set(rows.map((r) => r.id));
