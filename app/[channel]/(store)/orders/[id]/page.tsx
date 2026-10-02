@@ -9,6 +9,7 @@ import { getShopOrder } from "@/lib/queries/shop-orders";
 import { reorderForm } from "@/actions/cart";
 import { peso } from "@/lib/format";
 import { SubmitButton } from "@/components/ui/submit-button";
+import { CopyOrderButton } from "@/components/shop/copy-order-button";
 import { fmtDate, fmtDateTime, OrderStatusBadge, PaymentBadge, PAYMENT_METHOD, StatusTrack } from "@/components/shop/order-bits";
 
 export const dynamic = "force-dynamic";
@@ -36,8 +37,18 @@ export default async function OrderDetailPage({
   if (!isOwner && !tracked) redirect(`${base}/orders`);
   const customer = { address: order.address };
 
-  const noteLines = order.note?.split("\n").filter(Boolean) ?? [];
+  // "Review:" is a staff-only line and can quote another customer's details on file: never show it to the buyer
+  const noteLines = order.note?.split("\n").filter((l) => l && !l.startsWith("Review:")) ?? [];
   const canReorder = isOwner && order.lines.length > 0; // reorder needs the owning device, not a track link
+  // plain text the buyer pastes into a chat with us
+  const copyText = [
+    `Order ${order.orderNo}`,
+    ...noteLines,
+    "",
+    "Items:",
+    ...order.lines.map((l) => `- ${l.name}${l.variant ? ` (${l.variant})` : ""} x${l.qty} = ${peso(l.lineTotal)}`),
+    `Total${order.status === "pending" ? " (to be confirmed)" : ""}: ${peso(order.total)}`,
+  ].join("\n");
 
   return (
     <div className="mx-auto flex max-w-3xl flex-col gap-5">
@@ -54,6 +65,8 @@ export default async function OrderDetailPage({
               We&apos;ll check stock and message you the confirmed total and delivery fee. Once you pay by GCash, Maya or bank transfer, your
               order ships.
             </p>
+            <p className="mt-2 text-sm font-medium text-brand-900/80">Messaging us on Facebook? Copy your order details and paste them in the chat.</p>
+            <CopyOrderButton text={copyText} variant="primary" className="mt-3" />
           </div>
         </div>
       )}
@@ -71,15 +84,18 @@ export default async function OrderDetailPage({
           </h1>
           <p className="text-sm font-medium text-zinc-500">Requested {fmtDateTime(order.requestedAt)}</p>
         </div>
-        {canReorder && (
-          <form action={reorderForm}>
-            <input type="hidden" name="channel" value={channel.key} />
-            <input type="hidden" name="orderId" value={order.id} />
-            <SubmitButton variant="outline" pendingText="Adding…" className="h-9 px-3">
-              <RotateCcw className="size-4" /> Reorder
-            </SubmitButton>
-          </form>
-        )}
+        <div className="flex flex-wrap gap-2">
+          <CopyOrderButton text={copyText} />
+          {canReorder && (
+            <form action={reorderForm}>
+              <input type="hidden" name="channel" value={channel.key} />
+              <input type="hidden" name="orderId" value={order.id} />
+              <SubmitButton variant="outline" pendingText="Adding…" className="h-9 px-3">
+                <RotateCcw className="size-4" /> Reorder
+              </SubmitButton>
+            </form>
+          )}
+        </div>
       </div>
 
       <section className="rounded-xl border border-zinc-200 bg-white px-4 py-5 sm:px-6">
