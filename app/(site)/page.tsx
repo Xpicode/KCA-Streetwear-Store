@@ -73,7 +73,7 @@ export default async function LandingPage() {
             <Carousel heading={<SectionBar no={no()} title="In stock now" />} link={{ href: "/shop", label: "View all" }}>
               {featured.map((p, i) => (
                 <li key={p.id} className="reveal w-64 shrink-0 snap-start sm:w-80" style={{ "--i": i } as React.CSSProperties}>
-                  <Link href={`/shop/product/${p.slug}`} className="group block">
+                  <Link href={`${p.retailOnly ? "/retail" : "/shop"}/product/${p.slug}`} className="group block">
                     <div className="relative aspect-square overflow-hidden bg-zinc-100">
                       {p.imageUrl ? (
                         <img src={p.imageUrl} alt={p.name} className="h-full w-full object-cover transition duration-500 group-hover:scale-105" />
@@ -108,7 +108,7 @@ export default async function LandingPage() {
               {categoryList.map((c, i) => (
                 <li key={c.id} className="border-b border-zinc-950">
                   <Link
-                    href={`/shop?category=${c.slug}`}
+                    href={`${c.retailOnly ? "/retail" : "/shop"}?category=${c.slug}`}
                     className="reveal group relative isolate flex items-center gap-4 overflow-hidden px-2 py-5 transition hover:text-white before:absolute before:inset-0 before:-z-10 before:-translate-x-full before:bg-zinc-950 before:transition-transform before:duration-300 hover:before:translate-x-0 sm:gap-8 sm:py-7"
                     style={{ "--i": i } as React.CSSProperties}
                   >
