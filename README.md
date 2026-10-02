@@ -80,7 +80,7 @@ between tests, so dev data is never touched.
   per email / 15 min, 30 per IP). Counters live in the `login_attempts` table, so they
   hold across server instances (serverless included).
 - **Uploads**: photos are type-checked by their leading bytes, resized in the browser
-  before upload, and stored outside the code (Cloudflare R2 or local disk).
+  before upload, and stored outside the code (Supabase Storage or local disk).
 - **Supabase Data API**: Supabase exposes the `public` schema over REST to the `anon` /
   `authenticated` roles by default. This app never uses that API (it connects directly),
   so migrations `0005`–`0006` enable Row Level Security on every table with no policies
@@ -98,16 +98,15 @@ between tests, so dev data is never touched.
 
 ## Deploying (Supabase + Vercel)
 
-The recommended setup: **Supabase** for the database, **Cloudflare R2** for product photos, **Vercel** for
+The recommended setup: **Supabase** for the database and product photos, **Vercel** for
 the app. Both have free tiers; HTTPS and a domain come with Vercel.
 
 1. **Supabase** — create a project (pick a region near your customers, e.g. Singapore).
    - *Project → Connect*: copy the **Transaction** pooler URL (port 6543) → `DATABASE_URL`
      and the **Session** pooler URL (port 5432) → `DIRECT_URL`. Keep `?sslmode=require`.
-   - **Cloudflare R2** (photos) — create a bucket, turn on its *Public Development URL*
-     (or connect a custom domain) → `R2_PUBLIC_URL`, bucket name → `R2_BUCKET`. Under
-     *Manage API tokens* create a token with *Object Read & Write* for that bucket →
-     `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`; the account ID is on the R2 overview → `R2_ACCOUNT_ID`.
+   - *Settings → API*: copy the **Project URL** → `SUPABASE_URL` and the **service_role**
+     key → `SUPABASE_SERVICE_ROLE_KEY`. The `products` photo bucket is created on the first
+     upload; nothing else to set up.
 2. **Create the tables and your login** from your computer, with those values in `.env.local`:
    ```bash
    npm run db:migrate
@@ -116,12 +115,12 @@ the app. Both have free tiers; HTTPS and a domain come with Vercel.
    (Do **not** run `db:seed` against Supabase — it wipes tables and installs sample logins.)
 3. **Vercel** — import the Git repository. In *Settings → Environment Variables* add
    `DATABASE_URL`, `DIRECT_URL`, `AUTH_SECRET` (a new 64-character random string),
-   and the five `R2_*` variables. Deploy. Add your domain under *Domains*.
+   `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`. Deploy. Add your domain under *Domains*.
 4. Sign in at `https://your-domain/admin/login`, add categories/products, and in Settings
    add staff accounts.
 
 **Any other host** (a VPS, Docker, Railway, Render…) also works: `npm run build && npm start`
-with the same variables behind HTTPS. Without the `R2_*` variables, photos are stored on the
+with the same variables behind HTTPS. Without `SUPABASE_URL`, photos are stored on the
 server's disk at `public/uploads/products/`, so that host needs a persistent disk.
 HTTPS is required in production: session cookies are `secure` and the CSP upgrades
 insecure requests. New migrations are applied with `npm run db:migrate` (uses `DIRECT_URL`).
