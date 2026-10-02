@@ -1,7 +1,7 @@
 /** Philippine delivery address as typed at checkout, one field per line of the form. */
 export type AddressParts = {
   street: string; // house / unit / block number & street name
-  subdivision: string; // subdivision / village / building (optional)
+  subdivision: string; // subdivision / village / building
   barangay: string;
   city: string; // city or municipality
   province: string; // optional; "Metro Manila" where it applies

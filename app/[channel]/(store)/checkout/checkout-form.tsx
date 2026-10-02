@@ -55,8 +55,8 @@ export function CheckoutForm({ channel, shopper }: { channel: Channel; shopper: 
               {/* customers from before the split have one address line: start them in this field */}
               <Input name="addrStreet" defaultValue={a?.street ?? c?.address ?? ""} placeholder="e.g. 123 St. Jude Street" autoComplete="address-line1" required />
             </Field>
-            <Field label="Subdivision / village / building (optional)">
-              <Input name="addrSubdivision" defaultValue={a?.subdivision ?? ""} placeholder="e.g. Greenview Subdivision" autoComplete="address-line2" />
+            <Field label="Subdivision / village / building">
+              <Input name="addrSubdivision" defaultValue={a?.subdivision ?? ""} placeholder="e.g. Greenview Subdivision" autoComplete="address-line2" required />
             </Field>
             <div className="grid gap-4 sm:grid-cols-2">
               <Field label="Barangay">

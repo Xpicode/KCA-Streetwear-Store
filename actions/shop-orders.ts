@@ -26,7 +26,7 @@ const schema = z.object({
   phone: z.string().trim().min(7, "Enter a contact number"),
   email: z.string().trim().toLowerCase().email("Enter a valid email").optional().or(z.literal("")),
   addrStreet: z.string().trim().min(3, "Enter the house / unit number and street").max(200),
-  addrSubdivision: z.string().trim().max(120).optional().default(""),
+  addrSubdivision: z.string().trim().min(2, "Enter the subdivision, village or building").max(120),
   addrBarangay: z.string().trim().min(2, "Enter the barangay").max(120),
   addrCity: z.string().trim().min(2, "Enter the city or municipality").max(120),
   addrProvince: z.string().trim().max(120).optional().default(""),
