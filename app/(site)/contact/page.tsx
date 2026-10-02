@@ -29,7 +29,15 @@ export default function ContactPage() {
             }
             note="Message us on Messenger"
           />
-          <Card title="Email" value={BRAND.email} note="Quotes and custom print inquiries" />
+          <Card
+            title="Instagram"
+            value={
+              <a href={BRAND.instagram} target="_blank" rel="noopener noreferrer" className="underline-offset-4 hover:underline">
+                kcastreatwear
+              </a>
+            }
+            note="New drops and restocks"
+          />
           <Card title="Location" value={BRAND.city} note="Pickup by appointment" last />
         </div>
       </section>

@@ -68,7 +68,6 @@ export function SiteFooter() {
           <div>
             <h2 className="reveal font-display text-4xl uppercase leading-none sm:text-6xl">Questions? Message us.</h2>
             <div className="mt-6 flex flex-col gap-1 font-mono text-sm text-zinc-400">
-              <span>{BRAND.email}</span>
               <span>{BRAND.city}</span>
             </div>
             <div className={`mt-6 flex flex-wrap gap-x-8 gap-y-3 ${navLink}`}>
