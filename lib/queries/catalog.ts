@@ -140,8 +140,13 @@ export async function getProductBySlug(slug: string, priceGroup: string, channel
   return row ? shape(row, priceGroup, channel) : null;
 }
 
-export async function getShopCategories() {
-  return db.select({ id: categories.id, name: categories.name, slug: categories.slug }).from(categories).orderBy(categories.sortOrder, categories.name);
+/** Category tabs for one store: only categories with a product on that store's shelf. */
+export async function getShopCategories(channel: Channel) {
+  return db
+    .selectDistinct({ id: categories.id, name: categories.name, slug: categories.slug, sortOrder: categories.sortOrder })
+    .from(categories)
+    .innerJoin(products, and(eq(products.categoryId, categories.id), onShelf(channel)))
+    .orderBy(categories.sortOrder, categories.name);
 }
 
 // ---- cart joined to the catalog ---------------------------------------------

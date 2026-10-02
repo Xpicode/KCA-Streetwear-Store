@@ -19,7 +19,7 @@ export default async function CatalogPage({ params, searchParams }: { params: Pa
   const cart = await readCart(channel.key);
   const [products, categories, cartSummary] = await Promise.all([
     getCatalog({ q, category, priceGroup, channel: channel.key }),
-    getShopCategories(),
+    getShopCategories(channel.key),
     getCartLines(cart, priceGroup, channel.key),
   ]);
 

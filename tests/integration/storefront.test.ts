@@ -2,8 +2,8 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { eq } from "drizzle-orm";
 import { db } from "@/db";
-import { orderItems, orders, products } from "@/db/schema";
-import { getCartLines, getCatalog, getProductBySlug } from "@/lib/queries/catalog";
+import { categories, orderItems, orders, products } from "@/db/schema";
+import { getCartLines, getCatalog, getProductBySlug, getShopCategories } from "@/lib/queries/catalog";
 import { CartProblem, createStorefrontOrder } from "@/lib/shop-orders";
 import { resetDb, seedBasics } from "../helpers/fixtures";
 
@@ -113,5 +113,12 @@ describe("show on website", () => {
     expect(await slugs("wholesale")).toEqual(["cap", "tee"]);
     expect(await slugs("retail")).toEqual([]);
     expect(await getProductBySlug("tee", "standard", "retail")).toBeNull();
+  });
+
+  it("a store's category tabs leave out categories with nothing in that store", async () => {
+    const [cat] = await db.insert(categories).values({ name: "Jackets", slug: "jackets" }).returning({ id: categories.id });
+    await db.update(products).set({ categoryId: cat.id, showIn: "retail" }).where(eq(products.id, fx.productId));
+    expect((await getShopCategories("retail")).map((c) => c.slug)).toEqual(["jackets"]);
+    expect(await getShopCategories("wholesale")).toEqual([]);
   });
 });
