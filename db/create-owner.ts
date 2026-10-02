@@ -4,8 +4,12 @@
  *
  *   OWNER_EMAIL=you@yourshop.com OWNER_PASSWORD='a long password' OWNER_NAME='Kian' npm run db:create-owner
  *
+ * OWNER_EMAIL is the login name: an email or a plain username. To rename an existing account
+ * (keeping its history) also set OWNER_OLD_EMAIL to its current login name.
+ *
  * Uses DIRECT_URL when set (Supabase: the session-mode / direct connection), else DATABASE_URL.
  */
+import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import { loadEnvLocal } from "./env";
@@ -20,8 +24,8 @@ function readInputs(): { email: string; password: string; name: string | undefin
   const email = process.env.OWNER_EMAIL?.trim().toLowerCase() ?? "";
   const password = process.env.OWNER_PASSWORD ?? "";
   const name = process.env.OWNER_NAME?.trim() || undefined;
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    console.error("Set OWNER_EMAIL to a valid email address.");
+  if (!/^\S{3,200}$/.test(email)) {
+    console.error("Set OWNER_EMAIL to an email address or a username (no spaces).");
     process.exit(1);
   }
   if (password.length < 10) {
@@ -37,6 +41,17 @@ const db = drizzle(client, { schema: s });
 
 async function main() {
   const passwordHash = hashPassword(password);
+  const oldEmail = process.env.OWNER_OLD_EMAIL?.trim().toLowerCase();
+  if (oldEmail) {
+    const [renamed] = await db
+      .update(s.users)
+      .set({ email, passwordHash, role: "owner", ...(name ? { name } : {}) })
+      .where(eq(s.users.email, oldEmail))
+      .returning({ id: s.users.id });
+    if (!renamed) throw new Error(`No account with login ${oldEmail}`);
+    console.log(`Owner account renamed: ${oldEmail} -> ${email} (user #${renamed.id}). Sign in at /admin/login.`);
+    return;
+  }
   const [row] = await db
     .insert(s.users)
     .values({ name: name ?? "Owner", email, passwordHash, role: "owner" })

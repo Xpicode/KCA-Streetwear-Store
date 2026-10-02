@@ -11,8 +11,8 @@ export function AdminLoginForm() {
   const [state, action] = useActionState(adminLogin, null);
   return (
     <form action={action} className="flex flex-col gap-4">
-      <Field label="Email">
-        <Input name="email" type="email" autoComplete="email" required autoFocus />
+      <Field label="Email or username">
+        <Input name="email" type="text" autoComplete="username" autoCapitalize="none" required autoFocus />
       </Field>
       <Field label="Password">
         <Input name="password" type="password" autoComplete="current-password" required />

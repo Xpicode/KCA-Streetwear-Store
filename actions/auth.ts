@@ -11,7 +11,8 @@ import { clear, hit, retryAfter } from "@/lib/rate-limit";
 import type { ActionState } from "@/components/ui/form-message";
 
 const loginSchema = z.object({
-  email: z.string().trim().toLowerCase().email("Enter a valid email"),
+  // the owner signs in with a username, staff with their email: both live in users.email
+  email: z.string().trim().toLowerCase().min(1, "Enter your email or username").max(200),
   password: z.string().min(1, "Enter your password"),
 });
 
@@ -47,7 +48,7 @@ export async function adminLogin(_prev: ActionState, formData: FormData): Promis
   if (!u || !verifyPassword(parsed.data.password, u.passwordHash)) {
     await hit(emailKey, EMAIL_RULE);
     await hit(ipKey, IP_RULE);
-    return { error: "Wrong email or password." };
+    return { error: "Wrong login or password." };
   }
 
   await clear(emailKey);
