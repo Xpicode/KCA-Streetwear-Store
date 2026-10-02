@@ -105,11 +105,11 @@ export default async function SettingsPage() {
         <CardBody className="flex flex-col gap-2 text-sm text-zinc-700">
           <p>
             The store shows as <code className="rounded bg-zinc-100 px-1.5 py-0.5 font-bold">{BRAND.name}</code> across the landing page,
-            storefront and admin. Name, contact number, email and city all live in one file:
+            storefront and admin. Name, email, city and social links all live in one file:
           </p>
           <ul className="list-disc pl-5 text-zinc-600">
             <li>
-              <code>lib/brand.ts</code> — brand name, phone, email, city (phone/email/city are still placeholders)
+              <code>lib/brand.ts</code> — brand name, email, city, social links (the email is still a placeholder)
             </li>
             <li>
               <code>app/layout.tsx</code> — browser tab title

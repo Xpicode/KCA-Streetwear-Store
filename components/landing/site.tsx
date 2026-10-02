@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { BRAND } from "@/lib/brand";
+import { SocialIcon } from "@/components/social-icon";
 
 /** Shared chrome + style tokens for the public site (home and detail pages). */
 export const label = "font-mono text-[10px] font-medium uppercase tracking-[0.2em] text-zinc-500";
@@ -67,9 +68,16 @@ export function SiteFooter() {
           <div>
             <h2 className="reveal font-display text-4xl uppercase leading-none sm:text-6xl">Questions? Message us.</h2>
             <div className="mt-6 flex flex-col gap-1 font-mono text-sm text-zinc-400">
-              <span>{BRAND.phone}</span>
               <span>{BRAND.email}</span>
               <span>{BRAND.city}</span>
+            </div>
+            <div className={`mt-6 flex flex-wrap gap-x-8 gap-y-3 ${navLink}`}>
+              {BRAND.socials.map((s) => (
+                <a key={s.name} href={s.url} target="_blank" rel="noopener noreferrer" className="ink inline-flex items-center gap-2">
+                  <SocialIcon name={s.name} className="size-5" />
+                  {s.name}
+                </a>
+              ))}
             </div>
           </div>
           <nav className={`grid grid-cols-2 gap-x-12 gap-y-3 ${navLink}`}>

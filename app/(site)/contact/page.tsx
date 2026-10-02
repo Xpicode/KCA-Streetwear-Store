@@ -20,7 +20,15 @@ export default function ContactPage() {
 
       <section className="border-b border-zinc-950">
         <div className={`${container} grid gap-px border-b border-zinc-950 md:grid-cols-3`}>
-          <Card title="Mobile" value={BRAND.phone} note="Call, text, Viber or WhatsApp" />
+          <Card
+            title="Facebook"
+            value={
+              <a href={BRAND.facebook} target="_blank" rel="noopener noreferrer" className="underline-offset-4 hover:underline">
+                KCAStreetwear
+              </a>
+            }
+            note="Message us on Messenger"
+          />
           <Card title="Email" value={BRAND.email} note="Quotes and custom print inquiries" />
           <Card title="Location" value={BRAND.city} note="Pickup by appointment" last />
         </div>
@@ -50,7 +58,7 @@ export default function ContactPage() {
   );
 }
 
-function Card({ title, value, note, last }: { title: string; value: string; note: string; last?: boolean }) {
+function Card({ title, value, note, last }: { title: string; value: React.ReactNode; note: string; last?: boolean }) {
   return (
     <div className={`reveal py-10 md:px-8 ${last ? "" : "border-b border-zinc-950 md:border-r md:border-b-0"} md:first:pl-0`}>
       <div className={label}>{title}</div>
