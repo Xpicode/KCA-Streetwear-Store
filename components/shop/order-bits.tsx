@@ -1,6 +1,7 @@
 import { Check, X } from "lucide-react";
 import { Badge, ORDER_STATUS, PAYMENT_STATUS } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { BRAND } from "@/lib/brand";
 
 export const fmtDate = (d: Date | string) =>
   new Date(d).toLocaleDateString("en-PH", { day: "numeric", month: "short", year: "numeric", timeZone: "Asia/Manila" });
@@ -16,6 +17,23 @@ export function OrderStatusBadge({ status }: { status: string }) {
 export function PaymentBadge({ status }: { status: string }) {
   const s = PAYMENT_STATUS[status] ?? { label: status, tone: "neutral" as const };
   return <Badge tone={s.tone}>{s.label}</Badge>;
+}
+
+/** Opens our Facebook page so the buyer can message us about the order. */
+export function FacebookButton({ className }: { className?: string }) {
+  return (
+    <a
+      href={BRAND.facebook}
+      target="_blank"
+      rel="noopener noreferrer"
+      className={cn("inline-flex h-9 items-center justify-center gap-2 rounded-lg bg-[#0866ff] px-3 text-sm font-bold text-white hover:bg-[#0756d6]", className)}
+    >
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" className="size-4">
+        <path d="M9.101 23.691v-7.98H6.627v-3.667h2.474v-1.58c0-4.085 1.848-5.978 5.858-5.978.401 0 .955.042 1.468.103a8.68 8.68 0 0 1 1.141.195v3.325a8.623 8.623 0 0 0-.653-.036 26.805 26.805 0 0 0-.733-.009c-.707 0-1.259.096-1.675.309a1.686 1.686 0 0 0-.679.622c-.258.42-.374.995-.374 1.752v1.297h3.919l-.386 2.103-.287 1.564h-3.246v8.245C19.396 23.238 24 18.179 24 12.044c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.628 3.874 10.35 9.101 11.647Z" />
+      </svg>
+      Message us on Facebook
+    </a>
+  );
 }
 
 export const PAYMENT_METHOD: Record<string, string> = { cash: "Cash", bank: "Bank transfer", ewallet: "E-wallet" };

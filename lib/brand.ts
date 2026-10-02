@@ -5,4 +5,5 @@ export const BRAND = {
   phone: "[0917 000 0000]",
   email: "[hello@kcastreetwear.com]",
   city: "Cavite, Philippines",
+  facebook: "https://www.facebook.com/KCAStreetwear",
 };

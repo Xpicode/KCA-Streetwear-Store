@@ -10,7 +10,7 @@ import { reorderForm } from "@/actions/cart";
 import { peso } from "@/lib/format";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { CopyOrderButton } from "@/components/shop/copy-order-button";
-import { fmtDate, fmtDateTime, OrderStatusBadge, PaymentBadge, PAYMENT_METHOD, StatusTrack } from "@/components/shop/order-bits";
+import { fmtDate, fmtDateTime, FacebookButton, OrderStatusBadge, PaymentBadge, PAYMENT_METHOD, StatusTrack } from "@/components/shop/order-bits";
 
 export const dynamic = "force-dynamic";
 
@@ -65,8 +65,13 @@ export default async function OrderDetailPage({
               We&apos;ll check stock and message you the confirmed total and delivery fee. Once you pay by GCash, Maya or bank transfer, your
               order ships.
             </p>
-            <p className="mt-2 text-sm font-medium text-brand-900/80">Messaging us on Facebook? Copy your order details and paste them in the chat.</p>
-            <CopyOrderButton text={copyText} variant="primary" className="mt-3" />
+            <p className="mt-2 text-sm font-medium text-brand-900/80">
+              Message us on Facebook for your order: copy your order details, then paste them in the chat.
+            </p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              <CopyOrderButton text={copyText} variant="primary" />
+              <FacebookButton />
+            </div>
           </div>
         </div>
       )}
@@ -85,7 +90,13 @@ export default async function OrderDetailPage({
           <p className="text-sm font-medium text-zinc-500">Requested {fmtDateTime(order.requestedAt)}</p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <CopyOrderButton text={copyText} />
+          {/* right after checkout the banner above already has both */}
+          {!placed && (
+            <>
+              <CopyOrderButton text={copyText} />
+              <FacebookButton />
+            </>
+          )}
           {canReorder && (
             <form action={reorderForm}>
               <input type="hidden" name="channel" value={channel.key} />
