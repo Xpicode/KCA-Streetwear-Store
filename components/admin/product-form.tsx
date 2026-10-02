@@ -169,6 +169,11 @@ export function ProductForm({
   const [price, setPrice] = useState(p.basePrice ? String(p.basePrice) : "");
   const [cost, setCost] = useState(p.baseCost ? String(p.baseCost) : "");
   const [retailPrice, setRetailPrice] = useState(p.retailPrice != null ? String(p.retailPrice) : "");
+  const [moq, setMoq] = useState(String(p.moq));
+  // which store's inputs to ask for; "both" and "hidden" ask for everything
+  const [visibility, setVisibility] = useState<string>(p.isActive ? p.showIn : "hidden");
+  const wholesale = visibility !== "retail";
+  const retail = visibility !== "wholesale";
 
   // photo: an uploaded file wins over the pasted link; preview shows whichever is set
   const fileRef = useRef<HTMLInputElement>(null);
@@ -252,6 +257,24 @@ export function ProductForm({
   // a hidden default variant keeps its id so it is updated, not recreated
   const defaultVariantId =
     initialVariants.length === 1 && !initialVariants[0].size && !initialVariants[0].color && !initialVariants[0].locked ? initialVariants[0].id : undefined;
+
+  const retailField = (
+    <Field
+      label="Retail price (₱)"
+      hint={wholesale ? "Per piece in the retail store (no minimum, no tiers). Leave blank to hide this product from the retail store." : "Per piece in the retail store."}
+    >
+      <Input
+        name="retailPrice"
+        type="number"
+        step="0.01"
+        min="0"
+        value={retailPrice}
+        onChange={(e) => setRetailPrice(e.target.value)}
+        required={!wholesale}
+        placeholder={wholesale ? "Not sold in retail" : "0.00"}
+      />
+    </Field>
+  );
 
   return (
     <form action={action} className="flex flex-col gap-5">
@@ -350,27 +373,33 @@ export function ProductForm({
         <Card>
           <CardHeader title="Pricing & stock" />
           <CardBody className="flex flex-col gap-4">
+            <Field label="Show on website" hint="Where customers can see this product. The form only asks for what that store needs. Hidden products are left out of stock-in too.">
+              <Select name="visibility" value={visibility} onChange={(e) => setVisibility(e.target.value)}>
+                <option value="both">Wholesale and retail</option>
+                <option value="wholesale">Wholesale store only</option>
+                <option value="retail">Retail store only</option>
+                <option value="hidden">Hidden (not on the website)</option>
+              </Select>
+            </Field>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <Field label="Cost per unit (₱)" hint="What you pay your supplier.">
                 <Input name="baseCost" type="number" step="0.01" min="0" value={cost} onChange={(e) => setCost(e.target.value)} placeholder="0.00" />
               </Field>
-              <Field label="Wholesale price (₱)" hint="Per unit, before quantity tiers.">
-                <Input name="basePrice" type="number" step="0.01" min="0" value={price} onChange={(e) => setPrice(e.target.value)} required placeholder="0.00" />
-              </Field>
+              {wholesale ? (
+                <Field label="Wholesale price (₱)" hint="Per unit, before quantity tiers.">
+                  <Input name="basePrice" type="number" step="0.01" min="0" value={price} onChange={(e) => setPrice(e.target.value)} required placeholder="0.00" />
+                </Field>
+              ) : (
+                retailField
+              )}
             </div>
-            <ProfitPreview cost={cost} price={price} />
-            <Field label="Retail price (₱)" hint="Per piece in the retail store (no minimum, no tiers). Leave blank to hide this product from the retail store.">
-              <Input
-                name="retailPrice"
-                type="number"
-                step="0.01"
-                min="0"
-                value={retailPrice}
-                onChange={(e) => setRetailPrice(e.target.value)}
-                placeholder="Not sold in retail"
-              />
-            </Field>
-            {retailPrice.trim() !== "" && <ProfitPreview cost={cost} price={retailPrice} label="Retail" />}
+            {wholesale && <ProfitPreview cost={cost} price={price} />}
+            {wholesale && retail && retailField}
+            {retail && (!wholesale || retailPrice.trim() !== "") && <ProfitPreview cost={cost} price={retailPrice} label="Retail" />}
+            {/* fields of the store this product is not in keep their values, so switching back loses nothing */}
+            {!wholesale && <input type="hidden" name="basePrice" value={price.trim() !== "" ? price : retailPrice} />}
+            {!wholesale && <input type="hidden" name="moq" value={moq} />}
+            {!retail && <input type="hidden" name="retailPrice" value={retailPrice} />}
             <Field label="Unit">
               <Select name="unit" defaultValue={p.unit}>
                 {UNITS.map((u) => (
@@ -381,10 +410,12 @@ export function ProductForm({
               </Select>
             </Field>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Field label="MOQ" hint="Minimum order qty">
-                <Input name="moq" type="number" min="1" step="1" defaultValue={p.moq} required />
-              </Field>
-              <Field label="Reorder level" hint="Flag as low stock at">
+              {wholesale && (
+                <Field label="MOQ" hint="Minimum order qty (wholesale)">
+                  <Input name="moq" type="number" min="1" step="1" value={moq} onChange={(e) => setMoq(e.target.value)} required />
+                </Field>
+              )}
+              <Field label="Reorder level" hint="Flag as low stock at" className={wholesale ? undefined : "sm:col-span-2"}>
                 <Input name="reorderLevel" type="number" min="0" step="1" defaultValue={p.reorderLevel} required />
               </Field>
             </div>
@@ -393,14 +424,6 @@ export function ProductForm({
                 <Input name="initialStock" type="number" min="0" step="1" defaultValue={0} />
               </Field>
             )}
-            <Field label="Show on website" hint="Where customers can see this product. The retail store also needs a retail price. Hidden products are left out of stock-in too.">
-              <Select name="visibility" defaultValue={p.isActive ? p.showIn : "hidden"}>
-                <option value="both">Wholesale and retail</option>
-                <option value="wholesale">Wholesale store only</option>
-                <option value="retail">Retail store only</option>
-                <option value="hidden">Hidden (not on the website)</option>
-              </Select>
-            </Field>
           </CardBody>
         </Card>
       </div>
@@ -432,7 +455,7 @@ export function ProductForm({
                   <tr>
                     <th className="px-3 py-2">Size</th>
                     <th className="px-3 py-2">Color</th>
-                    <th className="px-3 py-2">Price override (₱)</th>
+                    {wholesale && <th className="px-3 py-2">Price override (₱)</th>}
                     {mode === "create" && <th className="px-3 py-2">Starting stock</th>}
                     <th className="px-3 py-2">Active</th>
                     <th className="w-24 px-3 py-2 text-right"></th>
@@ -447,17 +470,19 @@ export function ProductForm({
                       <td className="px-3 py-2">
                         <Input value={v.color} onChange={(e) => setVariant(v.key, { color: e.target.value })} placeholder="e.g. Black" className="h-9" />
                       </td>
-                      <td className="px-3 py-2">
-                        <Input
-                          type="number"
-                          step="0.01"
-                          min="0"
-                          value={v.priceOverride}
-                          onChange={(e) => setVariant(v.key, { priceOverride: e.target.value })}
-                          placeholder="base price"
-                          className="h-9"
-                        />
-                      </td>
+                      {wholesale && (
+                        <td className="px-3 py-2">
+                          <Input
+                            type="number"
+                            step="0.01"
+                            min="0"
+                            value={v.priceOverride}
+                            onChange={(e) => setVariant(v.key, { priceOverride: e.target.value })}
+                            placeholder="base price"
+                            className="h-9"
+                          />
+                        </td>
+                      )}
                       {mode === "create" && (
                         <td className="px-3 py-2">
                           <Input
@@ -509,8 +534,8 @@ export function ProductForm({
         </CardBody>
       </Card>
 
-      {/* Price tiers */}
-      <Card>
+      {/* Price tiers (wholesale only; existing tiers are kept while hidden) */}
+      {wholesale && <Card>
         <CardHeader
           title="Price tiers"
           action={
@@ -587,7 +612,7 @@ export function ProductForm({
             The highest “from qty” at or below the ordered quantity wins. Leave price group blank to apply to every customer.
           </p>
         </CardBody>
-      </Card>
+      </Card>}
 
       <FormMessage state={state} />
 
