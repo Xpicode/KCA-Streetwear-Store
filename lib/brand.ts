@@ -8,5 +8,8 @@ export const BRAND = {
   city: "Cavite, Philippines",
   facebook,
   /** Social accounts shown in the site footer. Add Instagram, TikTok… as { name, url }. */
-  socials: [{ name: "Facebook", url: facebook }],
+  socials: [
+    { name: "Facebook", url: facebook },
+    { name: "Instagram", url: "https://www.instagram.com/kcastreatwear/" },
+  ],
 };
